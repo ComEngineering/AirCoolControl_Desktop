@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+      <file>../../Images/shema-konditsionera.gif</file>
+      <file>../../Images/left_stream_0.gif</file>
+      <file>../../Images/left_stream_1.gif</file>
+      <file>../../Images/left_stream_2.gif</file>
+      <file>../../Images/left_stream_3.gif</file>
+      <file>../../Images/right_stream_0.gif</file>
+      <file>../../Images/right_stream_1.gif</file>
+      <file>../../Images/right_stream_2.gif</file>
+      <file>../../Images/right_stream_3.gif</file>
+    </qresource>
+</RCC>
