@@ -1,22 +1,26 @@
-#ifndef __PULLERTASK__
-#define __PULLERTASK__
+#ifndef __PullerReadTask__
+#define __PullerReadTask__
 
 #include  <QVector>
 #include  <QMutex>
 #include  <memory>
 #include  "Interval.h"
+#include  "IPullerTask.h"
 
-class PullerTask 
+class PullerReadTask : public IPullerTask
 {
 
 public:
-    PullerTask(int id, Interval& range);
-    ~PullerTask();
+    PullerReadTask(int id, Interval& range);
+    virtual ~PullerReadTask();
+
+    bool proceed(ModBusUART_ImplShared modbus);
+    int  getID() const;
 
     bool isContentChanged();
     void getContent(QVector<quint16>& list);
     void setContent(const QVector<quint16>& list);
-    int  getID() const;
+    
     const Interval& getRange() const;
 
 private:
@@ -27,6 +31,6 @@ private:
     mutable QMutex *    m_mutex;
 };
 
-typedef std::shared_ptr<PullerTask> PullerTaskShared;
+typedef std::shared_ptr<PullerReadTask> PullerReadTaskShared;
 
-#endif //__PULLERTASK__
+#endif //__PullerReadTask__

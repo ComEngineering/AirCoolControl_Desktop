@@ -4,7 +4,7 @@
 #include <QObject>
 #include "ConfigMap.h"
 #include <memory>
-#include "PullerTask.h"
+#include "PullerReadTask.h"
 #include "ModbusDriver.h"
 
 class CoollerExplorer : public QObject
@@ -35,8 +35,8 @@ private:
     ModbusDriver&     m_modbus;
     QVector<quint16>  m_localInPull;
     QVector<quint16>  m_localOutPull;
-    PullerTaskShared  m_inRegisters;
-    PullerTaskShared  m_outRegisters;
+    PullerReadTaskShared  m_inRegisters;
+    PullerReadTaskShared  m_outRegisters;
     int               m_currentDeviceID;
 };
 

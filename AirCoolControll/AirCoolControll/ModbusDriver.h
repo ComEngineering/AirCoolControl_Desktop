@@ -2,7 +2,7 @@
 #define MODBUSDRIVER_H
 
 #include <QObject>
-#include "PullerTask.h"
+#include "PullerReadTask.h"
 #include "VersionStorage.h"
 #include "modbusuart_impl.h"
 #include "ModbusRegisterPuller.h"
@@ -18,7 +18,7 @@ public:
     ~ModbusDriver();
 
     bool setPortName(const QString& name);
-    void addPullerTask(PullerTaskShared a_task);
+    void addPullerReadTask(PullerReadTaskShared a_task);
     bool readDeviceInfo(quint16 id, DeviceInfo& info);
     bool writeRegister(quint16 id, quint16 regNumber, quint16 value);
     void getDeviceList(DeviceInfoMap& map) const;

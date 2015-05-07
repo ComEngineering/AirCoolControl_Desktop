@@ -45,7 +45,7 @@ void ModbusDriver::UARTfail()
     m_puller.terminate();
 }
 
-void ModbusDriver::addPullerTask(PullerTaskShared a_task)
+void ModbusDriver::addPullerReadTask(PullerReadTaskShared a_task)
 {
     m_puller.addTask(a_task);
 }

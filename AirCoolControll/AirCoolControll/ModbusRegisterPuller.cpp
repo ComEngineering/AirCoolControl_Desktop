@@ -54,43 +54,42 @@ void ModbusRegisterPuller::run(void)
         if (m_isStoped)
             QThread::yieldCurrentThread();
 
-        DeviceInfoMap::iterator ci = m_deviceInfoList.find(currentScanningID);
-        if (m_modbus->readDeviceInfo(currentScanningID, vendor, product, version))
-        {
-            if (! (ci != m_deviceInfoList.end() && (vendor == ci->second->m_vendor || product == ci->second->m_product || ci->second->m_version == version)))
-            {
-                DeviceInfoShared a_info = std::make_shared<DeviceInfo>(vendor, product, version);
-                {
-                    QMutexLocker lock(&m_infoMapMutex);
-                    m_deviceInfoList[currentScanningID] = a_info;
-                }
-                emit deviceListUpdated();
-            }
-        }
-        else
-        {
-            if (ci != m_deviceInfoList.end())
-            {
-                //if (!m_modbus->readDeviceInfo(currentScanningID, vendor, product, version))
-                {
-                    QMutexLocker lock(&m_infoMapMutex);
-                    m_deviceInfoList.erase(currentScanningID);
-                }
-                emit deviceListUpdated();
-            }
-        }
+        //DeviceInfoMap::iterator ci = m_deviceInfoList.find(currentScanningID);
+        //if (m_modbus->readDeviceInfo(currentScanningID, vendor, product, version))
+        //{
+        //    if (! (ci != m_deviceInfoList.end() && (vendor == ci->second->m_vendor || product == ci->second->m_product || ci->second->m_version == version)))
+        //    {
+        //        DeviceInfoShared a_info = std::make_shared<DeviceInfo>(vendor, product, version);
+        //        {
+        //            QMutexLocker lock(&m_infoMapMutex);
+        //            m_deviceInfoList[currentScanningID] = a_info;
+        //        }
+        //        emit deviceListUpdated();
+        //    }
+        //}
+        //else
+        //{
+        //    if (ci != m_deviceInfoList.end())
+        //    {
+        //        //if (!m_modbus->readDeviceInfo(currentScanningID, vendor, product, version))
+        //        {
+        //            QMutexLocker lock(&m_infoMapMutex);
+        //            m_deviceInfoList.erase(currentScanningID);
+        //        }
+        //        emit deviceListUpdated();
+        //    }
+        //}
 
-        if (++currentScanningID > 10)
-            currentScanningID = 1;
+        //if (++currentScanningID > 10)
+        //    currentScanningID = 1;
 
         {
             QMutexLocker lock(&m_taskMutex);
-            for (PullerTaskShared task : m_tasks)
+            for (QList<PullerTaskShared>::iterator task = m_tasks.begin(); task != m_tasks.end(); task++)
             {
-                QVector<quint16> res;
-                if (m_modbus->readRegisterPool(task->getID(), task->getRange().first, task->getRange().second - task->getRange().first + 1, res))
+                if (true == (*task)->proceed(m_modbus))
                 {
-                    task->setContent(res);
+                    m_tasks.erase(task);
                 }
             }
         }

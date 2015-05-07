@@ -46,6 +46,8 @@ bool ModBusUART_Impl::readRegisterPool(quint16 id, quint16 regNumber, quint16 re
     if (!m_port.isOpen())
         return false;
 
+    m_port.clear();
+
     quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
     quint16 regCountBig = qToBigEndian<quint16>(regCount);
 
@@ -220,6 +222,7 @@ void ModBusUART_Impl::communicationError(QSerialPort::SerialPortError err)
     switch (err)
     {
     case QSerialPort::UnknownError :
+        m_port.clearError();
         /*m_port.close();
         if (m_port.open(QIODevice::ReadWrite))
         {

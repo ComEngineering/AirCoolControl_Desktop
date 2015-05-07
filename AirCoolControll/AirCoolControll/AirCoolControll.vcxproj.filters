@@ -137,9 +137,6 @@
     <ClCompile Include="ConfigMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PullerTask.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="aircoolcontroll.cpp">
       <Filter>Source Files\Widgets</Filter>
     </ClCompile>
@@ -200,6 +197,12 @@
     <ClCompile Include="connectionlog.cpp">
       <Filter>Source Files\Widgets</Filter>
     </ClCompile>
+    <ClCompile Include="PullerReadTask.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IPullerTask.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="aircoolcontroll.ui">
@@ -227,9 +230,6 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="coollerexplorer.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="PullerTask.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="aircoolcontroll.h">
@@ -268,6 +268,9 @@
     <CustomBuild Include="connectionlog.h">
       <Filter>Header Files\Widgets</Filter>
     </CustomBuild>
+    <CustomBuild Include="PullerReadTask.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_aircoolcontroll.h">
@@ -305,6 +308,9 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_coollergraphwidget.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IPullerTask.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

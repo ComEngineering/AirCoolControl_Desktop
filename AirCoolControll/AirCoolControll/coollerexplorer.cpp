@@ -40,10 +40,10 @@ CoollerExplorer::CoollerExplorer(const ConfigList& configs, ModbusDriver& modbus
     {
         Interval i_int = m_currentMap->getInputInterval();
         Interval o_int = m_currentMap->getOutputInterval();
-        m_inRegisters = std::make_shared<PullerTask>(m_currentDeviceID,i_int);
-        m_outRegisters = std::make_shared<PullerTask>(m_currentDeviceID,o_int);
-        m_modbus.addPullerTask(m_inRegisters);
-        m_modbus.addPullerTask(m_outRegisters);
+        m_inRegisters = std::make_shared<PullerReadTask>(m_currentDeviceID,i_int);
+        m_outRegisters = std::make_shared<PullerReadTask>(m_currentDeviceID,o_int);
+        m_modbus.addPullerReadTask(m_inRegisters);
+        m_modbus.addPullerReadTask(m_outRegisters);
         m_localInPull.resize(i_int.second - i_int.first + 1);
         m_localOutPull.resize(o_int.second - o_int.first + 1);
     }
