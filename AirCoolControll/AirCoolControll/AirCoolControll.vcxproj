@@ -162,7 +162,7 @@ xcopy "$(SolutionDir)..\configs"  "$(OutputPath)\configs" /y</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="IPullerTask.cpp" />
+    <ClCompile Include="PullerTaskBase.cpp" />
     <ClCompile Include="ModbusRegisterPuller.cpp" />
     <ClCompile Include="coolerstatewidget.cpp" />
     <ClCompile Include="coollerexplorer.cpp" />
@@ -291,6 +291,7 @@ xcopy "$(SolutionDir)..\configs"  "$(OutputPath)\configs" /y</Command>
     <ClCompile Include="ModbusDriver.cpp" />
     <ClCompile Include="modbusuart_impl.cpp" />
     <ClCompile Include="PullerReadTask.cpp" />
+    <ClCompile Include="PullerWriteTask.cpp" />
     <ClCompile Include="RequestRouter.cpp" />
     <ClCompile Include="VersionStorage.cpp" />
   </ItemGroup>
@@ -374,7 +375,8 @@ xcopy "$(SolutionDir)..\configs"  "$(OutputPath)\configs" /y</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB "-IC:\Libs\boost_1_57_0" "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtWidgets"</Command>
     </CustomBuild>
     <ClInclude Include="GeneratedFiles\ui_coollergraphwidget.h" />
-    <ClInclude Include="IPullerTask.h" />
+    <ClInclude Include="PullerTaskBase.h" />
+    <ClInclude Include="PullerWriteTask.h" />
     <ClInclude Include="VersionStorage.h" />
     <CustomBuild Include="coollerexplorer.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

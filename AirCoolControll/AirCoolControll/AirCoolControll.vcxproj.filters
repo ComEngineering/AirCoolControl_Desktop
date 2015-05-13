@@ -200,7 +200,10 @@
     <ClCompile Include="PullerReadTask.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IPullerTask.cpp">
+    <ClCompile Include="PullerWriteTask.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PullerTaskBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -309,7 +312,10 @@
     <ClInclude Include="GeneratedFiles\ui_coollergraphwidget.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="IPullerTask.h">
+    <ClInclude Include="PullerWriteTask.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PullerTaskBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

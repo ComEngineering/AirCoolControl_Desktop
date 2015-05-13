@@ -3,7 +3,7 @@
 
 
 PullerReadTask::PullerReadTask(int id,Interval& range) :
-    m_id(id),
+    PullerTaskBase(id),
     m_range(range),
     m_mutex(new QMutex())
 {
@@ -36,11 +36,6 @@ void PullerReadTask::setContent(const QVector<quint16>& list)
         m_isUpdated = true;
         m_pull = list;
     }
-}
-
-int  PullerReadTask::getID() const
-{
-    return m_id;
 }
 
 const Interval& PullerReadTask::getRange() const

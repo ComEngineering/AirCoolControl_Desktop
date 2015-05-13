@@ -5,9 +5,9 @@
 #include  <QMutex>
 #include  <memory>
 #include  "Interval.h"
-#include  "IPullerTask.h"
+#include  "PullerTaskBase.h"
 
-class PullerReadTask : public IPullerTask
+class PullerReadTask : public PullerTaskBase
 {
 
 public:
@@ -15,7 +15,6 @@ public:
     virtual ~PullerReadTask();
 
     bool proceed(ModBusUART_ImplShared modbus);
-    int  getID() const;
 
     bool isContentChanged();
     void getContent(QVector<quint16>& list);

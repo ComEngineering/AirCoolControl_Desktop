@@ -2,7 +2,7 @@
 #define ModbusRegisterPuller_H
 
 #include <QThread>
-#include "IPullerTask.h"
+#include "PullerTaskBase.h"
 #include <qlist.h>
 #include "modbusuart_impl.h"
 #include <qsemaphore.h>
