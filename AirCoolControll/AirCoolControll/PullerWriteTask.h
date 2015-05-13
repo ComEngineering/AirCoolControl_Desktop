@@ -12,10 +12,15 @@ public:
 
     bool proceed(ModBusUART_ImplShared modbus);
 
+signals:
+    void transmitionError(void);
+
 private:
     int m_regNumber;
     int m_value;
     int m_tryCounter;
 };
+
+typedef std::shared_ptr<PullerWriteTask> PullerWriteTaskShared;
 
 #endif // __PullerWriteTask__

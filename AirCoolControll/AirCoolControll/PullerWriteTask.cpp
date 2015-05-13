@@ -23,6 +23,8 @@ bool PullerWriteTask::proceed(ModBusUART_ImplShared modbus)
     {
         if (m_tryCounter++ < 3)  /// TO DO read from settings
             rc = false;
+        else
+            emit transmitionError();
     }
 
     return rc;

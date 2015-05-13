@@ -98,6 +98,8 @@ bool ModBusUART_Impl::writeRegister(quint16 id, quint16 regNumber, quint16 value
     if (!m_port.isOpen())
         return false;
 
+    m_port.clear();
+
     quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
     quint16 valueBig = qToBigEndian<quint16>(value);
     QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
@@ -136,6 +138,8 @@ bool ModBusUART_Impl::readDeviceInfo(quint16 id, QString& vendor, QString& produ
 {
     if (!m_port.isOpen())
         return false;
+
+    m_port.clear();
 
     const char reqBody[] = { char(0x0E), char(1), char(0) };
     QByteArray reqBodyArray(reqBody);

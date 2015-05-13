@@ -206,6 +206,9 @@
     <ClCompile Include="PullerTaskBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PullerGetDeviceInfoTask.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="aircoolcontroll.ui">
@@ -316,6 +319,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PullerTaskBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PullerGetDeviceInfoTask.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
