@@ -209,6 +209,24 @@
     <ClCompile Include="PullerGetDeviceInfoTask.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_PullerGetDeviceInfoTask.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_PullerGetDeviceInfoTask.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_PullerTaskBase.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_PullerTaskBase.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_PullerWriteTask.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_PullerWriteTask.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="aircoolcontroll.ui">
@@ -277,6 +295,15 @@
     <CustomBuild Include="PullerReadTask.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="PullerGetDeviceInfoTask.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="PullerTaskBase.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="PullerWriteTask.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_aircoolcontroll.h">
@@ -314,15 +341,6 @@
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_coollergraphwidget.h">
       <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PullerWriteTask.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PullerTaskBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PullerGetDeviceInfoTask.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

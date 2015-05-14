@@ -9,5 +9,6 @@
       <file>../../Images/right_stream_1.gif</file>
       <file>../../Images/right_stream_2.gif</file>
       <file>../../Images/right_stream_3.gif</file>
+	  <file>../../Images/app_icon.png</file>
     </qresource>
 </RCC>

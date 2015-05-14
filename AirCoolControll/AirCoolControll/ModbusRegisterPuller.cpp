@@ -12,7 +12,8 @@ ModbusRegisterPuller::ModbusRegisterPuller(QObject *parent)
 ModbusRegisterPuller::~ModbusRegisterPuller()
 {
     m_continueProcessing = false;
-    m_endProcessingSemaphore.acquire();
+    if(false == m_isStoped)
+        m_endProcessingSemaphore.acquire();
     //m_deviceInfoList.clear();
 }
 

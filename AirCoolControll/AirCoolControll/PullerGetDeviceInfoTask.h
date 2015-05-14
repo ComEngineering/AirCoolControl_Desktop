@@ -3,9 +3,11 @@
 
 #include "PullerTaskBase.h"
 
+
 class PullerGetDeviceInfoTask :
-    public PullerTaskBase
+    public PullerTaskBase 
 {
+    Q_OBJECT
 public:
     PullerGetDeviceInfoTask(int id);
     virtual ~PullerGetDeviceInfoTask();

@@ -8,7 +8,8 @@ int main(int argc, char *argv[])
     Configurator conf;
     
     AirCoolControll w;
-    
+    QIcon mainIcon(":/Images/app_icon.png");
+    a.setWindowIcon(mainIcon);
     
     w.show();
     return a.exec();
