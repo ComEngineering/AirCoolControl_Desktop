@@ -7,7 +7,7 @@ ModBusDialog::ModBusDialog(QWidget *parent)
 
     connect(ui.parameters, SIGNAL(speedChanged(int)), this, SLOT(newSpeed(int)));
     connect(ui.parameters, SIGNAL(portChanged(int)), this, SLOT(newPort(int)));
-    connect(ui.parameters, SIGNAL(deviceIDChanged(int)), this, SLOT(newDevice(int)));
+    connect(ui.parameters, SIGNAL(performConnection(int)), this, SLOT(newDevice(int)));
 }
 
 ModBusDialog::~ModBusDialog()

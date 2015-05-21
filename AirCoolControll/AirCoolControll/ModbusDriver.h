@@ -5,7 +5,7 @@
 #include "PullerReadTask.h"
 #include "VersionStorage.h"
 #include "modbusuart_impl.h"
-#include "ModbusRegisterPuller.h"
+#include "ModbusPuller.h"
 #include <qmutex.h>
 #include <map>
 
@@ -21,7 +21,6 @@ public:
     void addPullerReadTask(PullerReadTaskShared a_task);
     bool readDeviceInfo(quint16 id, DeviceInfo& info);
     bool writeRegister(quint16 id, quint16 regNumber, quint16 value);
-    void getDeviceList(DeviceInfoMap& map) const;
     bool readyToWork() const;
     void removeTaskWithID(int id);
 
@@ -33,7 +32,7 @@ private slots:
 
 private:
     ModBusUART_ImplShared m_modbus;
-    ModbusRegisterPuller  m_puller;
+    ModbusPuller          m_puller;
     QString               m_currentPortName;
     mutable QMutex *      m_mutex;
 };

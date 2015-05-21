@@ -40,12 +40,12 @@ public:
 signals:
     void speedChanged(int n);
     void portChanged(int n);
-    void deviceIDChanged(int n);
+    void performConnection(int);
 
 private slots:
     void speedValueChanged(int);
     void portValueChanged(int);
-    void IDValueChanged(int);
+    void connectPressed(void);
     void controllTabChanged(int);
     
     void externalConnect();

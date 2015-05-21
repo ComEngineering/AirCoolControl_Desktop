@@ -8,7 +8,7 @@
 #include <QtSerialPort\qserialport.h>
 #include <qtimer.h>
 #include <memory>
-#include "coollerexplorer.h"
+#include "DeviceExplorer.h"
 #include "ModbusDriver.h"
 
 class Cooller_ModBusController : public QObject
@@ -32,7 +32,6 @@ private slots:
     void sendConfiguration(void);
     void externalStateChanged(void);
     void externalListChanged(void);
-    void deviceObserverWaked();
 
 signals:
     void newStatus(const QString&);
@@ -48,7 +47,7 @@ private:
     ExternalConnector       m_connector;
     ExternalControllManager m_externalManager;
     ConfigList              m_configs;
-    CoollerExplorerShared   m_explorer;
+    DeviceExplorerShared   m_explorer;
     ModbusDriver            m_modbus;
 
     ConfigMap::ParameterList m_inParameters;

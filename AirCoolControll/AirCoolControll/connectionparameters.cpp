@@ -24,7 +24,7 @@ ConnectionParameters::ConnectionParameters(QWidget *parent)
     ui.ipEd3->setText(Configurator::getSettings("IP3").toString());
 
     connect(ui.comboBoxSpeed, SIGNAL(currentIndexChanged(int)), this, SLOT(speedValueChanged(int)));
-    connect(ui.spinBoxID, SIGNAL(valueChanged(int)), this, SLOT(IDValueChanged(int)));
+    connect(ui.UARTconnectButton, SIGNAL(clicked(void)), this, SLOT(connectPressed(void)));
     connect(ui.comboBoxCOM, SIGNAL(currentIndexChanged(int)), this, SLOT(portValueChanged(int)));
     connect(ui.controllTypeTab, SIGNAL(currentChanged(int)), this, SLOT(controllTabChanged(int)));
     connect(ui.connectButton, SIGNAL(clicked()), this, SLOT(externalConnect()));
@@ -97,9 +97,9 @@ void ConnectionParameters::speedValueChanged(int n)
     emit speedChanged(n);
 }
 
-void ConnectionParameters::IDValueChanged(int n)
+void ConnectionParameters::connectPressed(void)
 {
-    emit deviceIDChanged(n);
+    emit performConnection(ui.spinBoxID->value());
 }
 
 void ConnectionParameters::portValueChanged(int n)

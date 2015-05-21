@@ -1,3 +1,9 @@
+
+#ifdef _WIN32
+    #pragma warning(disable:4996)
+    #define  _D_SCL_SECURE_NO_WARNINGS
+#endif
+
 #include "Cooller_ModbusController.h"
 #include <QtSerialPort\qserialportinfo.h>
 #include <qstring>
@@ -34,7 +40,6 @@ Cooller_ModBusController::Cooller_ModBusController(CoolerStateWidget *view, ModB
     connect(&m_connector, SIGNAL(connectionErrorOccured(QString)), config, SLOT(connectionErrorOccured(QString)));
     connect(&m_externalManager, SIGNAL(stateChanged()), this, SLOT(externalStateChanged()));
     connect(&m_externalManager, SIGNAL(listChanged()), this, SLOT(externalListChanged()));
-    connect(&m_modbus, SIGNAL(deviceListUpdated(void)), this, SLOT(deviceObserverWaked()));
 
     QString configsPath = Configurator::getConfigFilesPath();
     QDirIterator iter(configsPath, QStringList() << "*.xml", QDir::Files | QDir::NoDotAndDotDot, QDirIterator::NoIteratorFlags);
@@ -61,7 +66,7 @@ void Cooller_ModBusController::updateState(void)
 {
     checkConnectionState();
 
-    if (m_explorer && m_explorer->getState() == CoollerExplorer::Ready)
+    if (m_explorer && m_explorer->getState() == DeviceExplorer::Ready)
     {
         updateStateWidget();
     }
@@ -133,7 +138,6 @@ void Cooller_ModBusController::newPort(int n)
         QString name = a_info.portName();
         m_modbus.setPortName(name);
         m_configDialog->setDeviceIndex(1);
-        newDevice(1);
     }
 }
 
@@ -144,8 +148,8 @@ void Cooller_ModBusController::newDevice(int n)
     {
         if (m_explorer)
             m_explorer->stopTasks();
-        m_explorer = std::make_shared<CoollerExplorer>(m_configs, m_modbus, m_currentDeviceID, this);
-        if (m_explorer->getState() == CoollerExplorer::Ready)
+        m_explorer = std::make_shared<DeviceExplorer>(m_configs, m_modbus, m_currentDeviceID, this);
+        if (m_explorer->getState() == DeviceExplorer::Ready)
         {
             m_inParameters = m_explorer->getCurrentConfig()->getInputParametersList();
             m_outParameters = m_explorer->getCurrentConfig()->getOutputParametersList();
@@ -267,11 +271,4 @@ void Cooller_ModBusController::updateStateWidget()
             m_view->updateParameter(i, value,false);
         }
     }
-}
-
-void Cooller_ModBusController::deviceObserverWaked()
-{
-    DeviceInfoMap map;
-    m_modbus.getDeviceList(map);
-    m_configDialog->setDeviceList(map);
 }

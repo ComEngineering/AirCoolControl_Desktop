@@ -1,10 +1,10 @@
-#include "coollerexplorer.h"
+#include "DeviceExplorer.h"
 #include "Logger.h"
 #include "ConfigMap.h"
 #include <boost/property_tree/xml_parser.hpp>
 #include <cfloat>
 
-CoollerExplorer::CoollerExplorer(const ConfigList& configs, ModbusDriver& modbus, int id, QObject *parent)
+DeviceExplorer::DeviceExplorer(const ConfigList& configs, ModbusDriver& modbus, int id, QObject *parent)
     : QObject(parent),
     m_state(Ready),
     m_currentDeviceID(0),
@@ -49,17 +49,17 @@ CoollerExplorer::CoollerExplorer(const ConfigList& configs, ModbusDriver& modbus
     }
 }
 
-CoollerExplorer::~CoollerExplorer()
+DeviceExplorer::~DeviceExplorer()
 {
     
 }
 
-void CoollerExplorer::stopTasks()
+void DeviceExplorer::stopTasks()
 {
     m_modbus.removeTaskWithID(m_currentDeviceID);
 }
 
-bool  CoollerExplorer::getRegisterValue(const std::string & key,int& value)
+bool  DeviceExplorer::getRegisterValue(const std::string & key,int& value)
 {
     if (m_state != Ready || ! m_currentMap->haveVariableWithName(key))
         return false;
@@ -80,7 +80,7 @@ bool  CoollerExplorer::getRegisterValue(const std::string & key,int& value)
     return true;
 }
 
-bool CoollerExplorer::setRegisterValue(const std::string & key,int value)
+bool DeviceExplorer::setRegisterValue(const std::string & key,int value)
 {
     if (m_currentDeviceID != 0 && m_currentMap->haveVariableWithName(key))
     {
@@ -89,7 +89,7 @@ bool CoollerExplorer::setRegisterValue(const std::string & key,int value)
     return false;
 }
 
-QString CoollerExplorer::errorString()
+QString DeviceExplorer::errorString()
 {
     return m_errorString;
 }

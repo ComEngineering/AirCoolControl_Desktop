@@ -70,11 +70,6 @@ bool ModbusDriver::writeRegister(quint16 id, quint16 regNumber, quint16 value)
     return m_modbus->writeRegister(id, regNumber, value);
 }
 
-void ModbusDriver::getDeviceList(DeviceInfoMap& map) const
-{
-    m_puller.getDeviceInfoList(map);
-}
-
 void ModbusDriver::removeTaskWithID(int id)
 {
     m_puller.removeTaskWithID(id);

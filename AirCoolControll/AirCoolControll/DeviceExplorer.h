@@ -1,5 +1,5 @@
-#ifndef COOLLEREXPLORER_H
-#define COOLLEREXPLORER_H
+#ifndef DeviceExplorer_H
+#define DeviceExplorer_H
 
 #include <QObject>
 #include "ConfigMap.h"
@@ -7,15 +7,15 @@
 #include "PullerReadTask.h"
 #include "ModbusDriver.h"
 
-class CoollerExplorer : public QObject
+class DeviceExplorer : public QObject
 {
     Q_OBJECT
 
 public:
     enum State{Ready = 0,DeviceNotReady,ConfigNotFound};
 
-    CoollerExplorer(const ConfigList& configs,ModbusDriver& modbus,int id,QObject *parent);
-    ~CoollerExplorer();
+    DeviceExplorer(const ConfigList& configs, ModbusDriver& modbus , int id, QObject *parent);
+    ~DeviceExplorer();
 
     bool  getRegisterValue(const std::string & key,int& value);
     bool  setRegisterValue(const std::string & key,int value);
@@ -40,5 +40,5 @@ private:
     int               m_currentDeviceID;
 };
 
-typedef std::shared_ptr<CoollerExplorer> CoollerExplorerShared;
-#endif // COOLLEREXPLORER_H
+typedef std::shared_ptr<DeviceExplorer> DeviceExplorerShared;
+#endif // DeviceExplorer_H

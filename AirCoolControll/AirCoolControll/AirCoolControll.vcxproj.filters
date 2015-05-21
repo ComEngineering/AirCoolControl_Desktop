@@ -125,15 +125,6 @@
     <ClCompile Include="Cooller_ModbusController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="coollerexplorer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_coollerexplorer.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_coollerexplorer.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="ConfigMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -175,15 +166,6 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_ModbusDriver.cpp">
       <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ModbusRegisterPuller.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ModbusRegisterPuller.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="ModbusRegisterPuller.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_coollergraphwidget.cpp">
       <Filter>Generated Files\Debug</Filter>
@@ -227,6 +209,24 @@
     <ClCompile Include="GeneratedFiles\Release\moc_PullerWriteTask.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="ModbusPuller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ModbusPuller.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ModbusPuller.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_DeviceExplorer.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_DeviceExplorer.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="DeviceExplorer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="aircoolcontroll.ui">
@@ -253,9 +253,6 @@
     <CustomBuild Include="Cooller_ModbusController.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="coollerexplorer.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="aircoolcontroll.h">
       <Filter>Header Files\Widgets</Filter>
     </CustomBuild>
@@ -280,9 +277,6 @@
     <CustomBuild Include="ModbusDriver.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="ModbusRegisterPuller.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="coollergraphwidget.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
@@ -302,6 +296,12 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="PullerWriteTask.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ModbusPuller.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DeviceExplorer.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
