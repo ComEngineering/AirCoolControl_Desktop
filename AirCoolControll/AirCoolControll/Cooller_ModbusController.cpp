@@ -234,6 +234,16 @@ bool Cooller_ModBusController::readXMLConfig(const QString& path)
             a_parameter.m_maxValue = p.second.get<float>("<xmlattr>.max", FLT_MAX);
             a_parameter.m_minValue = p.second.get<float>("<xmlattr>.max", FLT_MIN);
             a_parameter.m_isWriteble = true;
+			int b = p.second.get<int>("<xmlattr>.B", -1);
+			if (b != -1)
+			{
+				a_parameter.m_isBool = true;
+				a_parameter.m_bitNumber = b;
+			}
+			else
+			{
+				a_parameter.m_isBool = false;
+			}
             a_map->addVariable(name, a_parameter);
         }
         m_configs.push_back(a_map);

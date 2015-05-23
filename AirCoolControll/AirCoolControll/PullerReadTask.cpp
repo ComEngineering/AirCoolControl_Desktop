@@ -5,7 +5,8 @@
 PullerReadTask::PullerReadTask(int id,Interval& range) :
     PullerTaskBase(id),
     m_range(range),
-    m_mutex(new QMutex())
+    m_mutex(new QMutex()),
+	m_id(id)
 {
     m_pull.resize(range.second - range.first + 1);
 }
