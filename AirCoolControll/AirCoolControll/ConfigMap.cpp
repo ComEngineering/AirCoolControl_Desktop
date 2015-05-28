@@ -1,7 +1,6 @@
 #include "ConfigMap.h"
 #include <boost/property_tree/xml_parser.hpp>
-
-
+#include "DeviceInfo.h"
 
 ConfigMap::ConfigMap(const std::string& vendor, const std::string& product, const std::string& versionMin, const std::string& versionMax) :
     m_vendor(vendor),
@@ -66,6 +65,20 @@ unsigned int  ConfigMap::getValue(const std::string& name, const QVector<quint16
     return ret;
 }
 
+bool ConfigMap::isVariableBool(const std::string& name, int& bitNumber)
+{
+    assert(haveVariableWithName(name));
+
+    Parameter p = m_map.at(name);
+    if (p.m_isBool)
+    {
+        bitNumber = p.m_bitNumber;
+        return true;
+    }
+    
+    return false;
+}
+
 Interval& ConfigMap::getInputInterval() 
 {
     return m_inputRegistersInterval;
@@ -81,12 +94,12 @@ bool ConfigMap::isVariableOut(const std::string& name) const
     return m_outputRegistersInterval.in(getRegisterNumber(name));
 }
 
-bool  ConfigMap::isSupport(const DeviceInfo& info) const
+bool  ConfigMap::isSupport(const DeviceInfoShared info) const
 {
-    if (QString::compare(info.m_vendor, QString::fromStdString(m_vendor), Qt::CaseInsensitive) != 0 || QString::compare(info.m_product, QString::fromStdString(m_product), Qt::CaseInsensitive) != 0)
+    if (QString::compare(info->m_vendor, QString::fromStdString(m_vendor), Qt::CaseInsensitive) != 0 || QString::compare(info->m_product, QString::fromStdString(m_product), Qt::CaseInsensitive) != 0)
         return false;
 
-    return info.m_version <= m_versionMax && info.m_version >= m_versionMin;
+    return info->m_version <= m_versionMax && info->m_version >= m_versionMin;
 }
 
 ConfigMap::ParameterList ConfigMap::getInputParametersList(bool isForRead) const

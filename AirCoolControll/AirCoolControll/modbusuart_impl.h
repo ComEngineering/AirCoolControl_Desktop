@@ -6,22 +6,6 @@
 #include <qvector.h>
 #include <qmutex.h>
 #include <memory>
-#include "VersionStorage.h"
-#include <unordered_map>
-
-
-struct DeviceInfo
-{
-    DeviceInfo(const QString& ven, const QString& p, const QString& ver) : m_vendor(ven), m_product(p), m_version(ver){}
-    DeviceInfo(){} 
-    QString        m_vendor;
-    QString        m_product;
-    VersionStorage m_version;
-};
-
-typedef std::shared_ptr<DeviceInfo> DeviceInfoShared;
-
-typedef std::unordered_map<int, DeviceInfoShared> DeviceInfoMap;
 
 class ModBusUART_Impl : public QObject
 {
@@ -61,4 +45,5 @@ private:
 };
 
 typedef std::shared_ptr<ModBusUART_Impl> ModBusUART_ImplShared;
+
 #endif // MODBUSUART_IMPL_H

@@ -47,12 +47,12 @@ void ConnectionParameters::setCOMindex(int n)
         ui.comboBoxCOM->setCurrentIndex(n);
 }
 
-void ConnectionParameters::setCOMlist(QList<QSerialPortInfo>& list)
+void ConnectionParameters::setCOMlist(QList<QString>& list)
 {
     ui.comboBoxCOM->clear();
     for (auto info : list)
     {
-        ui.comboBoxCOM->addItem(info.description() + ' ' + info.portName());
+        ui.comboBoxCOM->addItem(info);
     }
 }
 

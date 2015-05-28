@@ -17,7 +17,7 @@ public:
 
     int  getCOMindex(void);
     void setCOMindex(int n);
-    void setCOMlist(QList<QSerialPortInfo>& list);
+    void setCOMlist(QList<QString>& list);
 
     void setExternalCommunicator(ExternalConnector* connector);
     void setExternalConnection(const QString& adress);
@@ -28,7 +28,7 @@ public:
     int  getDeviceIndex();
     void setDeviceIndex(int n);
 
-    void setDeviceList(const DeviceInfoMap& map);
+    void setDeviceList(const ConnectedDeviceStorage *storage);
 
     void setError(QString & errorString, bool critical = false);
     void clearError(void);

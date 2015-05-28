@@ -11,10 +11,14 @@ ConnectionLog::~ConnectionLog()
 
 }
 
-void ConnectionLog::setDeviceList(const DeviceInfoMap& map)
+void ConnectionLog::setDeviceList(const ConnectedDeviceStorage* devices)
 {
-    //ui.tableWidget->clear();
-    ui.tableWidget->setRowCount(map.size());
+    m_devices = devices;
+}
+
+void ConnectionLog::updateContent(void)
+{
+    /*ui.tableWidget->setRowCount(m_devices.size());
     int currentRow = 0;
     for (std::pair<int,DeviceInfoShared> info : map)
     {
@@ -35,5 +39,5 @@ void ConnectionLog::setDeviceList(const DeviceInfoMap& map)
         ui.tableWidget->setItem(currentRow, 3, newItem);
 
         currentRow++;
-    }
+    }*/
 }

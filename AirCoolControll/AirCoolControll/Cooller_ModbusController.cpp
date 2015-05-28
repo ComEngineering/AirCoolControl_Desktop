@@ -4,42 +4,48 @@
     #define  _D_SCL_SECURE_NO_WARNINGS
 #endif
 
-#include "Cooller_ModbusController.h"
+
 #include <QtSerialPort\qserialportinfo.h>
 #include <qstring>
 #include <qobject>
 #include <algorithm>
-#include "modbusuart_impl.h"
 #include "Configurator.h"
 #include <qdiriterator.h>
-#include "Logger.h"
 #include <qmainwindow.h>
+#include <qmessagebox.h>
+
+#include "modbusuart_impl.h"
+#include "Logger.h"
+#include "Cooller_ModbusController.h"
 
 Cooller_ModBusController::Cooller_ModBusController(CoolerStateWidget *view, ModBusDialog *config) :
     m_view(view), 
     m_configDialog(config),
     m_recheckTimer(new QTimer(this)),
     m_available(false),
-    m_comunicationSpeedIndex(6), //9600
-    m_currentDeviceID(1),
+    //m_comunicationSpeedIndex(6), //9600
     m_connector(this),
     m_externalManager(this),
-    m_modbus(this)
+    m_info(this),
+    m_explorers(m_info,this)
 {
     connect(m_recheckTimer, SIGNAL(timeout()), this, SLOT(updateState()));
     m_recheckTimer->setInterval(500);
     m_recheckTimer->start();
     config->setExternalCommunicator(&m_connector);
 
-    connect(m_configDialog, SIGNAL(speedChanged(int)), this, SLOT(newSpeed(int)));
-    connect(m_configDialog, SIGNAL(portChanged(int)), this, SLOT(newPort(int)));
     connect(m_configDialog, SIGNAL(deviceIDChanged(int)), this, SLOT(newDevice(int)));
+
     connect(&m_connector, SIGNAL(connectionEstablished()), config, SLOT(connectionEstablished()));
     connect(&m_connector, SIGNAL(connectionEstablished()), this, SLOT(sendConfiguration()));
     connect(&m_connector, SIGNAL(connectionBroken()), config, SLOT(connectionBroken()));
     connect(&m_connector, SIGNAL(connectionErrorOccured(QString)), config, SLOT(connectionErrorOccured(QString)));
+    
     connect(&m_externalManager, SIGNAL(stateChanged()), this, SLOT(externalStateChanged()));
     connect(&m_externalManager, SIGNAL(listChanged()), this, SLOT(externalListChanged()));
+
+    qRegisterMetaType<DeviceInfoShared>("DeviceInfoShared");
+    connect(&m_info, SIGNAL(deviceDetected(DeviceInfoShared)), this, SLOT(addDevice(DeviceInfoShared)));
 
     QString configsPath = Configurator::getConfigFilesPath();
     QDirIterator iter(configsPath, QStringList() << "*.xml", QDir::Files | QDir::NoDotAndDotDot, QDirIterator::NoIteratorFlags);
@@ -55,6 +61,10 @@ Cooller_ModBusController::Cooller_ModBusController(CoolerStateWidget *view, ModB
     {
         emit newStatus(tr("No config files were found"));
     }
+    else
+    {
+        m_explorers.setConfigList(&m_configs);
+    }
 }
 
 
@@ -66,40 +76,47 @@ void Cooller_ModBusController::updateState(void)
 {
     checkConnectionState();
 
-    if (m_explorer && m_explorer->getState() == DeviceExplorer::Ready)
-    {
-        updateStateWidget();
-    }
+    updateStateWidget();
 }
 
-bool Cooller_ModBusController::equalPredicat(QSerialPortInfo& first, QSerialPortInfo& second)
+void Cooller_ModBusController::allertError(QString errorDescription)
 {
-    return first.portName() == second.portName();
+    QMessageBox allertBox(QMessageBox::Icon::Critical,tr("Connection error"),errorDescription,QMessageBox::StandardButton::Ok);
+    allertBox.exec();
+}
+
+void Cooller_ModBusController::addDevice(DeviceInfoShared info)
+{
+    if (info->empty())
+        allertError(tr("Device's been found. At %1, id = %2").arg(info->m_uart, info->m_id));
+    else
+    {
+        m_explorers.addDevice(info);
+    }
 }
 
 void Cooller_ModBusController::checkConnectionState(void)
 {
-    QList<QSerialPortInfo> a_info = QSerialPortInfo::availablePorts();
+    bool uart_list_changed = m_info.update(QSerialPortInfo::availablePorts());
 
-    if (a_info.empty())
+    if (m_info.empty())
     {
         m_configDialog->setError(QObject::tr("COM ports aren't available"), true);
-        m_info.clear();
         m_configDialog->setCOMindex(-1);
         m_available = false;
         return;
     }
     
-    if (a_info.size() != m_info.size() || ! std::equal(a_info.begin(), a_info.end(), m_info.begin(), equalPredicat))
+    if (uart_list_changed)
     {
         int n = m_configDialog->getCOMindex();
         if (-1 != n)
         {
-            QString currentPortName = m_info[n].portName();
+            QString currentPortName = m_info.portName(n);
             n = -1;
-            for (int i = 0; i < a_info.size(); i++)
+            for (int i = 0; i < m_info.size(); i++)
             {
-                if (a_info[i].portName() == currentPortName)
+                if (m_info.portName(i) == currentPortName)
                 {
                     n = i;
                     break;
@@ -113,8 +130,7 @@ void Cooller_ModBusController::checkConnectionState(void)
             m_configDialog->clearError();
         }
 
-        m_info = a_info;
-        m_configDialog->setCOMlist(m_info);
+        m_configDialog->setCOMlist(m_info.getPortList());
         
         n = (-1 != n) ? n : 0;
         m_configDialog->setCOMindex(n);
@@ -124,49 +140,26 @@ void Cooller_ModBusController::checkConnectionState(void)
     }
 }
 
-void Cooller_ModBusController::newSpeed(int n)
-{
-    m_comunicationSpeedIndex = n;
-}
-
-void Cooller_ModBusController::newPort(int n)
-{
-    const static qint32 rates[] = {0};
-    if (-1 != n)
-    {
-        QSerialPortInfo a_info = m_info[n];
-        QString name = a_info.portName();
-        m_modbus.setPortName(name);
-        m_configDialog->setDeviceIndex(1);
-    }
-}
-
 void Cooller_ModBusController::newDevice(int n)
 {
-    m_currentDeviceID = n;
-    if (m_modbus.readyToWork())
+    int com_index = m_configDialog->getCOMindex();
+    if (-1 == com_index)
+        return;
+
+    ModbusDriverShared modbus = m_info.getDriver(com_index);
+    if (modbus->readyToWork())
     {
-        if (m_explorer)
-            m_explorer->stopTasks();
-        m_explorer = std::make_shared<DeviceExplorer>(m_configs, m_modbus, m_currentDeviceID, this);
-        if (m_explorer->getState() == DeviceExplorer::Ready)
-        {
-            m_inParameters = m_explorer->getCurrentConfig()->getInputParametersList();
-            m_outParameters = m_explorer->getCurrentConfig()->getOutputParametersList();
-            m_view->setParameterList(m_inParameters,true);
-            m_view->setParameterList(m_outParameters,false);
-        }
+        modbus->requestDeviceAproval(n);
     }
 }
-
 
 void Cooller_ModBusController::sendConfiguration(void)
 {
     QList<QString> ports;
 
-    for (auto info : m_info)
+    for (auto info : m_info.getPortList())
     {
-        ports.push_back(info.description() + ' ' + info.portName());
+        ports.push_back(info);
     }
     m_connector.sendPortList(ports);
 }
@@ -200,52 +193,34 @@ bool Cooller_ModBusController::readXMLConfig(const QString& path)
         std::string versionMax = tree.get<std::string>("Config.Version.max");
         std::shared_ptr<ConfigMap> a_map = std::make_shared<ConfigMap>(vendor, product, versionMin, versionMax);
 
-        boost::property_tree::ptree values = tree.get_child("Config.InputValues");
+        boost::property_tree::ptree values[2] = { tree.get_child("Config.InputValues"), tree.get_child("Config.OutValues") };
 
-        for (const std::pair<std::string, boost::property_tree::ptree> &p : values)
+        for (int i = 0; i < 2; i++)
         {
-            std::string name = p.first;
-            ConfigMap::Parameter a_parameter;
-            a_parameter.m_description = p.second.get_value<std::string>();
-            a_parameter.m_registerNumber = p.second.get<int>("<xmlattr>.R");
-            a_map->getInputInterval().add(a_parameter.m_registerNumber);
-            int b = p.second.get<int>("<xmlattr>.B", -1);
-            a_parameter.m_decodeMethod = p.second.get<std::string>("<xmlattr>.D", "");
-            if (b != -1)
+            boost::property_tree::ptree& a_value = values[i];
+            for (const std::pair<std::string, boost::property_tree::ptree> &p : a_value)
             {
-                a_parameter.m_isBool = true;
-                a_parameter.m_bitNumber = b;
+                std::string name = p.first;
+                ConfigMap::Parameter a_parameter;
+                a_parameter.m_description = p.second.get_value<std::string>();
+                a_parameter.m_registerNumber = p.second.get<int>("<xmlattr>.R");
+                a_map->getInputInterval().add(a_parameter.m_registerNumber);
+                a_parameter.m_isWriteble = (bool)i;
+                int b = p.second.get<int>("<xmlattr>.B", -1);
+                a_parameter.m_decodeMethod = p.second.get<std::string>("<xmlattr>.D", "");
+                if (b != -1)
+                {
+                    a_parameter.m_isBool = true;
+                    a_parameter.m_bitNumber = b;
+                }
+                else
+                {
+                    a_parameter.m_isBool = false;
+                }
+                a_map->addVariable(name, a_parameter);
             }
-            else
-            {
-                a_parameter.m_isBool = false;
-            }
-            a_map->addVariable(name, a_parameter);
         }
 
-        values = tree.get_child("Config.OutValues");
-        for (const std::pair<std::string, boost::property_tree::ptree> &p : values)
-        {
-            std::string name = p.first;
-            ConfigMap::Parameter a_parameter;
-            a_parameter.m_description = p.second.get_value<std::string>();
-            a_parameter.m_registerNumber = p.second.get<int>("<xmlattr>.R");
-            a_map->getOutputInterval().add(a_parameter.m_registerNumber);
-            a_parameter.m_maxValue = p.second.get<float>("<xmlattr>.max", FLT_MAX);
-            a_parameter.m_minValue = p.second.get<float>("<xmlattr>.max", FLT_MIN);
-            a_parameter.m_isWriteble = true;
-			int b = p.second.get<int>("<xmlattr>.B", -1);
-			if (b != -1)
-			{
-				a_parameter.m_isBool = true;
-				a_parameter.m_bitNumber = b;
-			}
-			else
-			{
-				a_parameter.m_isBool = false;
-			}
-            a_map->addVariable(name, a_parameter);
-        }
         m_configs.push_back(a_map);
     }
     catch (boost::property_tree::xml_parser_error& err)
@@ -264,7 +239,7 @@ bool Cooller_ModBusController::readXMLConfig(const QString& path)
 
 void Cooller_ModBusController::updateStateWidget()
 {
-    for (int i = 0; i < m_inParameters.size();i++)
+   /* for (int i = 0; i < m_inParameters.size();i++)
     {
         int value;
         if (m_explorer->getRegisterValue(m_inParameters[i].first, value))
@@ -280,5 +255,5 @@ void Cooller_ModBusController::updateStateWidget()
         {
             m_view->updateParameter(i, value,false);
         }
-    }
+    }*/
 }

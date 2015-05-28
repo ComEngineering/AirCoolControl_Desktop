@@ -52,9 +52,6 @@
         <property name="orientation">
          <enum>Qt::Vertical</enum>
         </property>
-        <widget class="CoollerGraphWidget" name="widget" native="true">
-         <layout class="QHBoxLayout" name="horizontalLayout"/>
-        </widget>
         <widget class="QTabWidget" name="tabWidget">
          <property name="currentIndex">
           <number>0</number>
@@ -153,14 +150,6 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>CoollerGraphWidget</class>
-   <extends>QWidget</extends>
-   <header>coollergraphwidget.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources>
   <include location="aircoolcontroll.qrc"/>
  </resources>

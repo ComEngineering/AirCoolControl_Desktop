@@ -4,7 +4,6 @@
 #include <QObject>
 #include "ConfigMap.h"
 #include <memory>
-#include "PullerReadTask.h"
 #include "ModbusDriver.h"
 
 class DeviceExplorer : public QObject
@@ -12,9 +11,13 @@ class DeviceExplorer : public QObject
     Q_OBJECT
 
 public:
-    enum State{Ready = 0,DeviceNotReady,ConfigNotFound};
+    enum State{
+        Ready = 0,
+        DeviceNotReady,
+        ConfigNotFound
+    };
 
-    DeviceExplorer(const ConfigList& configs, ModbusDriver& modbus , int id, QObject *parent);
+    DeviceExplorer(const ConfigMapShared config, ModbusDriverShared modbus, int id, QObject *parent = NULL);
     ~DeviceExplorer();
 
     bool  getRegisterValue(const std::string & key,int& value);
@@ -28,17 +31,17 @@ private:
     
 
 private:
-    State             m_state;
-    QString           m_errorString;
-    const ConfigList& m_configs;
-    ConfigMapShared   m_currentMap;
-    ModbusDriver&     m_modbus;
-    QVector<quint16>  m_localInPull;
-    QVector<quint16>  m_localOutPull;
-    PullerReadTaskShared  m_inRegisters;
-    PullerReadTaskShared  m_outRegisters;
-    int               m_currentDeviceID;
+    State                   m_state;
+    int                     m_deviceID;
+    QString                 m_errorString;
+    ConfigMapShared         m_currentMap;
+    ModbusDriverShared      m_modbus;
+    QVector<quint16>        m_localInPull;
+    QVector<quint16>        m_localOutPull;
+    PullerReadTaskShared    m_inRegisters;
+    PullerReadTaskShared    m_outRegisters;
 };
 
 typedef std::shared_ptr<DeviceExplorer> DeviceExplorerShared;
+
 #endif // DeviceExplorer_H

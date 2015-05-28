@@ -10,6 +10,8 @@
 #include <memory>
 #include "DeviceExplorer.h"
 #include "ModbusDriver.h"
+#include "UART_DeviceStorage.h"
+#include "ConnectedDeviceStorage.h"
 
 class Cooller_ModBusController : public QObject
 {
@@ -23,15 +25,15 @@ private:
     static bool equalPredicat(QSerialPortInfo& first,QSerialPortInfo& second);
     bool readXMLConfig(const QString& path);
     void updateStateWidget(void);
+    void allertError(QString errorDescription);
 
 private slots:
     void updateState(void);
-    void newSpeed(int);
-    void newPort(int);
     void newDevice(int);
     void sendConfiguration(void);
     void externalStateChanged(void);
     void externalListChanged(void);
+    void addDevice(DeviceInfoShared info);
 
 signals:
     void newStatus(const QString&);
@@ -39,19 +41,15 @@ signals:
 private:
     CoolerStateWidget *     m_view;
     ModBusDialog *          m_configDialog;
-    QList<QSerialPortInfo>  m_info;
+
+    UART_DeviceStorage      m_info;
     QTimer   *              m_recheckTimer;
     bool                    m_available;
-    int                     m_comunicationSpeedIndex;
-    int                     m_currentDeviceID;
     ExternalConnector       m_connector;
     ExternalControllManager m_externalManager;
     ConfigList              m_configs;
-    DeviceExplorerShared   m_explorer;
-    ModbusDriver            m_modbus;
-
-    ConfigMap::ParameterList m_inParameters;
-    ConfigMap::ParameterList m_outParameters;
+    
+    ConnectedDeviceStorage  m_explorers;
 };
 
 #endif // __Cooller_ModBusController__

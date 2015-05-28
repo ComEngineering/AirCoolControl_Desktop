@@ -1,9 +1,15 @@
+#ifdef _WIN32
+#pragma warning(disable:4996)
+#define  _D_SCL_SECURE_NO_WARNINGS
+#endif
+
 #include "VersionStorage.h"
 #include <algorithm> 
 #include <boost/algorithm/string.hpp>
 #include <string>
 #include <vector>
 #include <qtextstream.h>
+
 
 VersionStorage::VersionStorage(QString versionString)
 {

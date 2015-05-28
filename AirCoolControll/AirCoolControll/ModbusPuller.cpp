@@ -18,6 +18,7 @@ ModbusPuller::~ModbusPuller()
 
 void ModbusPuller::clearTaskList()
 {
+    QMutexLocker lock(&m_taskMutex);
     m_tasks.clear();
 }
 
@@ -31,6 +32,7 @@ void ModbusPuller::removeTaskWithID(int id)
         {
             if (id == (*it)->getID())
             {
+                QMutexLocker lock(&m_taskMutex);
                 m_tasks.erase(it);
                 finished = true;
                 break;

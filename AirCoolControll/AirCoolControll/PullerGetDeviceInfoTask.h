@@ -2,6 +2,7 @@
 #define __PullerGetDeviceInfoTask__
 
 #include "PullerTaskBase.h"
+#include "ModbusDriver.h"
 
 
 class PullerGetDeviceInfoTask :
@@ -9,23 +10,17 @@ class PullerGetDeviceInfoTask :
 {
     Q_OBJECT
 public:
-    PullerGetDeviceInfoTask(int id);
+    PullerGetDeviceInfoTask(int id,const QString& uartName,ModbusDriver::detectionCallback cb);
     virtual ~PullerGetDeviceInfoTask();
 
     bool proceed(ModBusUART_ImplShared modbus);
-    QString getVendor(){ return m_vendor; }
-    QString getProduct(){ return m_product; }
-    QString getVersion(){ return m_version; }
-
-signals:
-    void deviceNotFound(void);
-    void deviceDetected(void);
-
+ 
 private:
-    QString m_vendor; 
-    QString m_product; 
-    QString m_version;
     int     m_tryCounter;
+    QString m_uartName;
+    ModbusDriver::detectionCallback m_cb;
 };
+
+typedef std::shared_ptr<PullerGetDeviceInfoTask> PullerGetDeviceInfoTaskShared;
 
 #endif // __PullerGetDeviceInfoTask__

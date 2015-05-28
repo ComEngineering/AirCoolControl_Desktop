@@ -1,9 +1,11 @@
 #include "PullerGetDeviceInfoTask.h"
 
 
-PullerGetDeviceInfoTask::PullerGetDeviceInfoTask(int id):
+PullerGetDeviceInfoTask::PullerGetDeviceInfoTask(int id, const QString& uartName, ModbusDriver::detectionCallback cb) :
     PullerTaskBase(id),
-    m_tryCounter(0)
+    m_tryCounter(0),
+    m_uartName(uartName),
+    m_cb(cb)
 {
 }
 
@@ -16,16 +18,18 @@ bool PullerGetDeviceInfoTask::proceed(ModBusUART_ImplShared modbus)
 {
     bool rc = true;
 
-    if (!modbus->readDeviceInfo(getID(), m_vendor, m_product, m_version))
+    QString vendor,product,version;
+
+    if (!modbus->readDeviceInfo(getID(), vendor, product, version))
     {
         if (m_tryCounter++ < 3)  /// TO DO read from settings
             rc = false;
         else
-            emit deviceNotFound();
+            m_cb(std::make_shared<DeviceInfo>());
     }
     else
     {
-        emit deviceDetected();
+        m_cb(std::make_shared<DeviceInfo>(m_uartName, getID(), vendor, product, version));
     }
 
     return rc;

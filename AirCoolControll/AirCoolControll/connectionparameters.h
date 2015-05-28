@@ -16,9 +16,9 @@ public:
     ConnectionParameters(QWidget *parent = 0);
     ~ConnectionParameters();
 
-    int getCOMindex(void);
+    int  getCOMindex(void);
     void setCOMindex(int n);
-    void setCOMlist(QList<QSerialPortInfo>& list);
+    void setCOMlist(QList<QString>& list);
 
     void setExternalComunicator(ExternalConnector * comunicator);
     void externalConnection(bool isConnected);

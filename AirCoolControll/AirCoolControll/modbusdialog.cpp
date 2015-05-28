@@ -25,7 +25,7 @@ void ModBusDialog::setCOMindex(int n)
     ui.parameters->setCOMindex(n);
 }
 
-void ModBusDialog::setCOMlist(QList<QSerialPortInfo>& list)
+void ModBusDialog::setCOMlist(QList<QString>& list)
 {
     ui.parameters->setCOMlist(list);
 }
@@ -105,7 +105,7 @@ void ModBusDialog::setExternalPorts(const QList<QString>& list)
     ui.parameters->setExternalPorts(list);
 }
 
-void ModBusDialog::setDeviceList(const DeviceInfoMap& map)
+void ModBusDialog::setDeviceList(const ConnectedDeviceStorage *storage)
 {
-    ui.log->setDeviceList(map);
+    ui.log->setDeviceList(storage);
 }
