@@ -58,11 +58,15 @@ void ModbusPuller::run(void)
 
         {
             QMutexLocker lock(&m_taskMutex);
-            for (QList<PullerTaskShared>::iterator task = m_tasks.begin(); task != m_tasks.end(); task++)
+            for (QList<PullerTaskShared>::iterator task = m_tasks.begin(); task != m_tasks.end(); )
             {
                 if (true == (*task)->proceed(m_modbus))
                 {
-                    m_tasks.erase(task);
+                    task = m_tasks.erase(task);
+                }
+                else
+                {
+                    task++;
                 }
             }
         }

@@ -9,17 +9,17 @@ DeviceExplorer::DeviceExplorer(const ConfigMapShared config, ModbusDriverShared 
     m_state(Ready),
     m_deviceID(id),
     m_modbus(modbus),
-    m_currentMap(config)
+    m_currentMap(config),
+    m_errorString(tr("Working"))
 {
-    Interval i_int = m_currentMap->getInputInterval();
-    Interval o_int = m_currentMap->getOutputInterval();
+    Interval i_int = m_currentMap->getInterval(ConfigMap::INPUT_REGISTERS_PULL);
+    Interval o_int = m_currentMap->getInterval(ConfigMap::OUTPUT_REGISTERS_PULL);
     m_inRegisters = std::make_shared<PullerReadTask>(m_deviceID,i_int);
     m_outRegisters = std::make_shared<PullerReadTask>(m_deviceID, o_int);
     m_modbus->addPullerReadTask(m_inRegisters);
     m_modbus->addPullerReadTask(m_outRegisters);
     m_localInPull.resize(i_int.second - i_int.first + 1);
     m_localOutPull.resize(o_int.second - o_int.first + 1);
-
 }
 
 DeviceExplorer::~DeviceExplorer()

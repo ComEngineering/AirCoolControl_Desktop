@@ -17,9 +17,16 @@ public:
     void setDeviceList(const ConnectedDeviceStorage* devices);
     void updateContent(void);
 
-public:
+private slots:
+    void cellSelected(int row, int column);
+
+private:
+    void sellectionChanged();
+
+private:
     Ui::ConnectionLog ui;
     const ConnectedDeviceStorage* m_devices;
+    int m_currentSellectedRaw;
 };
 
 #endif // CONNECTIONLOG_H

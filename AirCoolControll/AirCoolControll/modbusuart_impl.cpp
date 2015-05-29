@@ -5,7 +5,7 @@
 
 ModBusUART_Impl::ModBusUART_Impl(const QString& name, QObject *parent)
     : QObject(parent),
-    m_timeOut(400) // default value
+    m_timeOut(800) // default value
 {
     connect(&m_port, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(communicationError(QSerialPort::SerialPortError)));
 
@@ -148,63 +148,62 @@ bool ModBusUART_Impl::readDeviceInfo(quint16 id, QString& vendor, QString& produ
 
     QMutexLocker locker(&m_mutex);
 
-    for (int retryCount = 10; retryCount; retryCount--)
-    {
-        m_port.write(req);
+   
+   m_port.write(req);
 
-        if (!m_port.waitForBytesWritten(m_timeOut))
-        {
+   if (!m_port.waitForBytesWritten(m_timeOut))
+   {
+        return false;
+   }
+
+   m_port.clear();
+
+   if (m_port.waitForReadyRead(m_timeOut))
+   {
+       QByteArray responseData = m_port.readAll();
+       while (m_port.waitForReadyRead(50))
+           responseData += m_port.readAll();
+
+       if (!checkCRC(responseData))
+       {
+           return false;
+       }
+
+       if (responseData[1] != char(43) || responseData[0] != char(id) || responseData[2] != char(0x0e) || responseData[3] != char(1))
             return false;
-        }
-
-        if (m_port.waitForReadyRead(m_timeOut))
-        {
-            QByteArray responseData = m_port.readAll();
-            while (m_port.waitForReadyRead(50))
-                responseData += m_port.readAll();
-
-            if (!checkCRC(responseData))
-            {
-                m_port.clear();
-                continue;
-            }
-
-            if (responseData[1] != char(43) || responseData[0] != char(id) || responseData[2] != char(0x0e) || responseData[3] != char(1))
+       try
+       {
+            int numberOfObjects = responseData[7];
+            if (numberOfObjects < 3)
                 return false;
-            try
+            for (int i = 0, startIndex = 8; i < numberOfObjects; i++)
             {
-                int numberOfObjects = responseData[7];
-                if (numberOfObjects < 3)
+                if (i != responseData[startIndex])
                     return false;
-                for (int i = 0, startIndex = 8; i < numberOfObjects; i++)
+                int len = responseData[startIndex + 1];
+                std::string a_string(responseData.data() + startIndex + 2, len);
+                QString* target;
+                switch (i)
                 {
-                    if (i != responseData[startIndex])
-                        return false;
-                    int len = responseData[startIndex + 1];
-                    std::string a_string(responseData.data() + startIndex + 2, len);
-                    QString* target;
-                    switch (i)
-                    {
-                    case 0:
-                        target = &vendor;
-                        break;
-                    case 1:
-                        target = &product;
-                        break;
-                    case 2:
-                        target = &version;
-                        break;
-                    }
-                    (*target) = QString::fromStdString(a_string);
-                    startIndex += len + 2;
+                case 0:
+                    target = &vendor;
+                    break;
+                case 1:
+                    target = &product;
+                    break;
+                case 2:
+                    target = &version;
+                    break;
                 }
-                return true;
+                (*target) = QString::fromStdString(a_string);
+                startIndex += len + 2;
             }
-            catch (...)
-            {
+            return true;
+       }
+       catch (...)
+       {
 
-            }
-        }
+       }
     }
     return false;
 }

@@ -16,6 +16,12 @@ public:
     ConfigMap(const std::string& vendor, const std::string& product, const std::string& versionMin, const std::string& versionMax);
     ~ConfigMap();
 
+    enum {
+        INPUT_REGISTERS_PULL = 0,
+        OUTPUT_REGISTERS_PULL,
+        REGESTER_PULL_COUNT
+    };
+    
     typedef struct 
     {
         int          m_registerNumber;
@@ -31,14 +37,13 @@ public:
     typedef std::vector<std::pair<std::string, std::string>> ParameterList;
     typedef std::unordered_map<std::string, Parameter> ParameterMap;
 
-    void addVariable(const std::string& name, const Parameter& p);
+    void addVariable(int n,const std::string& name, const Parameter& p);
     bool isVariableOut(const std::string& name) const;
     int  getRegisterNumber(const std::string& name) const;
     bool haveVariableWithName(const std::string& name) const;
     unsigned int  getValue(const std::string& name, const QVector<quint16>& array) const;
     bool isVariableBool(const std::string& name, int& bitNumber);
-    Interval& getInputInterval();
-    Interval& getOutputInterval();
+    Interval& getInterval(int n);
     bool  isSupport(const DeviceInfoShared info) const;
     ParameterList getInputParametersList(bool isForRead = true) const;
     ParameterList getOutputParametersList() const;
@@ -53,8 +58,7 @@ private:
     VersionStorage  m_versionMax;
 
     ParameterMap    m_map;
-    Interval        m_inputRegistersInterval;
-    Interval        m_outputRegistersInterval;
+    Interval        m_registersIntervals[REGESTER_PULL_COUNT];
 };
 
 typedef std::shared_ptr<ConfigMap> ConfigMapShared;

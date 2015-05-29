@@ -29,6 +29,7 @@ public:
     void setDeviceIndex(int n);
 
     void setDeviceList(const ConnectedDeviceStorage *storage);
+    void refreshDeviceList(void);
 
     void setError(QString & errorString, bool critical = false);
     void clearError(void);

@@ -109,3 +109,8 @@ void ModBusDialog::setDeviceList(const ConnectedDeviceStorage *storage)
 {
     ui.log->setDeviceList(storage);
 }
+
+void ModBusDialog::refreshDeviceList(void)
+{
+    ui.log->updateContent();
+}

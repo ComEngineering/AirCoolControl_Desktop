@@ -19,6 +19,7 @@ public:
     QString portName(int i) const;
     QList<QString> getPortList(void) const;
     ModbusDriverShared getDriver(int com_index);
+    ModbusDriverShared getDriver(const QString& name);
     ModbusDriverShared getDriverWithName(const QString& name);
 
 signals:

@@ -30,15 +30,17 @@ bool UART_DeviceStorage::update(const QList<QSerialPortInfo>& info)
         names.push_back(name);
     }
 
-    for (std::map<QString, std::pair<QString, ModbusDriverShared>>::iterator it = m_storage.begin(); it != m_storage.end(); it++)
+    for (std::map<QString, std::pair<QString, ModbusDriverShared>>::iterator it = m_storage.begin(); it != m_storage.end(); )
     {
         name = it->first;
-        if ( ! names.contains(name))
+        if (!names.contains(name))
         {
             it = m_storage.erase(it);
             rc = true;
             emit uartDisconnected(name);
         }
+        else
+            it++;
     }
 
     if (rc)
@@ -99,4 +101,17 @@ ModbusDriverShared UART_DeviceStorage::getDriver(int index)
     QString name = m_syncNames[index];
  
     return getDriverWithName(name);
+}
+
+ModbusDriverShared UART_DeviceStorage::getDriver(const QString& name)
+{
+    ModbusDriverShared rc;
+    for (auto i : m_storage)
+    {
+        rc = i.second.second;
+        if (rc && rc->getName() == name)
+            break;    
+    }
+
+    return rc;
 }

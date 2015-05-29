@@ -25,7 +25,7 @@ bool PullerGetDeviceInfoTask::proceed(ModBusUART_ImplShared modbus)
         if (m_tryCounter++ < 3)  /// TO DO read from settings
             rc = false;
         else
-            m_cb(std::make_shared<DeviceInfo>());
+            m_cb(std::make_shared<DeviceInfo>(m_uartName, getID()));
     }
     else
     {

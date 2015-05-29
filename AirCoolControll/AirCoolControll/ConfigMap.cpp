@@ -17,17 +17,16 @@ ConfigMap::~ConfigMap()
 {
 }
 
-void ConfigMap::addVariable(const std::string& name, const Parameter& p)
+void ConfigMap::addVariable(int n,const std::string& name, const Parameter& p)
 {
     m_map[name] = p;
-    if (!p.m_isWriteble)
-    {
-        if (p.m_registerNumber < m_inputRegistersInterval.first)
-            m_inputRegistersInterval.first = p.m_registerNumber;
+    
+    if (p.m_registerNumber < m_registersIntervals[n].first)
+        m_registersIntervals[n].first = p.m_registerNumber;
 
-        if (p.m_registerNumber > m_inputRegistersInterval.second)
-            m_inputRegistersInterval.second = p.m_registerNumber;
-    }
+    if (p.m_registerNumber > m_registersIntervals[n].second)
+        m_registersIntervals[n].second = p.m_registerNumber;
+
 }
 
 int  ConfigMap::getRegisterNumber(const std::string& name) const
@@ -50,7 +49,8 @@ unsigned int  ConfigMap::getValue(const std::string& name, const QVector<quint16
         return -1;
 
     Parameter p = m_map.at(name);
-    int index = p.m_registerNumber - ((p.m_isWriteble) ? m_outputRegistersInterval.first : m_inputRegistersInterval.first);
+    int pullType = (p.m_isWriteble) ? OUTPUT_REGISTERS_PULL : INPUT_REGISTERS_PULL;
+    int index = p.m_registerNumber - m_registersIntervals[pullType].first;
   
     qint16 ret = array[index];
 
@@ -79,27 +79,22 @@ bool ConfigMap::isVariableBool(const std::string& name, int& bitNumber)
     return false;
 }
 
-Interval& ConfigMap::getInputInterval() 
+Interval& ConfigMap::getInterval(int n) 
 {
-    return m_inputRegistersInterval;
-}
-
-Interval& ConfigMap::getOutputInterval()
-{
-    return m_outputRegistersInterval;
+    return m_registersIntervals[n];
 }
 
 bool ConfigMap::isVariableOut(const std::string& name) const
 {
-    return m_outputRegistersInterval.in(getRegisterNumber(name));
+    return m_registersIntervals[OUTPUT_REGISTERS_PULL].in(getRegisterNumber(name));
 }
 
 bool  ConfigMap::isSupport(const DeviceInfoShared info) const
 {
-    if (QString::compare(info->m_vendor, QString::fromStdString(m_vendor), Qt::CaseInsensitive) != 0 || QString::compare(info->m_product, QString::fromStdString(m_product), Qt::CaseInsensitive) != 0)
+    if (QString::compare(info->getVendor(), QString::fromStdString(m_vendor), Qt::CaseInsensitive) != 0 || QString::compare(info->getProduct(), QString::fromStdString(m_product), Qt::CaseInsensitive) != 0)
         return false;
 
-    return info->m_version <= m_versionMax && info->m_version >= m_versionMin;
+    return info->checkVersion(m_versionMin,m_versionMax);
 }
 
 ConfigMap::ParameterList ConfigMap::getInputParametersList(bool isForRead) const

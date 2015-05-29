@@ -1,24 +1,34 @@
 #ifndef DEVICEINFO_H
 #define DEVICEINFO_H
 
-#include <QObject>
-
 #include <qstring.h>
 #include "VersionStorage.h"
 #include <memory>
 
 class DeviceExplorer;
 
-class DeviceInfo : public QObject
+class DeviceInfo 
 {
-    Q_OBJECT
-
 public:
-    DeviceInfo(const QString& uart, int id, const QString& ven, const QString& p, const QString& ver, QObject  *parent = NULL);
-    explicit DeviceInfo(QObject  *parent = NULL);
+    DeviceInfo(const QString& uart, int id, const QString& ven, const QString& p, const QString& ver);
+    DeviceInfo(const QString& uart, int id);
 
     bool empty() const;
+    bool isActive()const{ return m_active; }
+    void setActive(bool active = true){ m_active = active; }
+    const QString& getUART() const { return m_uart; }
+    const QString& getVendor() const { return m_vendor; }
+    const QString& getProduct() const { return m_product; }
+    QString        getVersion() const { return QString(m_version); } 
+    int            getID() const { return m_id; }
+    bool checkVersion(const VersionStorage& min, const VersionStorage& max)const
+    {
+        return m_version <= max && m_version >= min;
+    }
+    std::shared_ptr<DeviceExplorer> getExplorer() { return m_explorer; }
+    void setExplorer(std::shared_ptr<DeviceExplorer> explorer){ m_explorer = explorer; }
 
+private:
     QString              m_uart;
     int                  m_id;
     QString              m_vendor;
@@ -26,6 +36,9 @@ public:
     VersionStorage       m_version;
 
     std::shared_ptr<DeviceExplorer> m_explorer;
+
+    bool                 m_empty;
+    bool                 m_active;
 };
 
 typedef std::shared_ptr<DeviceInfo> DeviceInfoShared;

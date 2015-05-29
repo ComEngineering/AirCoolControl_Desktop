@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>360</width>
-    <height>477</height>
+    <width>355</width>
+    <height>224</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -86,7 +86,7 @@
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0,0">
+             <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,0,0,0">
               <item>
                <widget class="QComboBox" name="comboBoxSpeed"/>
               </item>
@@ -113,23 +113,6 @@
                 </property>
                </spacer>
               </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_2">
-              <item>
-               <spacer name="horizontalSpacer_2">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
               <item>
                <widget class="QPushButton" name="UARTconnectButton">
                 <property name="text">
@@ -138,6 +121,9 @@
                </widget>
               </item>
              </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2"/>
             </item>
             <item>
              <spacer name="verticalSpacer_2">
@@ -177,16 +163,7 @@
            </layout>
           </item>
          </layout>
-         <zorder>label_3</zorder>
-         <zorder>spinBoxID</zorder>
-         <zorder>comboBoxCOM</zorder>
-         <zorder>label</zorder>
-         <zorder>frame</zorder>
-         <zorder>label_2</zorder>
          <zorder></zorder>
-         <zorder>UARTconnectButton</zorder>
-         <zorder>horizontalSpacer_2</zorder>
-         <zorder>verticalSpacer_2</zorder>
         </widget>
        </item>
       </layout>

@@ -29,6 +29,7 @@ public:
     bool readyToWork() const;
     void removeTaskWithID(int id);
     void onDeviceDetected(DeviceInfoShared a_info);
+    const QString& getName(void) const { return m_currentPortName; }
 
 signals:
     void deviceDetected(DeviceInfoShared);

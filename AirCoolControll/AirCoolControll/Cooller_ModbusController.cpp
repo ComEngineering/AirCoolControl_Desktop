@@ -65,6 +65,8 @@ Cooller_ModBusController::Cooller_ModBusController(CoolerStateWidget *view, ModB
     {
         m_explorers.setConfigList(&m_configs);
     }
+
+    m_configDialog->setDeviceList(&m_explorers);
 }
 
 
@@ -88,10 +90,11 @@ void Cooller_ModBusController::allertError(QString errorDescription)
 void Cooller_ModBusController::addDevice(DeviceInfoShared info)
 {
     if (info->empty())
-        allertError(tr("Device's been found. At %1, id = %2").arg(info->m_uart, info->m_id));
+        allertError(tr("Device hasn't been found. At %1, id = %2").arg(info->getUART(), QString::number(info->getID())));
     else
     {
         m_explorers.addDevice(info);
+        m_configDialog->refreshDeviceList();
     }
 }
 
@@ -109,6 +112,7 @@ void Cooller_ModBusController::checkConnectionState(void)
     
     if (uart_list_changed)
     {
+        m_configDialog->setCOMlist(m_info.getPortList());
         int n = m_configDialog->getCOMindex();
         if (-1 != n)
         {
@@ -129,8 +133,6 @@ void Cooller_ModBusController::checkConnectionState(void)
             m_available = true;
             m_configDialog->clearError();
         }
-
-        m_configDialog->setCOMlist(m_info.getPortList());
         
         n = (-1 != n) ? n : 0;
         m_configDialog->setCOMindex(n);
@@ -195,7 +197,7 @@ bool Cooller_ModBusController::readXMLConfig(const QString& path)
 
         boost::property_tree::ptree values[2] = { tree.get_child("Config.InputValues"), tree.get_child("Config.OutValues") };
 
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < ConfigMap::REGESTER_PULL_COUNT; i++)
         {
             boost::property_tree::ptree& a_value = values[i];
             for (const std::pair<std::string, boost::property_tree::ptree> &p : a_value)
@@ -204,7 +206,7 @@ bool Cooller_ModBusController::readXMLConfig(const QString& path)
                 ConfigMap::Parameter a_parameter;
                 a_parameter.m_description = p.second.get_value<std::string>();
                 a_parameter.m_registerNumber = p.second.get<int>("<xmlattr>.R");
-                a_map->getInputInterval().add(a_parameter.m_registerNumber);
+                a_map->getInterval(i).add(a_parameter.m_registerNumber);
                 a_parameter.m_isWriteble = (bool)i;
                 int b = p.second.get<int>("<xmlattr>.B", -1);
                 a_parameter.m_decodeMethod = p.second.get<std::string>("<xmlattr>.D", "");
@@ -217,7 +219,7 @@ bool Cooller_ModBusController::readXMLConfig(const QString& path)
                 {
                     a_parameter.m_isBool = false;
                 }
-                a_map->addVariable(name, a_parameter);
+                a_map->addVariable(i,name, a_parameter);
             }
         }
 

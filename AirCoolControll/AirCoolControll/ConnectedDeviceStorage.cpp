@@ -15,7 +15,7 @@ ConnectedDeviceStorage::~ConnectedDeviceStorage()
 
 bool ConnectedDeviceStorage::addDevice(DeviceInfoShared a_info)
 {
-    ModbusDriverShared driver = m_drivers.getDriverWithName(a_info->m_uart);
+    ModbusDriverShared driver = m_drivers.getDriver(a_info->getUART());
     if (NULL == driver)
         return false;
     
@@ -34,7 +34,7 @@ bool ConnectedDeviceStorage::addDevice(DeviceInfoShared a_info)
     
     if (rc)
     {
-        a_info->m_explorer = std::make_shared<DeviceExplorer>(currentMap, driver, a_info->m_id);
+        a_info->setExplorer(std::make_shared<DeviceExplorer>(currentMap, driver, a_info->getID()));
     }
 
     push_back(a_info);
