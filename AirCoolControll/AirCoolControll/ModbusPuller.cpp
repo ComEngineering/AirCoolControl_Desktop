@@ -44,7 +44,7 @@ void ModbusPuller::removeTaskWithID(int id)
 void ModbusPuller::addTask(PullerTaskShared a_task)
 {
     QMutexLocker lock(&m_taskMutex);
-    m_tasks.append(a_task);
+    m_newTasks.append(a_task);
 }
 
 void ModbusPuller::run(void)
@@ -56,20 +56,30 @@ void ModbusPuller::run(void)
         if (m_isStoped)
             QThread::yieldCurrentThread();
 
+        
+        for (QList<PullerTaskShared>::iterator task = m_tasks.begin(); task != m_tasks.end(); )
         {
-            QMutexLocker lock(&m_taskMutex);
-            for (QList<PullerTaskShared>::iterator task = m_tasks.begin(); task != m_tasks.end(); )
+            if (true == (*task)->proceed(m_modbus))
             {
-                if (true == (*task)->proceed(m_modbus))
-                {
-                    task = m_tasks.erase(task);
-                }
-                else
-                {
-                    task++;
-                }
+                task = m_tasks.erase(task);
+            }
+            else
+            {
+                task++;
             }
         }
+
+        {
+            QMutexLocker lock(&m_taskMutex);
+            if (m_newTasks.size() != 0)
+            {
+                for (PullerTaskShared a_task : m_newTasks)
+                    m_tasks.push_back(a_task);
+
+                m_newTasks.clear();
+            }
+        }
+
     }
     m_endProcessingSemaphore.release();
 }

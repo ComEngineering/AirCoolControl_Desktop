@@ -28,6 +28,7 @@ signals:
 
 private:
     QList<PullerTaskShared> m_tasks;
+    QList<PullerTaskShared> m_newTasks;
     ModBusUART_ImplShared   m_modbus;
     bool                    m_isStoped;
     mutable QMutex          m_infoMapMutex;

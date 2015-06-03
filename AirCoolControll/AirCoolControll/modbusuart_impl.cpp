@@ -9,24 +9,32 @@ ModBusUART_Impl::ModBusUART_Impl(const QString& name, QObject *parent)
 {
     connect(&m_port, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(communicationError(QSerialPort::SerialPortError)));
 
-    m_port.setPortName(name);
-    if (m_port.open(QIODevice::ReadWrite)) 
-    {
-        m_isOpen = true;
-    }
-    else 
-    {
-        m_isOpen = false;
-        return;
-    }
     
-    m_port.setDataBits(QSerialPort::Data8);
-    m_port.setFlowControl(QSerialPort::NoFlowControl);
-    m_port.setStopBits(QSerialPort::OneStop);
-    m_port.setParity(QSerialPort::NoParity);  
+    m_port.setPortName(name);
+    
+    
 }
 
 ModBusUART_Impl::~ModBusUART_Impl()
+{
+    m_port.close();
+}
+
+bool ModBusUART_Impl::startRequest(void)
+{
+    if (m_port.open(QIODevice::ReadWrite)) 
+    {
+        return  
+            m_port.setDataBits(QSerialPort::Data8) &&
+            m_port.setFlowControl(QSerialPort::NoFlowControl) &&
+            m_port.setStopBits(QSerialPort::OneStop) &&
+            m_port.setParity(QSerialPort::NoParity) &&
+            m_port.setBaudRate(QSerialPort::Baud9600);
+    }
+   
+    return false;
+}
+void ModBusUART_Impl::stopRequest(void)
 {
     m_port.close();
 }
@@ -43,169 +51,177 @@ void ModBusUART_Impl::setSpeed(int speed)
 
 bool ModBusUART_Impl::readRegisterPool(quint16 id, quint16 regNumber, quint16 regCount,QVector<quint16>& o_list)
 {
-    if (!m_port.isOpen())
+    if (!startRequest())
         return false;
 
-    m_port.clear();
+    bool rc = false;
 
-    quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
-    quint16 regCountBig = qToBigEndian<quint16>(regCount);
-
-    QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
-    data += QByteArray::fromRawData((const char*)& regCountBig, sizeof(quint16));
-    QByteArray req = makeRTUFrame(id, 3, data);
-
-    QMutexLocker locker(&m_mutex);
-
-    m_port.write(req);
-    if ( ! m_port.waitForBytesWritten(m_timeOut)) 
+    do
     {
-        return false;
-    }
+        quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
+        quint16 regCountBig = qToBigEndian<quint16>(regCount);
 
-    int responseLengthMust = 1 + 1 + 1 + 2 * regCount + 2;
+        QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
+        data += QByteArray::fromRawData((const char*)& regCountBig, sizeof(quint16));
+        QByteArray req = makeRTUFrame(id, 3, data);
 
-    if ( m_port.waitForReadyRead(m_timeOut))
-    {
-        QByteArray responseData = m_port.readAll();
-        while (m_port.waitForReadyRead(50))
-            responseData += m_port.readAll();
+        QMutexLocker locker(&m_mutex);
 
-        if ( ! checkCRC(responseData))
-            return false;
-
-        if (responseData.size() != responseLengthMust || responseData[1] != char(3) || responseData[0] != char(id))
-            return false;
-
-        o_list.clear();
-        const uchar* d = (const uchar *)responseData.data() + 3;
-        for (int i = 0; i < regCount; i++)
+        m_port.write(req);
+        if (!m_port.waitForBytesWritten(m_timeOut))
         {
-            quint16 v = qFromBigEndian<quint16>(d + i * 2);
-            o_list.push_back(v);
+            break;
         }
-    }
-    else
-    {
-        return false;
-    }
 
-    return true;
+        int responseLengthMust = 1 + 1 + 1 + 2 * regCount + 2;
+
+        if (m_port.waitForReadyRead(m_timeOut))
+        {
+            QByteArray responseData = m_port.readAll();
+            while (m_port.waitForReadyRead(50))
+                responseData += m_port.readAll();
+
+            if (!checkCRC(responseData))
+                break;
+
+            if (responseData.size() != responseLengthMust || responseData[1] != char(3) || responseData[0] != char(id))
+                break;
+
+            o_list.clear();
+            const uchar* d = (const uchar *)responseData.data() + 3;
+            for (int i = 0; i < regCount; i++)
+            {
+                quint16 v = qFromBigEndian<quint16>(d + i * 2);
+                o_list.push_back(v);
+            }
+
+            rc = true;
+        }
+    } while (false);
+
+    stopRequest();
+    return rc;
 }
 
 bool ModBusUART_Impl::writeRegister(quint16 id, quint16 regNumber, quint16 value)
 {
-    if (!m_port.isOpen())
+    if (!startRequest())
         return false;
 
-    m_port.clear();
+    bool rc = false;
 
-    quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
-    quint16 valueBig = qToBigEndian<quint16>(value);
-    QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
-    data.append(QByteArray::fromRawData((const char*)&valueBig, sizeof(quint16)));
-    data += QByteArray::fromRawData((const char*)& value, sizeof(qint16));
-    QByteArray req = makeRTUFrame(id, 6, data);
-
-    QMutexLocker locker(&m_mutex);
-
-    m_port.write(req);
-
-    if (!m_port.waitForBytesWritten(m_timeOut))
+    do
     {
-        return false;
-    }
+        quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
+        quint16 valueBig = qToBigEndian<quint16>(value);
+        QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
+        data.append(QByteArray::fromRawData((const char*)&valueBig, sizeof(quint16)));
+        data += QByteArray::fromRawData((const char*)& value, sizeof(qint16));
+        QByteArray req = makeRTUFrame(id, 6, data);
 
-    if (m_port.waitForReadyRead(m_timeOut))
-    {
-        QByteArray responseData = m_port.readAll();
-        while (m_port.waitForReadyRead(50))
-            responseData += m_port.readAll();
+        QMutexLocker locker(&m_mutex);
 
-        if ( ! checkCRC(responseData))
-            return false;
+        m_port.write(req);
 
-        if (responseData.size() == 8 && responseData[1] != char(6) || responseData[0] != char(id))
+        if (!m_port.waitForBytesWritten(m_timeOut))
+            break;
+
+        if (m_port.waitForReadyRead(m_timeOut))
         {
-            return true;
+            QByteArray responseData = m_port.readAll();
+            while (m_port.waitForReadyRead(50))
+                responseData += m_port.readAll();
+
+            if (!checkCRC(responseData))
+                break;
+
+            if (responseData.size() == 8 && responseData[1] != char(6) || responseData[0] != char(id))
+            {
+                rc = true;
+            }
         }
     }
-
-    return false;
+    while (false);
+    
+    stopRequest();
+    return rc;
 }
 
 bool ModBusUART_Impl::readDeviceInfo(quint16 id, QString& vendor, QString& product, QString& version)
 {
-    if (!m_port.isOpen())
+    if (!startRequest())
         return false;
 
-    m_port.clear();
+    bool rc = false;
 
-    const char reqBody[] = { char(0x0E), char(1), char(0) };
-    QByteArray reqBodyArray(reqBody);
-    reqBodyArray.append(char(0));
-    QByteArray req = makeRTUFrame(id, 43, reqBodyArray);
+    do
+    {
+        const char reqBody[] = { char(0x0E), char(1), char(0) };
+        QByteArray reqBodyArray(reqBody);
+        reqBodyArray.append(char(0));
+        QByteArray req = makeRTUFrame(id, 43, reqBodyArray);
 
-    QMutexLocker locker(&m_mutex);
+        QMutexLocker locker(&m_mutex);
 
-   
-   m_port.write(req);
 
-   if (!m_port.waitForBytesWritten(m_timeOut))
-   {
-        return false;
-   }
+        if (m_port.write(req) != req.size())
+            break;
 
-   m_port.clear();
+        if (!m_port.waitForBytesWritten(m_timeOut))
+            break;
 
-   if (m_port.waitForReadyRead(m_timeOut))
-   {
-       QByteArray responseData = m_port.readAll();
-       while (m_port.waitForReadyRead(50))
-           responseData += m_port.readAll();
+        if (m_port.waitForReadyRead(m_timeOut))
+        {
+            QByteArray responseData = m_port.readAll();
+            while (m_port.waitForReadyRead(50))
+                responseData += m_port.readAll();
 
-       if (!checkCRC(responseData))
-       {
-           return false;
-       }
+            if (!checkCRC(responseData))
+                break;
 
-       if (responseData[1] != char(43) || responseData[0] != char(id) || responseData[2] != char(0x0e) || responseData[3] != char(1))
-            return false;
-       try
-       {
-            int numberOfObjects = responseData[7];
-            if (numberOfObjects < 3)
-                return false;
-            for (int i = 0, startIndex = 8; i < numberOfObjects; i++)
+            if (responseData[1] != char(43) || responseData[0] != char(id) || responseData[2] != char(0x0e) || responseData[3] != char(1))
+                break;
+            try
             {
-                if (i != responseData[startIndex])
-                    return false;
-                int len = responseData[startIndex + 1];
-                std::string a_string(responseData.data() + startIndex + 2, len);
-                QString* target;
-                switch (i)
+                int numberOfObjects = responseData[7];
+                if (numberOfObjects < 3)
+                    break;
+                
+                int i = 0;
+                for (int startIndex = 8; i < numberOfObjects; i++)
                 {
-                case 0:
-                    target = &vendor;
-                    break;
-                case 1:
-                    target = &product;
-                    break;
-                case 2:
-                    target = &version;
-                    break;
+                    if (i != responseData[startIndex])
+                        break;
+                    int len = responseData[startIndex + 1];
+                    std::string a_string(responseData.data() + startIndex + 2, len);
+                    QString* target;
+                    switch (i)
+                    {
+                    case 0:
+                        target = &vendor;
+                        break;
+                    case 1:
+                        target = &product;
+                        break;
+                    case 2:
+                        target = &version;
+                        break;
+                    }
+                    (*target) = QString::fromStdString(a_string);
+                    startIndex += len + 2;
                 }
-                (*target) = QString::fromStdString(a_string);
-                startIndex += len + 2;
+                if (i == numberOfObjects)
+                    rc = true;
             }
-            return true;
-       }
-       catch (...)
-       {
+            catch (...)
+            {
 
-       }
-    }
-    return false;
+            }
+        }
+    } while (false);
+
+    stopRequest();
+    return rc;
 }
 
 bool ModBusUART_Impl::checkCRC(const QByteArray& data) const

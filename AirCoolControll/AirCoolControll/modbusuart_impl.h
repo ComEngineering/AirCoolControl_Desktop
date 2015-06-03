@@ -32,6 +32,9 @@ private:
     ModBusUART_Impl(ModBusUART_Impl&);
     ModBusUART_Impl& operator =(ModBusUART_Impl&);
 
+    bool startRequest(void);
+    void stopRequest(void);
+
     static quint16 crc16(const char* buffer, int length);
     static QByteArray ModBusUART_Impl::makeRTUFrame(int slave, int function, const QByteArray & data);
 
