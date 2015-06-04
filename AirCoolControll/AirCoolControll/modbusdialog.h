@@ -28,7 +28,7 @@ public:
     int  getDeviceIndex();
     void setDeviceIndex(int n);
 
-    void setDeviceList(const ConnectedDeviceStorage *storage);
+    void setDeviceList(ConnectedDeviceStorage *storage);
     void refreshDeviceList(void);
 
     void setError(QString & errorString, bool critical = false);

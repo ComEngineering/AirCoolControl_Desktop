@@ -6,7 +6,7 @@ PullerReadTask::PullerReadTask(int id,Interval& range) :
     PullerTaskBase(id),
     m_range(range),
     m_mutex(new QMutex()),
-	m_id(id)
+    m_lastSuccessfullAttemptTime(boost::gregorian::date(1971, boost::gregorian::May, 3))
 {
     m_pull.resize(range.second - range.first + 1);
 }
@@ -47,10 +47,24 @@ const Interval& PullerReadTask::getRange() const
 bool PullerReadTask::proceed(ModBusUART_ImplShared modbus)
 {
     QVector<quint16> res;
-    if (modbus->readRegisterPool(m_id, m_range.first, m_range.second - m_range.first + 1, res))
+    if (modbus->readRegisterPool(getID(), m_range.first, m_range.second - m_range.first + 1, res))
     {
         setContent(res);
+        m_lastSuccessfullAttemptTime = boost::posix_time::microsec_clock::local_time();
+        m_failCounter = 0;
+    }
+    else
+    {
+        m_failCounter++;
     }
     
+    return false;
+}
+
+bool PullerReadTask::isItTimeToDo(void) const
+{
+    boost::posix_time::time_duration diff = boost::posix_time::microsec_clock::local_time() - m_lastSuccessfullAttemptTime;
+    if (diff.total_milliseconds() > 1000) /// TO DO take from settings
+        return true;
     return false;
 }

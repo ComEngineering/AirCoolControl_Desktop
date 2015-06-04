@@ -1,8 +1,10 @@
 #include "connectionlog.h"
 
+const QBrush ConnectionLog::s_selected = QBrush(Qt::yellow);
+const QBrush ConnectionLog::s_free = QBrush(Qt::white);
+
 ConnectionLog::ConnectionLog(QWidget *parent)
-    : QWidget(parent),
-    m_currentSellectedRaw(-1)
+    : QWidget(parent)
 {
     ui.setupUi(this);
 
@@ -17,7 +19,7 @@ ConnectionLog::~ConnectionLog()
 
 }
 
-void ConnectionLog::setDeviceList(const ConnectedDeviceStorage* devices)
+void ConnectionLog::setDeviceList(ConnectedDeviceStorage* devices)
 {
     m_devices = devices;
 }
@@ -57,27 +59,34 @@ void ConnectionLog::updateContent(void)
         }
         newItem->setFlags( Qt::ItemIsEnabled);
         ui.tableWidget->setItem(currentRow, 4, newItem);
-       
-        if (info->isActive())
-            m_currentSellectedRaw = currentRow;
 
         currentRow++;
     }
-    if (m_currentSellectedRaw < 0 || m_currentSellectedRaw >= currentRow)
-        m_currentSellectedRaw = 0;
+    sellectionChanged();
 }
 
 void ConnectionLog::cellSelected(int row, int column)
 {
-    m_currentSellectedRaw = row;
+    m_devices->setActiveIndex(row);
     sellectionChanged();
 }
 
 void ConnectionLog::sellectionChanged()
 {
-    int n = 0;
-    for (std::list<DeviceInfoShared>::const_iterator it = m_devices->begin(); it != m_devices->end(); it++, n++)
+    int nsel = m_devices->getActiveIndex();
+    int nc = ui.tableWidget->rowCount();
+    if (nsel == -1 || nsel >= nc)
+        return;
+
+    for (int y = 0; y < nc; y++)
     {
-        (*it)->setActive(n == m_currentSellectedRaw);
+        for (int x = 0; x < ui.tableWidget->columnCount(); x++)
+        {
+            QTableWidgetItem* a_item = ui.tableWidget->item(y, x);
+            if (y == nsel)
+                a_item->setBackground(s_selected);
+            else
+                a_item->setBackground(s_free);
+        }
     }
 }

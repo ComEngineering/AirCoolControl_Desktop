@@ -59,7 +59,7 @@ void ModbusPuller::run(void)
         
         for (QList<PullerTaskShared>::iterator task = m_tasks.begin(); task != m_tasks.end(); )
         {
-            if (true == (*task)->proceed(m_modbus))
+            if ((*task)->isItTimeToDo() && true == (*task)->proceed(m_modbus))
             {
                 task = m_tasks.erase(task);
             }

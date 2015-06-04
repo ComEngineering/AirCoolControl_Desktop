@@ -2,7 +2,8 @@
 
 
 PullerTaskBase::PullerTaskBase(int id) :
-    m_id(id)
+    m_id(id),
+    m_failCounter(0)
 {
 }
 

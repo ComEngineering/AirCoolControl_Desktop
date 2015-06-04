@@ -3,7 +3,8 @@
 ConnectedDeviceStorage::ConnectedDeviceStorage(UART_DeviceStorage& drivers, QObject *parent)
     : QObject(parent),
     m_configs(NULL),
-    m_drivers(drivers)
+    m_drivers(drivers),
+    m_currentIndex(-1)
 {
 
 }
@@ -40,4 +41,31 @@ bool ConnectedDeviceStorage::addDevice(DeviceInfoShared a_info)
     push_back(a_info);
     
     return true;
+}
+
+void ConnectedDeviceStorage::setActiveIndex(int index)
+{
+    if (index < size())
+        m_currentIndex = index;
+    else
+        m_currentIndex = -1;
+
+    emit activeChanged();
+}
+
+DeviceInfoShared ConnectedDeviceStorage::getActiveDevice(void)
+{
+    DeviceInfoShared rc;
+    if (-1 != m_currentIndex)
+    {
+        int counter = m_currentIndex;
+        for (std::list<DeviceInfoShared>::iterator it = begin(); it != end(); it++,counter--)
+            if (0 == counter)
+            {
+                rc = *it;
+                break;
+            }
+    }
+
+    return rc;
 }

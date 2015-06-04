@@ -14,11 +14,15 @@ public:
     virtual ~PullerTaskBase();
 
     virtual bool proceed(ModBusUART_ImplShared modbus) = 0;
+    virtual bool isItTimeToDo(void) const { return true; }
 
     int  getID() const;
 
 private:
     int  m_id;
+    
+protected:
+    int   m_failCounter;
 };
 
 typedef std::shared_ptr<PullerTaskBase> PullerTaskShared;

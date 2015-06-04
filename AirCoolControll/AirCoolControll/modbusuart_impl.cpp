@@ -78,7 +78,7 @@ bool ModBusUART_Impl::readRegisterPool(quint16 id, quint16 regNumber, quint16 re
         if (m_port.waitForReadyRead(m_timeOut))
         {
             QByteArray responseData = m_port.readAll();
-            while (m_port.waitForReadyRead(50))
+            while (m_port.waitForReadyRead(20))  // TO DO from settings
                 responseData += m_port.readAll();
 
             if (!checkCRC(responseData))
@@ -129,7 +129,7 @@ bool ModBusUART_Impl::writeRegister(quint16 id, quint16 regNumber, quint16 value
         if (m_port.waitForReadyRead(m_timeOut))
         {
             QByteArray responseData = m_port.readAll();
-            while (m_port.waitForReadyRead(50))
+            while (m_port.waitForReadyRead(20)) // TO DO from settings
                 responseData += m_port.readAll();
 
             if (!checkCRC(responseData))
@@ -163,7 +163,6 @@ bool ModBusUART_Impl::readDeviceInfo(quint16 id, QString& vendor, QString& produ
 
         QMutexLocker locker(&m_mutex);
 
-
         if (m_port.write(req) != req.size())
             break;
 
@@ -173,7 +172,7 @@ bool ModBusUART_Impl::readDeviceInfo(quint16 id, QString& vendor, QString& produ
         if (m_port.waitForReadyRead(m_timeOut))
         {
             QByteArray responseData = m_port.readAll();
-            while (m_port.waitForReadyRead(50))
+            while (m_port.waitForReadyRead(20)) // TO DO from settings
                 responseData += m_port.readAll();
 
             if (!checkCRC(responseData))

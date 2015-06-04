@@ -105,7 +105,7 @@ void ModBusDialog::setExternalPorts(const QList<QString>& list)
     ui.parameters->setExternalPorts(list);
 }
 
-void ModBusDialog::setDeviceList(const ConnectedDeviceStorage *storage)
+void ModBusDialog::setDeviceList(ConnectedDeviceStorage *storage)
 {
     ui.log->setDeviceList(storage);
 }

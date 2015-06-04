@@ -34,6 +34,7 @@ private slots:
     void externalStateChanged(void);
     void externalListChanged(void);
     void addDevice(DeviceInfoShared info);
+    void setActiveDevice(void);
 
 signals:
     void newStatus(const QString&);
@@ -50,6 +51,7 @@ private:
     ConfigList              m_configs;
     
     ConnectedDeviceStorage  m_explorers;
+    DeviceExplorerShared    m_currentDevice;
 };
 
 #endif // __Cooller_ModBusController__

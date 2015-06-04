@@ -2,6 +2,7 @@
 #define CONNECTIONLOG_H
 
 #include <QWidget>
+#include <qbrush.h>
 #include "ui_connectionlog.h"
 #include "modbusuart_impl.h"
 #include "ConnectedDeviceStorage.h"
@@ -14,7 +15,7 @@ public:
     ConnectionLog(QWidget *parent = 0);
     ~ConnectionLog();
 
-    void setDeviceList(const ConnectedDeviceStorage* devices);
+    void setDeviceList(ConnectedDeviceStorage* devices);
     void updateContent(void);
 
 private slots:
@@ -25,8 +26,10 @@ private:
 
 private:
     Ui::ConnectionLog ui;
-    const ConnectedDeviceStorage* m_devices;
-    int m_currentSellectedRaw;
+    ConnectedDeviceStorage* m_devices;
+
+    static const QBrush  s_selected; 
+    static const QBrush  s_free; 
 };
 
 #endif // CONNECTIONLOG_H

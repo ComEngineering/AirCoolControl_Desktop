@@ -14,8 +14,6 @@ public:
     DeviceInfo(const QString& uart, int id);
 
     bool empty() const;
-    bool isActive()const{ return m_active; }
-    void setActive(bool active = true){ m_active = active; }
     const QString& getUART() const { return m_uart; }
     const QString& getVendor() const { return m_vendor; }
     const QString& getProduct() const { return m_product; }
@@ -38,7 +36,6 @@ private:
     std::shared_ptr<DeviceExplorer> m_explorer;
 
     bool                 m_empty;
-    bool                 m_active;
 };
 
 typedef std::shared_ptr<DeviceInfo> DeviceInfoShared;

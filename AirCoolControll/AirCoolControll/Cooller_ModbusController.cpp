@@ -17,6 +17,7 @@
 #include "modbusuart_impl.h"
 #include "Logger.h"
 #include "Cooller_ModbusController.h"
+#include "ConfigMap.h"
 
 Cooller_ModBusController::Cooller_ModBusController(CoolerStateWidget *view, ModBusDialog *config) :
     m_view(view), 
@@ -46,6 +47,7 @@ Cooller_ModBusController::Cooller_ModBusController(CoolerStateWidget *view, ModB
 
     qRegisterMetaType<DeviceInfoShared>("DeviceInfoShared");
     connect(&m_info, SIGNAL(deviceDetected(DeviceInfoShared)), this, SLOT(addDevice(DeviceInfoShared)));
+    connect(&m_explorers, SIGNAL(activeChanged(void)), this, SLOT(setActiveDevice(void)));
 
     QString configsPath = Configurator::getConfigFilesPath();
     QDirIterator iter(configsPath, QStringList() << "*.xml", QDir::Files | QDir::NoDotAndDotDot, QDirIterator::NoIteratorFlags);
@@ -72,6 +74,7 @@ Cooller_ModBusController::Cooller_ModBusController(CoolerStateWidget *view, ModB
 
 Cooller_ModBusController::~Cooller_ModBusController()
 {
+    m_explorers.clear();
 }
 
 void Cooller_ModBusController::updateState(void)
@@ -241,21 +244,40 @@ bool Cooller_ModBusController::readXMLConfig(const QString& path)
 
 void Cooller_ModBusController::updateStateWidget()
 {
-   /* for (int i = 0; i < m_inParameters.size();i++)
+    if (m_currentDevice)
     {
-        int value;
-        if (m_explorer->getRegisterValue(m_inParameters[i].first, value))
+        const ConfigMap::ParameterList& inParameters = m_currentDevice->getCurrentConfig()->getInputParametersList();
+        const ConfigMap::ParameterList& outParameters = m_currentDevice->getCurrentConfig()->getOutputParametersList();
+        for (int i = 0; i < inParameters.size(); i++)
         {
-            m_view->updateParameter(i, value,true);
+            int value;
+            if (m_currentDevice->getRegisterValue(inParameters[i].first, value))
+            {
+                m_view->updateParameter(i, value, true);
+            }
+        }
+
+        for (int i = 0; i < outParameters.size(); i++)
+        {
+            int value;
+            if (m_currentDevice->getRegisterValue(outParameters[i].first, value))
+            {
+                m_view->updateParameter(i, value, false);
+            }
         }
     }
+}
 
-    for (int i = 0; i < m_outParameters.size(); i++)
+void Cooller_ModBusController::setActiveDevice(void)
+{
+    m_currentDevice = m_explorers.getActiveDevice()->getExplorer();
+    if (m_currentDevice)
     {
-        int value;
-        if (m_explorer->getRegisterValue(m_outParameters[i].first, value))
-        {
-            m_view->updateParameter(i, value,false);
-        }
-    }*/
+        m_view->setParameterList(m_currentDevice->getCurrentConfig()->getInputParametersList(), true);
+        m_view->setParameterList(m_currentDevice->getCurrentConfig()->getOutputParametersList(), false);
+    }
+    else
+    {
+        //m_view->clear();
+    }
 }

@@ -17,6 +17,9 @@ public:
     static void setSettings(const QString& key, const QVariant& value);
     static  QString getConfigFilesPath();
 
+    static int getMaximumRetryCount(void);
+    static void setMaximumRetryCount(int count);
+
 private:
     const static QString s_version;
     static QSharedPointer <QSettings> s_settings;

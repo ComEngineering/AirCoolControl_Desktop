@@ -97,7 +97,15 @@ bool  ConfigMap::isSupport(const DeviceInfoShared info) const
     return info->checkVersion(m_versionMin,m_versionMax);
 }
 
-ConfigMap::ParameterList ConfigMap::getInputParametersList(bool isForRead) const
+const ConfigMap::ParameterList& ConfigMap::getInputParametersList()
+{
+    if (m_inParameters.empty())
+        m_inParameters = getParametersList(true);
+
+    return m_inParameters;
+}
+
+ConfigMap::ParameterList ConfigMap::getParametersList(bool isForRead)
 {
     std::vector<std::pair<std::string, std::string>> rc;
     for (std::pair<std::string, Parameter> a_record : m_map)
@@ -109,9 +117,12 @@ ConfigMap::ParameterList ConfigMap::getInputParametersList(bool isForRead) const
     return rc;
 }
 
-ConfigMap::ParameterList ConfigMap::getOutputParametersList() const
+const ConfigMap::ParameterList& ConfigMap::getOutputParametersList() 
 {
-    return getInputParametersList(false);
+    if (m_outParameters.empty())
+        m_outParameters = getParametersList(true);
+
+    return m_outParameters;
 }
 
 qint16 ConfigMap::decodeWithMethod(qint16 value, const std::string& method)

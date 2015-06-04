@@ -16,7 +16,6 @@ public:
     bool proceed(ModBusUART_ImplShared modbus);
  
 private:
-    int     m_tryCounter;
     QString m_uartName;
     ModbusDriver::detectionCallback m_cb;
 };

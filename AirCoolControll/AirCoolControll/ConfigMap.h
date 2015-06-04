@@ -45,8 +45,9 @@ public:
     bool isVariableBool(const std::string& name, int& bitNumber);
     Interval& getInterval(int n);
     bool  isSupport(const DeviceInfoShared info) const;
-    ParameterList getInputParametersList(bool isForRead = true) const;
-    ParameterList getOutputParametersList() const;
+    ParameterList getParametersList(bool isForRead = true);
+    const ParameterList& getInputParametersList();
+    const ParameterList& getOutputParametersList();
 
 private:
     static qint16 decodeWithMethod(qint16 value, const std::string& method);
@@ -59,6 +60,9 @@ private:
 
     ParameterMap    m_map;
     Interval        m_registersIntervals[REGESTER_PULL_COUNT];
+
+    ConfigMap::ParameterList m_inParameters;
+    ConfigMap::ParameterList m_outParameters;
 };
 
 typedef std::shared_ptr<ConfigMap> ConfigMapShared;
