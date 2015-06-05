@@ -14,7 +14,7 @@ PullerWriteTask::~PullerWriteTask()
 }
 
 
-bool PullerWriteTask::proceed(ModBusUART_ImplShared modbus)
+bool PullerWriteTask::proceed(ModBusUART_Impl* modbus)
 {
     bool rc = true;
 

@@ -7,11 +7,12 @@ class PullerWriteTask :
     public PullerTaskBase
 {
     Q_OBJECT
+
 public:
     PullerWriteTask(int id,int regNumber,int value);
     virtual ~PullerWriteTask();
 
-    bool proceed(ModBusUART_ImplShared modbus);
+    bool proceed(ModBusUART_Impl* modbus);
 
 private:
     int m_regNumber;

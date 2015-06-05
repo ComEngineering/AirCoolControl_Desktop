@@ -13,13 +13,13 @@ PullerGetDeviceInfoTask::~PullerGetDeviceInfoTask()
 {
 }
 
-bool PullerGetDeviceInfoTask::proceed(ModBusUART_ImplShared modbus)
+bool PullerGetDeviceInfoTask::proceed(ModBusUART_Impl* modbus)
 {
     bool rc = true;
 
     QString vendor,product,version;
 
-    if (!modbus->readDeviceInfo(getID(), vendor, product, version))
+    if ( ! modbus->readDeviceInfo(getID(), vendor, product, version))
     {
         if ( ++m_failCounter < 3)  /// TO DO read from settings
             rc = false;

@@ -5,19 +5,16 @@
 
 ModBusUART_Impl::ModBusUART_Impl(const QString& name, QObject *parent)
     : QObject(parent),
-    m_timeOut(800) // default value
+    m_timeOut(50) // default value
 {
     connect(&m_port, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(communicationError(QSerialPort::SerialPortError)));
 
-    
     m_port.setPortName(name);
-    
-    
 }
 
 ModBusUART_Impl::~ModBusUART_Impl()
 {
-    m_port.close();
+    QMutexLocker locker(&m_mutex);
 }
 
 bool ModBusUART_Impl::startRequest(void)
@@ -34,6 +31,7 @@ bool ModBusUART_Impl::startRequest(void)
    
     return false;
 }
+
 void ModBusUART_Impl::stopRequest(void)
 {
     m_port.close();

@@ -13,7 +13,7 @@ public:
     PullerGetDeviceInfoTask(int id,const QString& uartName,ModbusDriver::detectionCallback cb);
     virtual ~PullerGetDeviceInfoTask();
 
-    bool proceed(ModBusUART_ImplShared modbus);
+    bool proceed(ModBusUART_Impl* modbus);
  
 private:
     QString m_uartName;

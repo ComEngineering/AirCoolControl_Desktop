@@ -18,7 +18,7 @@ public:
     void clearTaskList();
     void removeTaskWithID(int id);
     void addTask(PullerTaskShared a_task);
-    void startPulling(ModBusUART_ImplShared modbus);
+    void startPulling(ModBusUART_Impl* modbus);
     void stopPulling();
 
 protected:
@@ -29,7 +29,7 @@ signals:
 private:
     QList<PullerTaskShared> m_tasks;
     QList<PullerTaskShared> m_newTasks;
-    ModBusUART_ImplShared   m_modbus;
+    ModBusUART_Impl*        m_modbus;
     bool                    m_isStoped;
     mutable QMutex          m_infoMapMutex;
     mutable QMutex          m_taskMutex;

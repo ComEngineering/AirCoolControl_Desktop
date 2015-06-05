@@ -39,7 +39,7 @@ private slots:
     void UARTfail(void);
 
 private:
-    ModBusUART_ImplShared m_modbus;
+    ModBusUART_Impl*      m_modbus;
     ModbusPuller          m_puller;
     QString               m_currentPortName;
     mutable QMutex *      m_mutex;

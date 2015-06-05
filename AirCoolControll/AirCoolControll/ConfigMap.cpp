@@ -120,7 +120,7 @@ ConfigMap::ParameterList ConfigMap::getParametersList(bool isForRead)
 const ConfigMap::ParameterList& ConfigMap::getOutputParametersList() 
 {
     if (m_outParameters.empty())
-        m_outParameters = getParametersList(true);
+        m_outParameters = getParametersList(false);
 
     return m_outParameters;
 }

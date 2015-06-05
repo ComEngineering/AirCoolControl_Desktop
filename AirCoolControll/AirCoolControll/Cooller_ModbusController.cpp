@@ -74,6 +74,7 @@ Cooller_ModBusController::Cooller_ModBusController(CoolerStateWidget *view, ModB
 
 Cooller_ModBusController::~Cooller_ModBusController()
 {
+    m_recheckTimer->stop();
     m_explorers.clear();
 }
 

@@ -8,8 +8,8 @@ ModbusDriver::ModbusDriver(const QString& name, QObject *parent)
     : QObject(parent),
     m_puller(this)
 { 
-    m_modbus = std::make_shared<ModBusUART_Impl>(name,this);
-    connect(m_modbus.get(), SIGNAL(fatalError()), this, SLOT(UARTfail()));
+    m_modbus =  new ModBusUART_Impl(name,this);
+    connect(m_modbus, SIGNAL(fatalError()), this, SLOT(UARTfail()));
     
     if (m_modbus->isOpen())
     {
@@ -21,13 +21,15 @@ ModbusDriver::ModbusDriver(const QString& name, QObject *parent)
 
 ModbusDriver::~ModbusDriver()
 {
-   // m_puller.terminate();
-
+    m_puller.terminate();
+    m_puller.wait();
+    delete m_modbus;
 }
 
 void ModbusDriver::UARTfail()
 {
     m_puller.terminate();
+
     emit connectionFail();
 }
 
@@ -61,5 +63,5 @@ void ModbusDriver::removeTaskWithID(int id)
 
 bool ModbusDriver::readyToWork() const
 {
-    return  (m_modbus.use_count() > 0 && m_modbus->isOpen());
+    return  (m_modbus != NULL && m_modbus->isOpen());
 }

@@ -39,6 +39,12 @@ bool ConnectedDeviceStorage::addDevice(DeviceInfoShared a_info)
     }
 
     push_back(a_info);
+
+    if (m_currentIndex == -1)
+    {
+        m_currentIndex = 0;
+        emit activeChanged();
+    }
     
     return true;
 }

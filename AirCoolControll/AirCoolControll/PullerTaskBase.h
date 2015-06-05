@@ -13,7 +13,7 @@ public:
     PullerTaskBase(int id);
     virtual ~PullerTaskBase();
 
-    virtual bool proceed(ModBusUART_ImplShared modbus) = 0;
+    virtual bool proceed(ModBusUART_Impl* modbus) = 0;
     virtual bool isItTimeToDo(void) const { return true; }
 
     int  getID() const;

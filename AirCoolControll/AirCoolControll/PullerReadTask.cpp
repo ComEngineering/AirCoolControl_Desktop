@@ -44,7 +44,7 @@ const Interval& PullerReadTask::getRange() const
     return m_range;
 }
 
-bool PullerReadTask::proceed(ModBusUART_ImplShared modbus)
+bool PullerReadTask::proceed(ModBusUART_Impl* modbus)
 {
     QVector<quint16> res;
     if (modbus->readRegisterPool(getID(), m_range.first, m_range.second - m_range.first + 1, res))

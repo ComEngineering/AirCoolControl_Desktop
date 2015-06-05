@@ -4,16 +4,17 @@ ModbusPuller::ModbusPuller(QObject *parent)
     : QThread(parent),
     m_modbus(NULL),
     m_isStoped(true),
-    m_continueProcessing(true)
+    m_continueProcessing(true),
+    m_endProcessingSemaphore(1)
 {
-
+   
 }
 
 ModbusPuller::~ModbusPuller()
 {
     m_continueProcessing = false;
     if(false == m_isStoped)
-        m_endProcessingSemaphore.acquire();
+        m_endProcessingSemaphore.acquire(0);
 }
 
 void ModbusPuller::clearTaskList()
@@ -49,6 +50,7 @@ void ModbusPuller::addTask(PullerTaskShared a_task)
 
 void ModbusPuller::run(void)
 {
+    m_endProcessingSemaphore.acquire(1);
     int currentScanningID = 1;
     QString vendor, product, version;
     while (m_continueProcessing)
@@ -81,10 +83,10 @@ void ModbusPuller::run(void)
         }
 
     }
-    m_endProcessingSemaphore.release();
+    m_endProcessingSemaphore.release(1);
 }
 
-void ModbusPuller::startPulling(ModBusUART_ImplShared modbus)
+void ModbusPuller::startPulling(ModBusUART_Impl* modbus)
 {
     m_modbus = modbus;
     m_isStoped = false;

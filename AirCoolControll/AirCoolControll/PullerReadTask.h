@@ -15,7 +15,7 @@ public:
     PullerReadTask(int id, Interval& range);
     virtual ~PullerReadTask();
 
-    bool proceed(ModBusUART_ImplShared modbus);
+    bool proceed(ModBusUART_Impl* modbus);
     virtual bool isItTimeToDo(void) const;
 
     bool isContentChanged();
