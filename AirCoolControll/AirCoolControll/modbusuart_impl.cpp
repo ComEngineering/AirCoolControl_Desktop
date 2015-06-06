@@ -114,7 +114,6 @@ bool ModBusUART_Impl::writeRegister(quint16 id, quint16 regNumber, quint16 value
         quint16 valueBig = qToBigEndian<quint16>(value);
         QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
         data.append(QByteArray::fromRawData((const char*)&valueBig, sizeof(quint16)));
-        data += QByteArray::fromRawData((const char*)& value, sizeof(qint16));
         QByteArray req = makeRTUFrame(id, 6, data);
 
         QMutexLocker locker(&m_mutex);
@@ -141,6 +140,103 @@ bool ModBusUART_Impl::writeRegister(quint16 id, quint16 regNumber, quint16 value
     }
     while (false);
     
+    stopRequest();
+    return rc;
+}
+
+bool ModBusUART_Impl::readCoilPool(quint16 id, quint16 regNumber, quint16 coilCount, QVector<bool>& o_list)
+{
+    if (!startRequest())
+        return false;
+
+    bool rc = false;
+
+    do
+    {
+        quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
+        quint16 regCountBig = qToBigEndian<quint16>(coilCount);
+
+        QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
+        data += QByteArray::fromRawData((const char*)& regCountBig, sizeof(quint16));
+        QByteArray req = makeRTUFrame(id, 1, data);
+
+        QMutexLocker locker(&m_mutex);
+
+        m_port.write(req);
+        if (!m_port.waitForBytesWritten(m_timeOut))
+        {
+            break;
+        }
+
+        char byteMust = (coilCount + 7) / 8;
+        int responseLengthMust = 1 + 1 + 1 + byteMust + 2;
+
+        if (m_port.waitForReadyRead(m_timeOut))
+        {
+            QByteArray responseData = m_port.readAll();
+            while (m_port.waitForReadyRead(20))  // TO DO from settings
+                responseData += m_port.readAll();
+
+            if (!checkCRC(responseData))
+                break;
+
+            if (responseData.size() != responseLengthMust || responseData[1] != char(1) || responseData[0] != char(id) || responseData[2] != byteMust)
+                break;
+
+            o_list.clear();
+            const uchar* d = (const uchar *)responseData.data() + 3;
+            for (int i = 0; i < coilCount; i++)
+            {
+                quint8 v = qFromBigEndian<quint8>(d + i / 8);
+                o_list.push_back(v & (0x1 << (i % 8)) );
+            }
+
+            rc = true;
+        }
+    } while (false);
+
+    stopRequest();
+    return rc;
+}
+
+bool ModBusUART_Impl::writeCoil(quint16 id, quint16 regNumber, bool state)
+{
+    if (!startRequest())
+        return false;
+
+    bool rc = false;
+
+    do
+    {
+        quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
+        quint16 valueBig = (state) ? 0xff00 : 0x0;
+        QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
+        data.append(QByteArray::fromRawData((const char*)&valueBig, sizeof(quint16)));
+        QByteArray req = makeRTUFrame(id, 5, data);
+
+        QMutexLocker locker(&m_mutex);
+
+        m_port.write(req);
+
+        if (!m_port.waitForBytesWritten(m_timeOut))
+            break;
+
+        if (m_port.waitForReadyRead(m_timeOut))
+        {
+            QByteArray responseData = m_port.readAll();
+            while (m_port.waitForReadyRead(20)) // TO DO from settings
+                responseData += m_port.readAll();
+
+            if (!checkCRC(responseData))
+                break;
+
+            if (responseData.size() == 8 && responseData[1] != char(5) || responseData[0] != char(id))
+            {
+                rc = true;
+            }
+        }
+    } while (false);
+
     stopRequest();
     return rc;
 }

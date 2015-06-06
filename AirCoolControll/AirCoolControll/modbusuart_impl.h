@@ -17,8 +17,13 @@ public:
 
     void   setTimeOut(int t);
     void   setSpeed(int speed);
+    
     bool   readRegisterPool(quint16 id, quint16 regNumber,quint16 regCount,QVector<quint16>& list);
     bool   writeRegister(quint16 id, quint16 regNumber, quint16 value);
+
+    bool   readCoilPool(quint16 id, quint16 regNumber, quint16 regCount, QVector<bool>& list);
+    bool   writeCoil(quint16 id, quint16 regNumber, bool state);
+
     bool   readDeviceInfo(quint16 id, QString& vendor, QString& product, QString& version);
     bool   isOpen(){ return m_isOpen; }
 
