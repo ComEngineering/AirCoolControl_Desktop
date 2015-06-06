@@ -22,12 +22,17 @@ public:
     void setConfigList(const ConfigList * configs) { m_configs = configs; }
     bool addDevice(DeviceInfoShared a_info);
 
-    void removeDeviceWithUART(const QString& uartName);
-
     void setActiveIndex(int index);
     int  getActiveIndex(void) const{ return m_currentIndex; }
     
     DeviceInfoShared getActiveDevice(void);
+    void removeDeviceFromList(int n);
+
+    static const int DISCONNECT_ALL = -1;
+    static const int DISCONNECT_CURRENT = -2;
+
+public slots:
+    void removeDevicesWithUART(const QString& uartName);
 
 signals:
     void activeChanged();

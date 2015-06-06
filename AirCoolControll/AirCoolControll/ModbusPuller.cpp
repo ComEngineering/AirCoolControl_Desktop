@@ -89,6 +89,7 @@ void ModbusPuller::run(void)
                         }
                     }
                 }
+                m_removeIndex = 0;
             }
         }
 

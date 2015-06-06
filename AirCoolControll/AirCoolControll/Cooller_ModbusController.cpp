@@ -51,6 +51,8 @@ Cooller_ModBusController::Cooller_ModBusController(CoolerStateWidget *view, ModB
 
     connect(m_view, SIGNAL(newRegisterValue(QString&, int)), this, SLOT(sendValueToDevice(QString&, int)));
 
+    connect(&m_info, SIGNAL(uartDisconnected(const QString&)), &m_explorers, SLOT(removeDevicesWithUART(const QString&)));
+
     QString configsPath = Configurator::getConfigFilesPath();
     QDirIterator iter(configsPath, QStringList() << "*.xml", QDir::Files | QDir::NoDotAndDotDot, QDirIterator::NoIteratorFlags);
     int configsRed = 0;
@@ -273,7 +275,8 @@ void Cooller_ModBusController::updateStateWidget()
 
 void Cooller_ModBusController::setActiveDevice(void)
 {
-    m_currentDevice = m_explorers.getActiveDevice()->getExplorer();
+    DeviceInfoShared info = m_explorers.getActiveDevice();
+    m_currentDevice = info ? info->getExplorer() : NULL;
     if (m_currentDevice)
     {
         m_view->setParameterList(m_currentDevice->getCurrentConfig()->getInputParametersList(), true);
@@ -283,6 +286,7 @@ void Cooller_ModBusController::setActiveDevice(void)
     {
         m_view->clear();
     }
+    m_configDialog->refreshDeviceList();
 }
 
 void Cooller_ModBusController::sendValueToDevice(QString& name, int v)

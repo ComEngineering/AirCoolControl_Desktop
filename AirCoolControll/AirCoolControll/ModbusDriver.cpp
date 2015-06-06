@@ -22,7 +22,7 @@ ModbusDriver::ModbusDriver(const QString& name, QObject *parent)
 ModbusDriver::~ModbusDriver()
 {
     m_puller.terminate();
-    m_puller.wait();
+   // m_puller.wait();
     delete m_modbus;
 }
 

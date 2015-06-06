@@ -63,3 +63,15 @@ void CoolerStateWidget::registerSet(QTableWidgetItem *item)
         emit newRegisterValue(name, d);
     }
 }
+
+void CoolerStateWidget::clear()
+{
+    QTableWidget* widgets[] = {
+        ui.inputParametersTable, 
+        ui.outputParametersTable
+    };
+
+    for (QTableWidget* a_widget : widgets)
+        while ( a_widget->rowCount())
+            a_widget->removeRow(0);
+}

@@ -35,9 +35,10 @@ bool UART_DeviceStorage::update(const QList<QSerialPortInfo>& info)
         name = it->first;
         if (!names.contains(name))
         {
+            QString removedUART_systemName = it->second.first;
             it = m_storage.erase(it);
             rc = true;
-            emit uartDisconnected(name);
+            emit uartDisconnected(removedUART_systemName);
         }
         else
             it++;

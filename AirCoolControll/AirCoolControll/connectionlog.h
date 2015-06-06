@@ -20,6 +20,8 @@ public:
 
 private slots:
     void cellSelected(int row, int column);
+    void removeConnection(void);
+    void removeAllConnection(void);
 
 private:
     void sellectionChanged();

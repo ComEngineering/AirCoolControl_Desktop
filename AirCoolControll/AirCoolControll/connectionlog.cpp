@@ -12,6 +12,8 @@ ConnectionLog::ConnectionLog(QWidget *parent)
     ui.tableWidget->resizeColumnsToContents();
 
     connect(ui.tableWidget, SIGNAL(cellClicked(int, int)), this, SLOT(cellSelected(int, int)));
+    connect(ui.disconnectButton, SIGNAL(clicked()), this, SLOT(removeConnection()));
+    connect(ui.clearButton, SIGNAL(clicked()), this, SLOT(removeAllConnection()));
 }
 
 ConnectionLog::~ConnectionLog()
@@ -89,4 +91,16 @@ void ConnectionLog::sellectionChanged()
                 a_item->setBackground(s_free);
         }
     }
+}
+
+void ConnectionLog::removeConnection(void)
+{
+    if (m_devices)
+        m_devices->removeDeviceFromList(ConnectedDeviceStorage::DISCONNECT_CURRENT);
+}
+
+void ConnectionLog::removeAllConnection(void)
+{
+    if (m_devices)
+        m_devices->removeDeviceFromList(ConnectedDeviceStorage::DISCONNECT_ALL);
 }

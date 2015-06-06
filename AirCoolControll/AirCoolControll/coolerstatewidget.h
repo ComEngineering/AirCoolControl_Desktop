@@ -18,7 +18,7 @@ public:
     
     void updateParameter(int n, int value, bool isInput);
 
-    void clear(){ ui.inputParametersTable->clear(); ui.outputParametersTable->clear(); }
+    void clear();
 
 private slots:
     void registerSet(QTableWidgetItem *);
