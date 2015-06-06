@@ -5,7 +5,8 @@ ModbusPuller::ModbusPuller(QObject *parent)
     m_modbus(NULL),
     m_isStoped(true),
     m_continueProcessing(true),
-    m_endProcessingSemaphore(1)
+    m_endProcessingSemaphore(1),
+    m_removeIndex(0)
 {
    
 }
@@ -20,26 +21,13 @@ ModbusPuller::~ModbusPuller()
 void ModbusPuller::clearTaskList()
 {
     QMutexLocker lock(&m_taskMutex);
-    m_tasks.clear();
+    m_removeIndex = -1;
 }
 
 void ModbusPuller::removeTaskWithID(int id)
 {
-    bool finished = true;
-    while (finished && m_tasks.size())
-    {
-        finished = false;
-        for (QList<PullerTaskShared>::iterator it = m_tasks.begin(); it != m_tasks.end(); it++)
-        {
-            if (id == (*it)->getID())
-            {
-                QMutexLocker lock(&m_taskMutex);
-                m_tasks.erase(it);
-                finished = true;
-                break;
-            }
-        }
-    }
+    QMutexLocker lock(&m_taskMutex);
+    m_removeIndex = id;
 }
 
 void ModbusPuller::addTask(PullerTaskShared a_task)
@@ -58,7 +46,6 @@ void ModbusPuller::run(void)
         if (m_isStoped)
             QThread::yieldCurrentThread();
 
-        
         for (QList<PullerTaskShared>::iterator task = m_tasks.begin(); task != m_tasks.end(); )
         {
             if ((*task)->isItTimeToDo() && true == (*task)->proceed(m_modbus))
@@ -79,6 +66,29 @@ void ModbusPuller::run(void)
                     m_tasks.push_back(a_task);
 
                 m_newTasks.clear();
+            }
+            if (0 != m_removeIndex)
+            {
+                if (-1 == m_removeIndex)
+                    m_tasks.clear();
+                else
+                {
+                    bool finished = true;
+                    while (finished && m_tasks.size())
+                    {
+                        finished = false;
+                        for (QList<PullerTaskShared>::iterator it = m_tasks.begin(); it != m_tasks.end(); it++)
+                        {
+                            if (m_removeIndex == (*it)->getID())
+                            {
+
+                                m_tasks.erase(it);
+                                finished = true;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
 

@@ -35,6 +35,7 @@ private slots:
     void externalListChanged(void);
     void addDevice(DeviceInfoShared info);
     void setActiveDevice(void);
+    void sendValueToDevice(QString&, int);
 
 signals:
     void newStatus(const QString&);

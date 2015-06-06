@@ -35,6 +35,11 @@ private:
     mutable QMutex          m_taskMutex;
     QSemaphore              m_endProcessingSemaphore;
     bool                    m_continueProcessing;
+    /// variable that indicates if some kind of task has to be removed from task list.
+    // 0 - nothing
+    // -1 - all
+    // id - for all requests with apropriate device id 
+    volatile int            m_removeIndex;
 };
 
 #endif // ModbusPuller_H

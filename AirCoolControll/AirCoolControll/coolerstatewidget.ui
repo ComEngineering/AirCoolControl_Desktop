@@ -54,7 +54,7 @@
         </property>
         <widget class="QTabWidget" name="tabWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="tab">
           <attribute name="title">
@@ -64,7 +64,7 @@
            <item row="0" column="0">
             <widget class="QTableWidget" name="inputParametersTable">
              <property name="columnCount">
-              <number>3</number>
+              <number>2</number>
              </property>
              <attribute name="horizontalHeaderStretchLastSection">
               <bool>true</bool>
@@ -78,11 +78,6 @@
              <attribute name="verticalHeaderMinimumSectionSize">
               <number>20</number>
              </attribute>
-             <column>
-              <property name="text">
-               <string>Name</string>
-              </property>
-             </column>
              <column>
               <property name="text">
                <string>Value</string>
@@ -104,12 +99,6 @@
           <layout class="QGridLayout" name="gridLayout_4">
            <item row="0" column="0">
             <widget class="QTableWidget" name="outputParametersTable">
-             <property name="maximumSize">
-              <size>
-               <width>616</width>
-               <height>436</height>
-              </size>
-             </property>
              <attribute name="horizontalHeaderStretchLastSection">
               <bool>true</bool>
              </attribute>
@@ -122,11 +111,6 @@
              <attribute name="verticalHeaderMinimumSectionSize">
               <number>20</number>
              </attribute>
-             <column>
-              <property name="text">
-               <string>Name</string>
-              </property>
-             </column>
              <column>
               <property name="text">
                <string>Value</string>

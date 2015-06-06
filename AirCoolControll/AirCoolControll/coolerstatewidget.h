@@ -18,8 +18,10 @@ public:
     
     void updateParameter(int n, int value, bool isInput);
 
+    void clear(){ ui.inputParametersTable->clear(); ui.outputParametersTable->clear(); }
+
 private slots:
-    void registerSet(QStandardItem *);
+    void registerSet(QTableWidgetItem *);
 
 signals:
     void newRegisterValue(QString&, int);
