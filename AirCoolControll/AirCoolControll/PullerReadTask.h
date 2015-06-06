@@ -6,7 +6,6 @@
 #include  <memory>
 #include  "Interval.h"
 #include  "PullerTaskBase.h"
-#include  "boost/date_time/posix_time/posix_time.hpp" 
 
 class PullerReadTask : public PullerTaskBase
 {
@@ -29,7 +28,6 @@ private:
     Interval                 m_range;
     bool                     m_isUpdated;
     mutable QMutex *         m_mutex;
-    boost::posix_time::ptime m_lastSuccessfullAttemptTime;
 };
 
 typedef std::shared_ptr<PullerReadTask> PullerReadTaskShared;

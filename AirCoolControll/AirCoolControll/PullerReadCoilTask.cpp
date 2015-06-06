@@ -1,8 +1,8 @@
-#include "PullerReadTask.h"
+#include "PullerReadCoilTask.h"
 #include <QMutexLocker>
 
 
-PullerReadTask::PullerReadTask(int id,Interval& range) :
+PullerReadCoilTask::PullerReadCoilTask(int id, Interval& range) :
     PullerTaskBase(id),
     m_range(range),
     m_mutex(new QMutex())
@@ -11,24 +11,24 @@ PullerReadTask::PullerReadTask(int id,Interval& range) :
 }
 
 
-PullerReadTask::~PullerReadTask()
+PullerReadCoilTask::~PullerReadCoilTask()
 {
     delete m_mutex;
 }
 
-bool PullerReadTask::isContentChanged()
+bool PullerReadCoilTask::isContentChanged()
 {
     return m_isUpdated;
 }
 
-void PullerReadTask::getContent(QVector<quint16>& list)
+void PullerReadCoilTask::getContent(QVector<bool>& list)
 {
     QMutexLocker lock(m_mutex);
     m_isUpdated = false;
     list = m_pull;
 }
 
-void PullerReadTask::setContent(const QVector<quint16>& list)
+void PullerReadCoilTask::setContent(const QVector<bool>& list)
 {
     if (list.size() == m_pull.size())
     {
@@ -38,15 +38,10 @@ void PullerReadTask::setContent(const QVector<quint16>& list)
     }
 }
 
-const Interval& PullerReadTask::getRange() const
+bool PullerReadCoilTask::proceed(ModBusUART_Impl* modbus)
 {
-    return m_range;
-}
-
-bool PullerReadTask::proceed(ModBusUART_Impl* modbus)
-{
-    QVector<quint16> res;
-    if (modbus->readRegisterPool(getID(), m_range.first, m_range.second - m_range.first + 1, res))
+    QVector<bool> res;
+    if (modbus->readCoilPool(getID(), m_range.first, m_range.second - m_range.first + 1, res))
     {
         setContent(res);
         m_lastSuccessfullAttemptTime = boost::posix_time::microsec_clock::local_time();
@@ -56,11 +51,11 @@ bool PullerReadTask::proceed(ModBusUART_Impl* modbus)
     {
         m_failCounter++;
     }
-    
+
     return false;
 }
 
-bool PullerReadTask::isItTimeToDo(void) const
+bool PullerReadCoilTask::isItTimeToDo(void) const
 {
     boost::posix_time::time_duration diff = boost::posix_time::microsec_clock::local_time() - m_lastSuccessfullAttemptTime;
     if (diff.total_milliseconds() > 1000) /// TO DO take from settings

@@ -6,8 +6,7 @@
 class PullerWriteTask :
     public PullerTaskBase
 {
-    Q_OBJECT
-
+  
 public:
     PullerWriteTask(int id,int regNumber,int value);
     virtual ~PullerWriteTask();

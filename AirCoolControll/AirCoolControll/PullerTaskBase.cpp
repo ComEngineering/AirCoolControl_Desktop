@@ -3,7 +3,8 @@
 
 PullerTaskBase::PullerTaskBase(int id) :
     m_id(id),
-    m_failCounter(0)
+    m_failCounter(0),
+    m_lastSuccessfullAttemptTime(boost::gregorian::date(1971, boost::gregorian::May, 3))
 {
 }
 

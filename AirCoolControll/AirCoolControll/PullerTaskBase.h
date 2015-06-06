@@ -3,11 +3,10 @@
 
 #include <memory>
 #include "modbusuart_impl.h"
-#include <qobject.h>
+#include  "boost/date_time/posix_time/posix_time.hpp" 
 
-class PullerTaskBase : public QObject
+class PullerTaskBase 
 {
-    Q_OBJECT
 
 public:
     PullerTaskBase(int id);
@@ -19,10 +18,11 @@ public:
     int  getID() const;
 
 private:
-    int  m_id;
+    int                      m_id;
     
 protected:
-    int   m_failCounter;
+    int                      m_failCounter;
+    boost::posix_time::ptime m_lastSuccessfullAttemptTime;
 };
 
 typedef std::shared_ptr<PullerTaskBase> PullerTaskShared;
