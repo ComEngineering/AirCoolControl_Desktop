@@ -1,5 +1,6 @@
 #include "PullerReadTask.h"
 #include <QMutexLocker>
+#include "modbusuart_impl.h"
 
 
 PullerReadTask::PullerReadTask(int id,Interval& range) :
@@ -36,11 +37,6 @@ void PullerReadTask::setContent(const QVector<quint16>& list)
         m_isUpdated = true;
         m_pull = list;
     }
-}
-
-const Interval& PullerReadTask::getRange() const
-{
-    return m_range;
 }
 
 bool PullerReadTask::proceed(ModBusUART_Impl* modbus)

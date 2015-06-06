@@ -203,9 +203,20 @@ bool Cooller_ModBusController::readXMLConfig(const QString& path)
         std::string versionMax = tree.get<std::string>("Config.Version.max");
         std::shared_ptr<ConfigMap> a_map = std::make_shared<ConfigMap>(vendor, product, versionMin, versionMax);
 
-        boost::property_tree::ptree values[2] = { tree.get_child("Config.InputValues"), tree.get_child("Config.OutValues") };
+        std::string uiType = tree.get<std::string>("Config.UI.<xmlattr>.type", "none");
+        if ("none" != uiType)
+        {
+            std::string ui_path = tree.get<std::string>("Config.UI");
+            a_map->setUI_Config(uiType, ui_path);
+        }
 
-        for (int i = 0; i < ConfigMap::REGESTER_PULL_COUNT; i++)
+        boost::property_tree::ptree values[ConfigMap::REGISTER_PULL_COUNT] = { 
+            tree.get_child("Config.InputValues", boost::property_tree::ptree()), 
+            tree.get_child("Config.OutValues", boost::property_tree::ptree()),
+            tree.get_child("Config.Coils",  boost::property_tree::ptree())
+        };
+
+        for (int i = 0; i < ConfigMap::REGISTER_PULL_COUNT; i++)
         {
             boost::property_tree::ptree& a_value = values[i];
             for (const std::pair<std::string, boost::property_tree::ptree> &p : a_value)
@@ -215,7 +226,7 @@ bool Cooller_ModBusController::readXMLConfig(const QString& path)
                 a_parameter.m_description = p.second.get_value<std::string>();
                 a_parameter.m_registerNumber = p.second.get<int>("<xmlattr>.R");
                 a_map->getInterval(i).add(a_parameter.m_registerNumber);
-                a_parameter.m_isWriteble = (bool)i;
+                a_parameter.m_type = (ConfigMap::RegisterType)i;
                 int b = p.second.get<int>("<xmlattr>.B", -1);
                 a_parameter.m_decodeMethod = p.second.get<std::string>("<xmlattr>.D", "");
                 if (b != -1)
@@ -251,8 +262,8 @@ void Cooller_ModBusController::updateStateWidget()
 {
     if (m_currentDevice)
     {
-        const ConfigMap::ParameterList& inParameters = m_currentDevice->getCurrentConfig()->getInputParametersList();
-        const ConfigMap::ParameterList& outParameters = m_currentDevice->getCurrentConfig()->getOutputParametersList();
+        const ConfigMap::ParameterList& inParameters = m_currentDevice->getCurrentConfig()->getParametersList(ConfigMap::INPUT_REGISTER);
+        const ConfigMap::ParameterList& outParameters = m_currentDevice->getCurrentConfig()->getParametersList(ConfigMap::OUTPUT_REGISTER);
         for (int i = 0; i < inParameters.size(); i++)
         {
             int value;
@@ -279,8 +290,8 @@ void Cooller_ModBusController::setActiveDevice(void)
     m_currentDevice = info ? info->getExplorer() : NULL;
     if (m_currentDevice)
     {
-        m_view->setParameterList(m_currentDevice->getCurrentConfig()->getInputParametersList(), true);
-        m_view->setParameterList(m_currentDevice->getCurrentConfig()->getOutputParametersList(), false);
+        m_view->setParameterList(m_currentDevice->getCurrentConfig()->getParametersList(ConfigMap::INPUT_REGISTER), true);
+        m_view->setParameterList(m_currentDevice->getCurrentConfig()->getParametersList(ConfigMap::OUTPUT_REGISTER), false);
     }
     else
     {

@@ -1,5 +1,5 @@
 #include "PullerSetCoilTask.h"
-
+#include "modbusuart_impl.h"
 
 PullerSetCoilTask::PullerSetCoilTask(int id, int regNumber, bool value) :
     PullerTaskBase(id),

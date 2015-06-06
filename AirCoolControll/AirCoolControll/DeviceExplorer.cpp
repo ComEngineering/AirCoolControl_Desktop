@@ -1,7 +1,5 @@
 #include "Logger.h"
-#include <boost/property_tree/xml_parser.hpp>
 #include <cfloat>
-#include "PullerReadTask.h"
 #include "DeviceExplorer.h"
 
 DeviceExplorer::DeviceExplorer(const ConfigMapShared config, ModbusDriverShared modbus, int id, QObject *parent)
@@ -12,14 +10,14 @@ DeviceExplorer::DeviceExplorer(const ConfigMapShared config, ModbusDriverShared 
     m_currentMap(config),
     m_errorString(tr("Working"))
 {
-    Interval i_int = m_currentMap->getInterval(ConfigMap::INPUT_REGISTERS_PULL);
-    Interval o_int = m_currentMap->getInterval(ConfigMap::OUTPUT_REGISTERS_PULL);
-    m_inRegisters = std::make_shared<PullerReadTask>(m_deviceID,i_int);
-    m_outRegisters = std::make_shared<PullerReadTask>(m_deviceID, o_int);
-    m_modbus->addPullerReadTask(m_inRegisters);
-    m_modbus->addPullerReadTask(m_outRegisters);
-    m_localInPull.resize(i_int.second - i_int.first + 1);
-    m_localOutPull.resize(o_int.second - o_int.first + 1);
+    for (int i = ConfigMap::INPUT_REGISTER; i < ConfigMap::REGISTER_PULL_COUNT; i++)
+    {
+        Interval a_int = m_currentMap->getInterval(i);
+        m_registers[i] = i != ConfigMap::COIL ? std::make_shared<PullerReadTask>(m_deviceID, a_int) :
+                                                std::make_shared<PullerReadCoilTask>(m_deviceID,a_int);
+        m_modbus->addPullerReadTask(m_registers[i]);
+        m_localPull[i].resize(a_int.second - a_int.first + 1);
+    }
 }
 
 DeviceExplorer::~DeviceExplorer()
@@ -37,23 +35,15 @@ bool  DeviceExplorer::getRegisterValue(const std::string & key,int& value)
     if (m_state != Ready || ! m_currentMap->haveVariableWithName(key))
         return false;
 
-    if (m_currentMap->isVariableOut(key))
-    {
-        if (m_outRegisters->isContentChanged())
-            m_outRegisters->getContent(m_localOutPull);
-        value = m_currentMap->getValue(key, m_localOutPull);
-    }
-    else
-    {
-        if (m_inRegisters->isContentChanged())
-            m_inRegisters->getContent(m_localInPull);
-        value = m_currentMap->getValue(key, m_localInPull);
-    }
-
+    ConfigMap::RegisterType a_type = m_currentMap->getVariableType(key);
+    if (m_registers[a_type]->isContentChanged())
+            m_registers[a_type]->getContent(m_localPull[a_type]);
+        value = m_currentMap->getValue(key, m_localPull[a_type]);
+    
     return true;
 }
 
-bool DeviceExplorer::setRegisterValue(const std::string & key,int value)
+void DeviceExplorer::setRegisterValue(const std::string & key,int value)
 {
     if ( m_currentMap->haveVariableWithName(key))
     {
@@ -66,7 +56,6 @@ bool DeviceExplorer::setRegisterValue(const std::string & key,int value)
         }
         m_modbus->writeRegister(m_deviceID, m_currentMap->getRegisterNumber(key), value);
     }
-    return true; // TO DO need asynchronious solution
 }
 
 QString DeviceExplorer::errorString()

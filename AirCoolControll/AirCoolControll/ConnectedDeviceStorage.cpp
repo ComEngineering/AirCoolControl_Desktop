@@ -1,4 +1,5 @@
 #include "ConnectedDeviceStorage.h"
+#include "UART_DeviceStorage.h"
 
 ConnectedDeviceStorage::ConnectedDeviceStorage(UART_DeviceStorage& drivers, QObject *parent)
     : QObject(parent),

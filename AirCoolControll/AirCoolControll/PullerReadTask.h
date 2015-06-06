@@ -20,12 +20,11 @@ public:
     bool isContentChanged();
     void getContent(QVector<quint16>& list);
     void setContent(const QVector<quint16>& list);
-    
-    const Interval& getRange() const;
 
+protected:
+    Interval                 m_range;
 private:
     QVector<quint16>         m_pull;
-    Interval                 m_range;
     bool                     m_isUpdated;
     mutable QMutex *         m_mutex;
 };

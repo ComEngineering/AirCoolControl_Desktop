@@ -6,7 +6,8 @@ ConfigMap::ConfigMap(const std::string& vendor, const std::string& product, cons
     m_vendor(vendor),
     m_product(product),
     m_versionMin(QString::fromStdString(versionMin)),
-    m_versionMax(QString::fromStdString(versionMax))
+    m_versionMax(QString::fromStdString(versionMax)),
+    m_UI_type("none")
 {
     if ((!m_versionMin.isLegal()) || (!m_versionMax.isLegal()))
         throw boost::property_tree::xml_parser_error("Bad version string in config file",product,0);
@@ -49,8 +50,8 @@ unsigned int  ConfigMap::getValue(const std::string& name, const QVector<quint16
         return -1;
 
     Parameter p = m_map.at(name);
-    int pullType = (p.m_isWriteble) ? OUTPUT_REGISTERS_PULL : INPUT_REGISTERS_PULL;
-    int index = p.m_registerNumber - m_registersIntervals[pullType].first;
+    
+    int index = p.m_registerNumber - m_registersIntervals[p.m_type].first;
   
     qint16 ret = array[index];
 
@@ -84,9 +85,9 @@ Interval& ConfigMap::getInterval(int n)
     return m_registersIntervals[n];
 }
 
-bool ConfigMap::isVariableOut(const std::string& name) const
+ConfigMap::RegisterType ConfigMap::getVariableType(const std::string& name) const
 {
-    return m_registersIntervals[OUTPUT_REGISTERS_PULL].in(getRegisterNumber(name));
+    return m_map.at(name).m_type;
 }
 
 bool  ConfigMap::isSupport(const DeviceInfoShared info) const
@@ -97,32 +98,17 @@ bool  ConfigMap::isSupport(const DeviceInfoShared info) const
     return info->checkVersion(m_versionMin,m_versionMax);
 }
 
-const ConfigMap::ParameterList& ConfigMap::getInputParametersList()
+ConfigMap::ParameterList ConfigMap::getParametersList(ConfigMap::RegisterType e)
 {
-    if (m_inParameters.empty())
-        m_inParameters = getParametersList(true);
-
-    return m_inParameters;
-}
-
-ConfigMap::ParameterList ConfigMap::getParametersList(bool isForRead)
-{
-    std::vector<std::pair<std::string, std::string>> rc;
-    for (std::pair<std::string, Parameter> a_record : m_map)
+    if (m_parameters[e].empty())
     {
-        if (a_record.second.m_isWriteble != isForRead)
-            rc.push_back(std::pair<std::string, std::string>(a_record.first, a_record.second.m_description));
+        for (std::pair<std::string, Parameter> a_record : m_map)
+        {
+            if (a_record.second.m_type != e)
+                m_parameters[e].push_back(std::pair<std::string, std::string>(a_record.first, a_record.second.m_description));
+        }
     }
-
-    return rc;
-}
-
-const ConfigMap::ParameterList& ConfigMap::getOutputParametersList() 
-{
-    if (m_outParameters.empty())
-        m_outParameters = getParametersList(false);
-
-    return m_outParameters;
+    return m_parameters[e];
 }
 
 qint16 ConfigMap::decodeWithMethod(qint16 value, const std::string& method)
@@ -136,4 +122,10 @@ qint16 ConfigMap::decodeWithMethod(qint16 value, const std::string& method)
     }
 
     return ret;
+}
+
+void  ConfigMap::setUI_Config(const std::string& type, const std::string& configFile)
+{
+    m_UI_type = type;
+    m_UI_config = configFile;
 }

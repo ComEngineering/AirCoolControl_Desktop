@@ -1,4 +1,5 @@
 #include "PullerWriteTask.h"
+#include "modbusuart_impl.h"
 
 
 PullerWriteTask::PullerWriteTask(int id, int regNumber, int value) :

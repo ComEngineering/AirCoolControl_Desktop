@@ -33,7 +33,7 @@ void ModbusDriver::UARTfail()
     emit connectionFail();
 }
 
-void ModbusDriver::addPullerReadTask(PullerReadTaskShared a_task)
+void ModbusDriver::addPullerReadTask(PullerTaskShared a_task)
 {
     m_puller.addTask(a_task);
 }

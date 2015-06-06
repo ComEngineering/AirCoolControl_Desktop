@@ -144,7 +144,7 @@ bool ModBusUART_Impl::writeRegister(quint16 id, quint16 regNumber, quint16 value
     return rc;
 }
 
-bool ModBusUART_Impl::readCoilPool(quint16 id, quint16 regNumber, quint16 coilCount, QVector<bool>& o_list)
+bool ModBusUART_Impl::readCoilPool(quint16 id, quint16 regNumber, quint16 coilCount, QVector<quint16>& o_list)
 {
     if (!startRequest())
         return false;
@@ -169,7 +169,7 @@ bool ModBusUART_Impl::readCoilPool(quint16 id, quint16 regNumber, quint16 coilCo
         }
 
         char byteMust = (coilCount + 7) / 8;
-        int responseLengthMust = 1 + 1 + 1 + byteMust + 2;
+        int responseLengthMust = 1 + 1 + 1 + byteMust;
 
         if (m_port.waitForReadyRead(m_timeOut))
         {
@@ -180,7 +180,7 @@ bool ModBusUART_Impl::readCoilPool(quint16 id, quint16 regNumber, quint16 coilCo
             if (!checkCRC(responseData))
                 break;
 
-            if (responseData.size() != responseLengthMust || responseData[1] != char(1) || responseData[0] != char(id) || responseData[2] != byteMust)
+            if (responseData.size() != responseLengthMust || responseData[1] != char(1) || responseData[0] != char(id))// || responseData[2] != byteMust)
                 break;
 
             o_list.clear();
@@ -188,7 +188,7 @@ bool ModBusUART_Impl::readCoilPool(quint16 id, quint16 regNumber, quint16 coilCo
             for (int i = 0; i < coilCount; i++)
             {
                 quint8 v = qFromBigEndian<quint8>(d + i / 8);
-                o_list.push_back(v & (0x1 << (i % 8)) );
+                o_list.push_back( v & (0x1 << (i % 8)) ? 0xff : 0 );
             }
 
             rc = true;

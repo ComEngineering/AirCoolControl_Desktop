@@ -1,9 +1,8 @@
 #ifndef __PullerGetDeviceInfoTask__
 #define __PullerGetDeviceInfoTask__
 
-#include "PullerTaskBase.h"
 #include "ModbusDriver.h"
-
+#include "PullerTaskBase.h"
 
 class PullerGetDeviceInfoTask :
     public PullerTaskBase 

@@ -2,8 +2,9 @@
 #define __PullerTaskBase__
 
 #include <memory>
-#include "modbusuart_impl.h"
-#include  "boost/date_time/posix_time/posix_time.hpp" 
+#include "boost/date_time/posix_time/posix_time.hpp" 
+
+class ModBusUART_Impl;
 
 class PullerTaskBase 
 {

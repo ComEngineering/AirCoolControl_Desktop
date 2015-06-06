@@ -4,12 +4,12 @@
 #include <QObject>
 #include <list>
 #include <QString>
-#include "ConfigMap.h"
+//#include "ConfigMap.h"
 
 #include "DeviceInfo.h"
 #include "DeviceExplorer.h"
-#include "UART_DeviceStorage.h"
 
+class UART_DeviceStorage;
 
 class ConnectedDeviceStorage : public QObject, public std::list<DeviceInfoShared>
 {

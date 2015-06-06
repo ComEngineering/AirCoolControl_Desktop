@@ -1,28 +1,19 @@
 #ifndef __PullerReadCoilTask__
 #define __PullerReadCoilTask__
 
-#include "PullerTaskBase.h"
-#include "Interval.h"
+#include "PullerReadTask.h"
 
 class PullerReadCoilTask :
-    public PullerTaskBase
+    public PullerReadTask
 {
 public:
     PullerReadCoilTask(int id, Interval& range);
     ~PullerReadCoilTask();
 
     bool proceed(ModBusUART_Impl* modbus);
-    virtual bool isItTimeToDo(void) const;
 
-    bool isContentChanged();
-    void getContent(QVector<bool>& list);
-    void setContent(const QVector<bool>& list);
-
-private:
-    QVector<bool>            m_pull;
-    Interval                 m_range;
-    bool                     m_isUpdated;
-    mutable QMutex *         m_mutex;
 };
+
+typedef std::shared_ptr<PullerReadCoilTask> PullerReadCoilsTaskShared;
 
 #endif //__PullerReadCoilTask__

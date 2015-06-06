@@ -6,11 +6,9 @@
 #include <map>
 #include <memory>
 #include <functional>
-#include "PullerReadTask.h"
 #include "VersionStorage.h"
 #include "modbusuart_impl.h"
 #include "ModbusPuller.h"
-
 #include "DeviceInfo.h"
 
 class ModbusDriver : public QObject
@@ -23,7 +21,7 @@ public:
     ModbusDriver(const QString& name,QObject *parent = NULL);
     ~ModbusDriver();
 
-    void addPullerReadTask(PullerReadTaskShared a_task);
+    void addPullerReadTask(PullerTaskShared a_task);
     void requestDeviceAproval(quint16 id);
     void writeRegister(quint16 id, quint16 regNumber, quint16 value);
     bool readyToWork() const;
