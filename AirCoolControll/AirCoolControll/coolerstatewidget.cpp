@@ -11,6 +11,7 @@ CoolerStateWidget::CoolerStateWidget(QWidget *parent)
     m_tables[ConfigMap::OUTPUT_REGISTER] = ui.outputParametersTable;
     m_tables[ConfigMap::COIL] = ui.coilsTable;
     connect(ui.outputParametersTable, SIGNAL(itemChanged(QTableWidgetItem *)), this, SLOT(registerSet(QTableWidgetItem *)));
+    connect(ui.coilsTable, SIGNAL(itemChanged(QTableWidgetItem *)), this, SLOT(registerSet(QTableWidgetItem *)));
 }
 
 CoolerStateWidget::~CoolerStateWidget()
@@ -30,6 +31,7 @@ void CoolerStateWidget::setParameterList(const std::vector<std::pair<std::string
         f |= Qt::ItemIsEditable;
         break;
     case ConfigMap::COIL:
+        f |= Qt::ItemIsEditable;
         break;
     }
 
@@ -45,6 +47,7 @@ void CoolerStateWidget::setParameterList(const std::vector<std::pair<std::string
         newItem = new QTableWidgetItem(QString());
         newItem->setFlags(f);
         newItem->setData(Qt::UserRole,QVariant(QString::fromStdString(a_line.first)));
+        newItem->setData(Qt::UserRole + 1, QVariant(static_cast<quint16>(type)));
         m_tables[type]->setItem(currentRow, 0, newItem);
         currentRow++;
     }
@@ -53,12 +56,12 @@ void CoolerStateWidget::setParameterList(const std::vector<std::pair<std::string
 
 void CoolerStateWidget::updateParameter(int n, int value, ConfigMap::RegisterType type)
 {
-    ui.outputParametersTable->blockSignals(true);
+    m_tables[type]->blockSignals(true);
     
     QTableWidgetItem *aItem = m_tables[type]->item(n, 0);
     if(NULL != aItem)
         aItem->setText(QString::number(value));
-    ui.outputParametersTable->blockSignals(false);
+    m_tables[type]->blockSignals(false);
 }
 
 void CoolerStateWidget::registerSet(QTableWidgetItem *item)
@@ -69,7 +72,8 @@ void CoolerStateWidget::registerSet(QTableWidgetItem *item)
     if (ok)
     {
         QString name = item->data(Qt::UserRole).toString();
-        emit newRegisterValue(name, d);
+        int registerType  = item->data(Qt::UserRole + 1).toInt();
+        emit newRegisterValue(registerType, name, d);
     }
 }
 

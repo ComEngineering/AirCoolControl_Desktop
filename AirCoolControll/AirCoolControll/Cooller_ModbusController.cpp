@@ -49,7 +49,7 @@ Cooller_ModBusController::Cooller_ModBusController(CoolerStateWidget *view, ModB
     connect(&m_info, SIGNAL(deviceDetected(DeviceInfoShared)), this, SLOT(addDevice(DeviceInfoShared)));
     connect(&m_explorers, SIGNAL(activeChanged(void)), this, SLOT(setActiveDevice(void)));
 
-    connect(m_view, SIGNAL(newRegisterValue(QString&, int)), this, SLOT(sendValueToDevice(QString&, int)));
+    connect(m_view, SIGNAL(newRegisterValue(int,QString&, int)), this, SLOT(sendValueToDevice(int,QString&, int)));
 
     connect(&m_info, SIGNAL(uartDisconnected(const QString&)), &m_explorers, SLOT(removeDevicesWithUART(const QString&)));
 
@@ -294,10 +294,19 @@ void Cooller_ModBusController::setActiveDevice(void)
     m_configDialog->refreshDeviceList();
 }
 
-void Cooller_ModBusController::sendValueToDevice(QString& name, int v)
+void Cooller_ModBusController::sendValueToDevice(int registerType,QString& name, int v)
 {
     if (m_currentDevice)
     {
-        m_currentDevice->setRegisterValue(name.toStdString(), v);
+        switch (static_cast<ConfigMap::RegisterType>(registerType))
+        {
+        case ConfigMap::OUTPUT_REGISTER :
+            m_currentDevice->setRegisterValue(name.toStdString(), v);
+            break;
+        case ConfigMap::COIL :
+            m_currentDevice->setCoilState(name.toStdString(), static_cast<bool>(v));
+            break;
+        }
+        
     }
 }

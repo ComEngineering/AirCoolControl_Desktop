@@ -23,6 +23,8 @@ public:
 
     bool  getRegisterValue(const std::string & key,int& value);
     void  setRegisterValue(const std::string & key,int value);
+    void  setCoilState(const std::string & key, bool state);
+
     QString errorString();
     ConfigMapShared getCurrentConfig(){ return m_currentMap; }
     State getState(){ return m_state; }

@@ -64,6 +64,14 @@ void DeviceExplorer::setRegisterValue(const std::string & key,int value)
     }
 }
 
+void  DeviceExplorer::setCoilState(const std::string & key, bool state)
+{
+    if (m_currentMap->haveVariableWithName(key))
+    {
+        m_modbus->setCoil(m_deviceID, m_currentMap->getRegisterNumber(key), state);
+    }
+}
+
 QString DeviceExplorer::errorString()
 {
     return m_errorString;

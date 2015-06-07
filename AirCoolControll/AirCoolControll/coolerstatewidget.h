@@ -24,7 +24,7 @@ private slots:
     void registerSet(QTableWidgetItem *);
 
 signals:
-    void newRegisterValue(QString&, int);
+    void newRegisterValue(int,QString&, int);
 
 private:
     Ui::CoolerStateWidget ui;    

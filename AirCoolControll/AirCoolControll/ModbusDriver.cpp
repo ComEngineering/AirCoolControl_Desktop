@@ -2,6 +2,7 @@
 #include <QMutexLocker>
 #include "PullerGetDeviceInfoTask.h"
 #include "PullerWriteTask.h"
+#include "PullerSetCoilTask.h"
 #include "DeviceInfo.h"
 
 ModbusDriver::ModbusDriver(const QString& name, QObject *parent)
@@ -53,6 +54,12 @@ void ModbusDriver::onDeviceDetected(DeviceInfoShared a_info)
 void ModbusDriver::writeRegister(quint16 id, quint16 regNumber, quint16 value)
 {
     PullerWriteTaskShared a_task = std::make_shared<PullerWriteTask>(id, regNumber, value);
+    m_puller.addTask(a_task);
+}
+
+void ModbusDriver::setCoil(quint16 id, quint16 regNumber, bool state)
+{
+    PullerSetCoilTaskShared a_task = std::make_shared<PullerSetCoilTask>(id, regNumber, state);
     m_puller.addTask(a_task);
 }
 

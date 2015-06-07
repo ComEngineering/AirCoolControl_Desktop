@@ -1,5 +1,5 @@
-#ifndef __PullerWriteTask__
-#define __PullerWriteTask__
+#ifndef __PullerSetCoilTask__
+#define __PullerSetCoilTask__
 
 #include "PullerTaskBase.h"
 
@@ -17,4 +17,6 @@ private:
     bool  m_value;
 };
 
-#endif //__PullerWriteTask__
+typedef std::shared_ptr<PullerSetCoilTask> PullerSetCoilTaskShared;
+
+#endif //__PullerSetCoilTask__

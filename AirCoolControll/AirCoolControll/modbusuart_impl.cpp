@@ -209,7 +209,7 @@ bool ModBusUART_Impl::writeCoil(quint16 id, quint16 regNumber, bool state)
     do
     {
         quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
-        quint16 valueBig = (state) ? 0xff00 : 0x0;
+        quint16 valueBig = (state) ? 0x00ff : 0x0;
         QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
         data.append(QByteArray::fromRawData((const char*)&valueBig, sizeof(quint16)));
         QByteArray req = makeRTUFrame(id, 5, data);
@@ -230,7 +230,7 @@ bool ModBusUART_Impl::writeCoil(quint16 id, quint16 regNumber, bool state)
             if (!checkCRC(responseData))
                 break;
 
-            if (responseData.size() == 8 && responseData[1] != char(5) || responseData[0] != char(id))
+            if (responseData.size() == 8 && responseData[1] == char(5) || responseData[0] == char(id))
             {
                 rc = true;
             }
