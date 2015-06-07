@@ -4,7 +4,7 @@
 #include <QWidget>
 #include "ui_coolerstatewidget.h"
 #include <qstandarditemmodel.h>
-
+#include "ConfigMap.h"
 
 class CoolerStateWidget : public QWidget
 {
@@ -14,9 +14,9 @@ public:
     CoolerStateWidget(QWidget *parent = 0);
     ~CoolerStateWidget();
 
-    void setParameterList(const std::vector<std::pair<std::string,std::string>>& list,bool isInput);
+    void setParameterList(const std::vector<std::pair<std::string, std::string>>& list, ConfigMap::RegisterType type);
     
-    void updateParameter(int n, int value, bool isInput);
+    void updateParameter(int n, int value, ConfigMap::RegisterType type);
 
     void clear();
 
@@ -28,6 +28,7 @@ signals:
 
 private:
     Ui::CoolerStateWidget ui;    
+    QTableWidget*         m_tables[ConfigMap::REGISTER_PULL_COUNT];
 };
 
 #endif // COOLERSTATEWIDGET_H

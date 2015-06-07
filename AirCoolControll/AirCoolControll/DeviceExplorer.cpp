@@ -13,10 +13,13 @@ DeviceExplorer::DeviceExplorer(const ConfigMapShared config, ModbusDriverShared 
     for (int i = ConfigMap::INPUT_REGISTER; i < ConfigMap::REGISTER_PULL_COUNT; i++)
     {
         Interval a_int = m_currentMap->getInterval(i);
-        m_registers[i] = i != ConfigMap::COIL ? std::make_shared<PullerReadTask>(m_deviceID, a_int) :
-                                                std::make_shared<PullerReadCoilTask>(m_deviceID,a_int);
-        m_modbus->addPullerReadTask(m_registers[i]);
-        m_localPull[i].resize(a_int.second - a_int.first + 1);
+        if (!a_int.empty())
+        {
+            m_registers[i] = i != ConfigMap::COIL ? std::make_shared<PullerReadTask>(m_deviceID, a_int) :
+                std::make_shared<PullerReadCoilTask>(m_deviceID, a_int);
+            m_modbus->addPullerReadTask(m_registers[i]);
+            m_localPull[i].resize(a_int.second - a_int.first + 1);
+        }
     }
 }
 
@@ -36,9 +39,12 @@ bool  DeviceExplorer::getRegisterValue(const std::string & key,int& value)
         return false;
 
     ConfigMap::RegisterType a_type = m_currentMap->getVariableType(key);
+    if (m_registers[a_type] == NULL)
+        return false;
+
     if (m_registers[a_type]->isContentChanged())
-            m_registers[a_type]->getContent(m_localPull[a_type]);
-        value = m_currentMap->getValue(key, m_localPull[a_type]);
+        m_registers[a_type]->getContent(m_localPull[a_type]);
+    value = m_currentMap->getValue(key, m_localPull[a_type]);
     
     return true;
 }

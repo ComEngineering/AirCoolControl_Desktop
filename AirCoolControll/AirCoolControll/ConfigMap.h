@@ -9,6 +9,7 @@
 #include <memory>
 #include "DeviceInfo.h"
 #include "VersionStorage.h"
+#include <assert.h>
 
 class ConfigMap
 {
@@ -17,12 +18,19 @@ public:
     ~ConfigMap();
 
     enum RegisterType {
-        INPUT_REGISTER,
+        REGISTER_PULL_FIRST = 0,
+        INPUT_REGISTER = 0,
         OUTPUT_REGISTER,
         COIL,
         REGISTER_PULL_COUNT
     };
-    
+      
+    static RegisterType &NEXT(ConfigMap::RegisterType &c) {
+        assert(c < REGISTER_PULL_COUNT);
+        c = static_cast<RegisterType>(c + 1);
+        return c;
+    }
+
     typedef struct 
     {
         int                     m_registerNumber;

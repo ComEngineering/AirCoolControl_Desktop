@@ -104,7 +104,7 @@ ConfigMap::ParameterList ConfigMap::getParametersList(ConfigMap::RegisterType e)
     {
         for (std::pair<std::string, Parameter> a_record : m_map)
         {
-            if (a_record.second.m_type != e)
+            if (a_record.second.m_type == e)
                 m_parameters[e].push_back(std::pair<std::string, std::string>(a_record.first, a_record.second.m_description));
         }
     }

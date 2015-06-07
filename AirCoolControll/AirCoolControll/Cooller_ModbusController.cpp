@@ -262,23 +262,17 @@ void Cooller_ModBusController::updateStateWidget()
 {
     if (m_currentDevice)
     {
-        const ConfigMap::ParameterList& inParameters = m_currentDevice->getCurrentConfig()->getParametersList(ConfigMap::INPUT_REGISTER);
-        const ConfigMap::ParameterList& outParameters = m_currentDevice->getCurrentConfig()->getParametersList(ConfigMap::OUTPUT_REGISTER);
-        for (int i = 0; i < inParameters.size(); i++)
+        for (ConfigMap::RegisterType it = ConfigMap::REGISTER_PULL_FIRST; it < ConfigMap::REGISTER_PULL_COUNT; ConfigMap::NEXT(it))
         {
-            int value;
-            if (m_currentDevice->getRegisterValue(inParameters[i].first, value))
+            const ConfigMap::ParameterList& parameters = m_currentDevice->getCurrentConfig()->getParametersList(it);
+            
+            for (int i = 0; i < parameters.size(); i++)
             {
-                m_view->updateParameter(i, value, true);
-            }
-        }
-
-        for (int i = 0; i < outParameters.size(); i++)
-        {
-            int value;
-            if (m_currentDevice->getRegisterValue(outParameters[i].first, value))
-            {
-                m_view->updateParameter(i, value, false);
+                int value;
+                if (m_currentDevice->getRegisterValue(parameters[i].first, value))
+                {
+                    m_view->updateParameter(i, value, it);
+                }
             }
         }
     }
@@ -290,8 +284,8 @@ void Cooller_ModBusController::setActiveDevice(void)
     m_currentDevice = info ? info->getExplorer() : NULL;
     if (m_currentDevice)
     {
-        m_view->setParameterList(m_currentDevice->getCurrentConfig()->getParametersList(ConfigMap::INPUT_REGISTER), true);
-        m_view->setParameterList(m_currentDevice->getCurrentConfig()->getParametersList(ConfigMap::OUTPUT_REGISTER), false);
+        for (ConfigMap::RegisterType i = ConfigMap::REGISTER_PULL_FIRST; i < ConfigMap::REGISTER_PULL_COUNT; ConfigMap::NEXT(i))
+            m_view->setParameterList(m_currentDevice->getCurrentConfig()->getParametersList(i), i);
     }
     else
     {

@@ -18,3 +18,8 @@ bool Interval::in(int n) const
 {
     return n >= first && n <= second;
 }
+
+bool Interval::empty(void) const
+{
+    return first > second;
+}
