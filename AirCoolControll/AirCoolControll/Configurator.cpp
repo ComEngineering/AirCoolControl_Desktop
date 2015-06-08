@@ -1,7 +1,7 @@
 #include "Configurator.h"
 #include <qapplication.h>
 
-const QString Configurator::s_version("0.0.0.1");
+const QString Configurator::s_version("0.0.1.2");
 QSharedPointer <QSettings>   Configurator::s_settings;
 
 Configurator::Configurator()

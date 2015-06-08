@@ -1,6 +1,7 @@
 #include "PullerReadTask.h"
 #include <QMutexLocker>
 #include "modbusuart_impl.h"
+#include "Configurator.h"
 
 
 PullerReadTask::PullerReadTask(int id,Interval& range) :
@@ -59,7 +60,7 @@ bool PullerReadTask::proceed(ModBusUART_Impl* modbus)
 bool PullerReadTask::isItTimeToDo(void) const
 {
     boost::posix_time::time_duration diff = boost::posix_time::microsec_clock::local_time() - m_lastSuccessfullAttemptTime;
-    if (diff.total_milliseconds() > 1000) /// TO DO take from settings
+    if (diff.total_milliseconds() > Configurator::getPullInterval()) 
         return true;
     return false;
 }

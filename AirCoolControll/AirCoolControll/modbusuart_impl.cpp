@@ -2,10 +2,10 @@
 #include <qdatastream.h>
 #include <QtEndian> 
 #include <QMutexLocker>
+#include "Configurator.h"
 
 ModBusUART_Impl::ModBusUART_Impl(const QString& name, QObject *parent)
-    : QObject(parent),
-    m_timeOut(50) // default value
+    : QObject(parent)
 {
     connect(&m_port, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(communicationError(QSerialPort::SerialPortError)));
 
@@ -37,11 +37,6 @@ void ModBusUART_Impl::stopRequest(void)
     m_port.close();
 }
 
-void ModBusUART_Impl::setTimeOut(int t)
-{
-    m_timeOut = t;
-}
-
 void ModBusUART_Impl::setSpeed(int speed)
 {
     m_port.setBaudRate(speed);
@@ -66,17 +61,17 @@ bool ModBusUART_Impl::readRegisterPool(quint16 id, quint16 regNumber, quint16 re
         QMutexLocker locker(&m_mutex);
 
         m_port.write(req);
-        if (!m_port.waitForBytesWritten(m_timeOut))
+        if (!m_port.waitForBytesWritten(Configurator::getMaximunTimeout()))
         {
             break;
         }
 
         int responseLengthMust = 1 + 1 + 1 + 2 * regCount + 2;
 
-        if (m_port.waitForReadyRead(m_timeOut))
+        if (m_port.waitForReadyRead(Configurator::getMaximunTimeout()))
         {
             QByteArray responseData = m_port.readAll();
-            while (m_port.waitForReadyRead(20))  // TO DO from settings
+            while (m_port.waitForReadyRead(Configurator::getChankTimeout()))  // TO DO from settings
                 responseData += m_port.readAll();
 
             if (!checkCRC(responseData))
@@ -120,13 +115,13 @@ bool ModBusUART_Impl::writeRegister(quint16 id, quint16 regNumber, quint16 value
 
         m_port.write(req);
 
-        if (!m_port.waitForBytesWritten(m_timeOut))
+        if (!m_port.waitForBytesWritten(Configurator::getMaximunTimeout()))
             break;
 
-        if (m_port.waitForReadyRead(m_timeOut))
+        if (m_port.waitForReadyRead(Configurator::getMaximunTimeout()))
         {
             QByteArray responseData = m_port.readAll();
-            while (m_port.waitForReadyRead(20)) // TO DO from settings
+            while (m_port.waitForReadyRead(Configurator::getChankTimeout())) 
                 responseData += m_port.readAll();
 
             if (!checkCRC(responseData))
@@ -163,7 +158,7 @@ bool ModBusUART_Impl::readCoilPool(quint16 id, quint16 regNumber, quint16 coilCo
         QMutexLocker locker(&m_mutex);
 
         m_port.write(req);
-        if (!m_port.waitForBytesWritten(m_timeOut))
+        if (!m_port.waitForBytesWritten(Configurator::getMaximunTimeout()))
         {
             break;
         }
@@ -171,10 +166,10 @@ bool ModBusUART_Impl::readCoilPool(quint16 id, quint16 regNumber, quint16 coilCo
         char byteMust = (coilCount + 7) / 8;
         int responseLengthMust = 1 + 1 + 1 + byteMust;
 
-        if (m_port.waitForReadyRead(m_timeOut))
+        if (m_port.waitForReadyRead(Configurator::getMaximunTimeout()))
         {
             QByteArray responseData = m_port.readAll();
-            while (m_port.waitForReadyRead(20))  // TO DO from settings
+            while (m_port.waitForReadyRead(Configurator::getChankTimeout()))
                 responseData += m_port.readAll();
 
             if (!checkCRC(responseData))
@@ -218,13 +213,13 @@ bool ModBusUART_Impl::writeCoil(quint16 id, quint16 regNumber, bool state)
 
         m_port.write(req);
 
-        if (!m_port.waitForBytesWritten(m_timeOut))
+        if (!m_port.waitForBytesWritten(Configurator::getMaximunTimeout()))
             break;
 
-        if (m_port.waitForReadyRead(m_timeOut))
+        if (m_port.waitForReadyRead(Configurator::getMaximunTimeout()))
         {
             QByteArray responseData = m_port.readAll();
-            while (m_port.waitForReadyRead(20)) // TO DO from settings
+            while (m_port.waitForReadyRead(Configurator::getChankTimeout()))
                 responseData += m_port.readAll();
 
             if (!checkCRC(responseData))
@@ -260,13 +255,13 @@ bool ModBusUART_Impl::readDeviceInfo(quint16 id, QString& vendor, QString& produ
         if (m_port.write(req) != req.size())
             break;
 
-        if (!m_port.waitForBytesWritten(m_timeOut))
+        if (!m_port.waitForBytesWritten(Configurator::getMaximunTimeout()))
             break;
 
-        if (m_port.waitForReadyRead(m_timeOut))
+        if (m_port.waitForReadyRead(Configurator::getMaximunTimeout()))
         {
             QByteArray responseData = m_port.readAll();
-            while (m_port.waitForReadyRead(20)) // TO DO from settings
+            while (m_port.waitForReadyRead(Configurator::getChankTimeout()))
                 responseData += m_port.readAll();
 
             if (!checkCRC(responseData))

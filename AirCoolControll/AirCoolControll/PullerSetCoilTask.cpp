@@ -1,5 +1,6 @@
 #include "PullerSetCoilTask.h"
 #include "modbusuart_impl.h"
+#include "Configurator.h"
 
 PullerSetCoilTask::PullerSetCoilTask(int id, int regNumber, bool value) :
     PullerTaskBase(id),
@@ -20,7 +21,7 @@ bool PullerSetCoilTask::proceed(ModBusUART_Impl* modbus)
 
     if (!modbus->writeCoil(getID(), m_regNumber, m_value))
     {
-        if (m_failCounter++ < 3)  /// TO DO read from settings
+        if (m_failCounter++ < Configurator::getRetryCount())  /// TO DO read from settings
             rc = false;
         /* else
         emit transmitionError();*/ // TO DO fire callback

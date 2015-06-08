@@ -1,5 +1,6 @@
 #include "PullerWriteTask.h"
 #include "modbusuart_impl.h"
+#include "Configurator.h"
 
 
 PullerWriteTask::PullerWriteTask(int id, int regNumber, int value) :
@@ -21,7 +22,7 @@ bool PullerWriteTask::proceed(ModBusUART_Impl* modbus)
 
     if (!modbus->writeRegister(getID(), m_regNumber, m_value))
     {
-        if (m_failCounter++ < 3)  /// TO DO read from settings
+        if (m_failCounter++ <  Configurator::getRetryCount())  
             rc = false;
        /* else
             emit transmitionError();*/

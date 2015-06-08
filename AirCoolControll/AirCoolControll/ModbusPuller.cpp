@@ -13,9 +13,8 @@ ModbusPuller::ModbusPuller(QObject *parent)
 
 ModbusPuller::~ModbusPuller()
 {
-    m_continueProcessing = false;
-    if(false == m_isStoped)
-        m_endProcessingSemaphore.acquire(0);
+    if(m_continueProcessing)
+        stopPulling();
 }
 
 void ModbusPuller::clearTaskList()
@@ -92,7 +91,6 @@ void ModbusPuller::run(void)
                 m_removeIndex = 0;
             }
         }
-
     }
     m_endProcessingSemaphore.release(1);
 }
@@ -105,5 +103,7 @@ void ModbusPuller::startPulling(ModBusUART_Impl* modbus)
 
 void ModbusPuller::stopPulling()
 {
-    m_isStoped = true;
+    m_continueProcessing = false;
+    if (false == m_isStoped)
+        m_endProcessingSemaphore.acquire(0);
 }

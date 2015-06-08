@@ -15,7 +15,6 @@ public:
     ModBusUART_Impl(const QString& info,QObject *parent);
     ~ModBusUART_Impl();
 
-    void   setTimeOut(int t);
     void   setSpeed(int speed);
     
     bool   readRegisterPool(quint16 id, quint16 regNumber,quint16 regCount,QVector<quint16>& list);
@@ -47,7 +46,6 @@ private:
 
 private:
     QSerialPort     m_port;
-    int             m_timeOut;
     mutable QMutex  m_mutex;
     bool            m_isOpen;
 };

@@ -1,14 +1,8 @@
 <RCC>
     <qresource prefix="/">
-      <file>../../Images/shema-konditsionera.gif</file>
-      <file>../../Images/left_stream_0.gif</file>
-      <file>../../Images/left_stream_1.gif</file>
-      <file>../../Images/left_stream_2.gif</file>
-      <file>../../Images/left_stream_3.gif</file>
-      <file>../../Images/right_stream_0.gif</file>
-      <file>../../Images/right_stream_1.gif</file>
-      <file>../../Images/right_stream_2.gif</file>
-      <file>../../Images/right_stream_3.gif</file>
-	  <file>../../Images/app_icon.png</file>
+      <file>../../Images/app_icon.png</file>
+      <file>../../Images/connect.png</file>
+      <file>../../Images/disconnect.png</file>
+      <file>../../Images/preferences.png</file>
     </qresource>
 </RCC>

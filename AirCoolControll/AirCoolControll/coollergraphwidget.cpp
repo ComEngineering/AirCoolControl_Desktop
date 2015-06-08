@@ -7,7 +7,7 @@ CoollerGraphWidget::CoollerGraphWidget(QWidget *parent)
     m_windState(0),
     m_viewTimer(new QTimer(this))
 {
-    s_left_arrows[0] = QPixmap(":/Images/left_stream_0.gif");
+   /* s_left_arrows[0] = QPixmap(":/Images/left_stream_0.gif");
     s_left_arrows[1] = QPixmap(":/Images/left_stream_1.gif");
     s_left_arrows[2] = QPixmap(":/Images/left_stream_2.gif");
     s_left_arrows[3] = QPixmap(":/Images/left_stream_3.gif");
@@ -15,7 +15,7 @@ CoollerGraphWidget::CoollerGraphWidget(QWidget *parent)
     s_right_arrows[0] = QPixmap(":/Images/right_stream_0.gif");
     s_right_arrows[1] = QPixmap(":/Images/right_stream_1.gif");
     s_right_arrows[2] = QPixmap(":/Images/right_stream_2.gif");
-    s_right_arrows[3] = QPixmap(":/Images/right_stream_3.gif");
+    s_right_arrows[3] = QPixmap(":/Images/right_stream_3.gif");*/
 
     ui.setupUi(this);
     
@@ -36,7 +36,7 @@ CoollerGraphWidget::~CoollerGraphWidget()
 void CoollerGraphWidget::updateViewElements(void)
 {
     m_windState++;
-    if (m_windState >= AnimationSteps)
+    /*if (m_windState >= AnimationSteps)
         m_windState = 0;
 
     if (m_leftWindOn)
@@ -54,7 +54,7 @@ void CoollerGraphWidget::updateViewElements(void)
     if (m_leftWindOn || m_rightWindOn)
     {
         update();
-    }
+    }*/
 }
 
 void CoollerGraphWidget::leftWindState(bool on)

@@ -1,4 +1,5 @@
 #include "PullerGetDeviceInfoTask.h"
+#include "Configurator.h"
 
 
 PullerGetDeviceInfoTask::PullerGetDeviceInfoTask(int id, const QString& uartName, ModbusDriver::detectionCallback cb) :
@@ -21,7 +22,7 @@ bool PullerGetDeviceInfoTask::proceed(ModBusUART_Impl* modbus)
 
     if ( ! modbus->readDeviceInfo(getID(), vendor, product, version))
     {
-        if ( ++m_failCounter < 3)  /// TO DO read from settings
+        if (++m_failCounter < Configurator::getRetryCount()) 
             rc = false;
         else
             m_cb(std::make_shared<DeviceInfo>(m_uartName, getID()));
