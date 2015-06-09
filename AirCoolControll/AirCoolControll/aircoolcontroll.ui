@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>667</height>
+    <height>685</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -60,6 +60,7 @@
    </attribute>
    <addaction name="actionConnect_to_device"/>
    <addaction name="actionDisconnect_from_UART"/>
+   <addaction name="actionConnect_to_host"/>
    <addaction name="separator"/>
    <addaction name="actionPreferences"/>
   </widget>
@@ -101,6 +102,18 @@
    </property>
    <property name="menuRole">
     <enum>QAction::PreferencesRole</enum>
+   </property>
+  </action>
+  <action name="actionConnect_to_host">
+   <property name="icon">
+    <iconset resource="aircoolcontroll.qrc">
+     <normaloff>:/Images/connect_to_host.png</normaloff>:/Images/connect_to_host.png</iconset>
+   </property>
+   <property name="text">
+    <string>connect_to_host</string>
+   </property>
+   <property name="toolTip">
+    <string>Connect ot remote host</string>
    </property>
   </action>
  </widget>

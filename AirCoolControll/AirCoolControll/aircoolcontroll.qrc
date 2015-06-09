@@ -4,5 +4,6 @@
       <file>../../Images/connect.png</file>
       <file>../../Images/disconnect.png</file>
       <file>../../Images/preferences.png</file>
+      <file>../../Images/connect_to_host.png</file>
     </qresource>
 </RCC>
