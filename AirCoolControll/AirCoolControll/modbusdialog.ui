@@ -38,7 +38,7 @@
       <item row="0" column="0">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="ConnectionParameters" name="parameters" native="true"/>
+         <widget class="UART_ConnectionWindow" name="parameters" native="true"/>
         </item>
         <item>
          <widget class="ConnectionLog" name="log" native="true"/>
@@ -53,9 +53,9 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>ConnectionParameters</class>
+   <class>UART_ConnectionWindow</class>
    <extends>QWidget</extends>
-   <header>connectionparameters.h</header>
+   <header>UART_ConnectionWindow.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

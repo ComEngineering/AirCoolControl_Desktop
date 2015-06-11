@@ -13,11 +13,13 @@
 #include "UART_DeviceStorage.h"
 #include "ConnectedDeviceStorage.h"
 
+class AirCoolControll;
+
 class Cooller_ModBusController : public QObject
 {
     Q_OBJECT
 public:
-    Cooller_ModBusController(CoolerStateWidget *view, ModBusDialog *config);
+    Cooller_ModBusController(AirCoolControll* mainWindow);
     ~Cooller_ModBusController();
 
 private:
@@ -26,10 +28,11 @@ private:
     bool readXMLConfig(const QString& path);
     void updateStateWidget(void);
     void allertError(QString errorDescription);
+    void newDevice();
 
 private slots:
     void updateState(void);
-    void newDevice(int);
+    
     void sendConfiguration(void);
     void externalStateChanged(void);
     void externalListChanged(void);
@@ -41,9 +44,7 @@ signals:
     void newStatus(const QString&);
 
 private:
-    CoolerStateWidget *     m_view;
-    ModBusDialog *          m_configDialog;
-
+    AirCoolControll*        m_mainWindow;
     UART_DeviceStorage      m_info;
     QTimer   *              m_recheckTimer;
     bool                    m_available;

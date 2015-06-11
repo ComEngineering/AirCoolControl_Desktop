@@ -70,41 +70,6 @@ void ModBusDialog::newDevice(int n)
     emit deviceIDChanged(n);
 }
 
-void ModBusDialog::setExternalCommunicator(ExternalConnector* connector)
-{
-    ui.parameters->setExternalComunicator(connector);
-}
-
-void ModBusDialog::connectionEstablished()
-{
-    ui.parameters->externalConnection(true);
-}
-
-void ModBusDialog::connectionBroken()
-{
-    ui.parameters->externalConnection(false);
-}
-
-void ModBusDialog::connectionErrorOccured(QString err)
-{
-    ui.parameters->externalConnection(err);
-}
-
-void ModBusDialog::setExternalConnection(const QString& adress)
-{
-    ui.parameters->setExternalConnection(adress);
-}
-
-void ModBusDialog::dropExternalConnection()
-{
-    ui.parameters->dropExternalConnection();
-}
-
-void ModBusDialog::setExternalPorts(const QList<QString>& list)
-{
-    ui.parameters->setExternalPorts(list);
-}
-
 void ModBusDialog::setDeviceList(ConnectedDeviceStorage *storage)
 {
     ui.log->setDeviceList(storage);

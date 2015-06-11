@@ -12,6 +12,9 @@ public:
     PreferencesWindow(QWidget *parent = 0);
     ~PreferencesWindow();
 
+signals:
+    void finished(void);
+
 private slots:
     void attemptChanged(int);
     void intervalChanged(int);

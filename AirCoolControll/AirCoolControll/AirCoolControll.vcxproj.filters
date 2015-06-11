@@ -59,12 +59,6 @@
     <ClCompile Include="GeneratedFiles\qrc_aircoolcontroll.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_connectionparameters.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_connectionparameters.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_connectionlog.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -129,9 +123,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="aircoolcontroll.cpp">
-      <Filter>Source Files\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="connectionparameters.cpp">
       <Filter>Source Files\Widgets</Filter>
     </ClCompile>
     <ClCompile Include="coolerstatewidget.cpp">
@@ -245,6 +236,33 @@
     <ClCompile Include="PreferencesWindow.cpp">
       <Filter>Source Files\Widgets</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_ExternalConnectionWindow.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_ExternalConnectionWindow.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="ExternalConnectionWindow.cpp">
+      <Filter>Source Files\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_UART_ConnectionWindow.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_UART_ConnectionWindow.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="UART_ConnectionWindow.cpp">
+      <Filter>Source Files\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MdiSubWindowPermanent.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MdiSubWindowPermanent.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="MdiSubWindowPermanent.cpp">
+      <Filter>Source Files\Widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="aircoolcontroll.ui">
@@ -252,9 +270,6 @@
     </CustomBuild>
     <CustomBuild Include="aircoolcontroll.qrc">
       <Filter>Resource Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="connectionparameters.ui">
-      <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="connectionlog.ui">
       <Filter>Form Files</Filter>
@@ -272,9 +287,6 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="aircoolcontroll.h">
-      <Filter>Header Files\Widgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="connectionparameters.h">
       <Filter>Header Files\Widgets</Filter>
     </CustomBuild>
     <CustomBuild Include="coolerstatewidget.h">
@@ -337,12 +349,24 @@
     <CustomBuild Include="PreferencesWindow.h">
       <Filter>Header Files\Widgets</Filter>
     </CustomBuild>
+    <CustomBuild Include="ExternalConnectionWindow.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="ExternalConnectionWindow.h">
+      <Filter>Header Files\Widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="UART_ConnectionWindow.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="UART_ConnectionWindow.h">
+      <Filter>Header Files\Widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MdiSubWindowPermanent.h">
+      <Filter>Header Files\Widgets</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_aircoolcontroll.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_connectionparameters.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_connectionlog.h">
@@ -382,6 +406,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_PreferencesWindow.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_ExternalConnectionWindow.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_UART_ConnectionWindow.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
