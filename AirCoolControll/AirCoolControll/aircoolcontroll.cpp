@@ -2,14 +2,11 @@
 
 AirCoolControll::AirCoolControll(QWidget *parent)
     : QMainWindow(parent),
-    m_preferences(NULL)
+    m_preferences(NULL),
+    m_uartConnector(this),
+    m_internetConnector(this)
 {
     ui.setupUi(this);
-    
-    m_uartConnector = new UART_ConnectionWindow(this);
-    m_uartConnectorMdi = new MdiSubWindowPermanent(m_uartConnector,this);
-    
-    (m_internetConnector = new ExternalConnectionWindow(this))->hide();
 
     m_comunicator = new Cooller_ModBusController(this);
     connect(m_comunicator, SIGNAL(newStatus(const QString&)), ui.statusBar, SLOT(showMessage(const QString&, int)));
@@ -31,7 +28,7 @@ AirCoolControll::~AirCoolControll()
 
 UART_ConnectionWindow * AirCoolControll::getUART_Configurator(void)
 {
-    return m_uartConnector;
+    return m_uartConnector.widget();
 }
 
 void AirCoolControll::showPreferencesDialog()
@@ -55,10 +52,9 @@ void AirCoolControll::hidePreferences(void)
 
 void AirCoolControll::showConnectDialog()
 {
-    ui.mdiArea->addSubWindow(m_uartConnectorMdi);
-    m_uartConnectorMdi->setWindowFlags(Qt::WindowCancelButtonHint | Qt::WindowMinimizeButtonHint | Qt::WindowSystemMenuHint);
-    m_uartConnectorMdi->setWindowIcon(QPixmap(":/Images/connect.png"));
-    m_uartConnectorMdi->show();
+    ui.mdiArea->addSubWindow(m_uartConnector);
+    m_uartConnector.operator QMdiSubWindow*()->setWindowIcon(QPixmap(":/Images/connect.png"));
+    m_uartConnector.operator QMdiSubWindow*()->show();
 }
 
 void AirCoolControll::showDisconnectDialog()
@@ -69,7 +65,6 @@ void AirCoolControll::showDisconnectDialog()
 void AirCoolControll::showConnectToHostDialog()
 {
     ui.mdiArea->addSubWindow(m_internetConnector);
-    m_internetConnector->setWindowFlags(Qt::WindowCancelButtonHint | Qt::WindowMinimizeButtonHint | Qt::WindowSystemMenuHint);
-    m_internetConnector->setWindowIcon(QPixmap(":/Images/connect.png"));
-    m_internetConnector->show();
+    m_internetConnector.operator QMdiSubWindow*()->setWindowIcon(QPixmap(":/Images/connect_to_host.png"));
+    m_internetConnector.operator QMdiSubWindow*()->show();
 }

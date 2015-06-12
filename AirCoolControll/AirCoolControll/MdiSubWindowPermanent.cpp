@@ -5,6 +5,7 @@ MdiSubWindowPermanent::MdiSubWindowPermanent(QWidget *child,QWidget *parent)
 {
     setWidget(child);
     hide();
+    setWindowFlags(Qt::WindowCancelButtonHint | Qt::WindowMinimizeButtonHint | Qt::WindowSystemMenuHint);
 }
 
 MdiSubWindowPermanent::~MdiSubWindowPermanent()

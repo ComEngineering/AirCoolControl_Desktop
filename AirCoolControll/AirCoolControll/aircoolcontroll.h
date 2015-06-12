@@ -9,7 +9,7 @@
 #include "Cooller_ModbusController.h"
 #include "PreferencesWindow.h"
 #include "ExternalConnectionWindow.h"
-#include "MdiSubWindowPermanent.h"
+#include "MdiContainer.h"
 
 class AirCoolControll : public QMainWindow
 {
@@ -33,10 +33,8 @@ private:
     Cooller_ModBusController* m_comunicator; 
     QMdiSubWindow*            m_preferences;
 
-    UART_ConnectionWindow*    m_uartConnector;
-    MdiSubWindowPermanent*    m_uartConnectorMdi;
-
-    ExternalConnectionWindow* m_internetConnector;
+    MdiContainer<UART_ConnectionWindow>    m_uartConnector;
+    MdiContainer<ExternalConnectionWindow> m_internetConnector;
 };
 
 #endif // AIRCOOLCONTROLL_H

@@ -414,6 +414,9 @@
     <ClInclude Include="GeneratedFiles\ui_UART_ConnectionWindow.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="MdiContainer.h">
+      <Filter>Header Files\Widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="..\..\configs\TEKO_COOLER_0_0_1.xml" />
