@@ -1,15 +1,26 @@
 #include "aircoolcontroll.h"
+#include "Cooller_ModbusController.h"
 
 AirCoolControll::AirCoolControll(QWidget *parent)
     : QMainWindow(parent),
     m_preferences(NULL),
     m_uartConnector(this),
-    m_internetConnector(this)
+    m_internetConnector(this),
+    m_connectionLog(this)
 {
     ui.setupUi(this);
 
     m_comunicator = new Cooller_ModBusController(this);
+    m_uartConnector.widget<UART_ConnectionWindow>()->setController(m_comunicator);
     connect(m_comunicator, SIGNAL(newStatus(const QString&)), ui.statusBar, SLOT(showMessage(const QString&, int)));
+
+    m_uartConnector.container<UART_ConnectionWindow>()->setWindowIcon(QPixmap(":/Images/connect.png"));
+    ui.mdiArea->addSubWindow(m_uartConnector.container<UART_ConnectionWindow>());
+
+    m_internetConnector.container<ExternalConnectionWindow>()->setWindowIcon(QPixmap(":/Images/connect_to_host.png"));
+    ui.mdiArea->addSubWindow(m_internetConnector.container<ExternalConnectionWindow>());
+
+    ui.mdiArea->addSubWindow(m_connectionLog.container<ConnectionLog>());
   
    ///  Toolbox actions  ///////////////////////////////////////////////////////////////
 
@@ -26,9 +37,14 @@ AirCoolControll::~AirCoolControll()
    
 }
 
-UART_ConnectionWindow * AirCoolControll::getUART_Configurator(void)
+UART_ConnectionWindow * AirCoolControll::getUART_Configurator(void) const
 {
-    return m_uartConnector.widget();
+    return m_uartConnector.widget<UART_ConnectionWindow>();
+}
+
+ConnectionLog * AirCoolControll::getConnectionLog(void) const
+{
+    return m_connectionLog.widget<ConnectionLog>();
 }
 
 void AirCoolControll::showPreferencesDialog()
@@ -52,9 +68,7 @@ void AirCoolControll::hidePreferences(void)
 
 void AirCoolControll::showConnectDialog()
 {
-    ui.mdiArea->addSubWindow(m_uartConnector);
-    m_uartConnector.operator QMdiSubWindow*()->setWindowIcon(QPixmap(":/Images/connect.png"));
-    m_uartConnector.operator QMdiSubWindow*()->show();
+    m_uartConnector.activate();
 }
 
 void AirCoolControll::showDisconnectDialog()
@@ -64,7 +78,10 @@ void AirCoolControll::showDisconnectDialog()
 
 void AirCoolControll::showConnectToHostDialog()
 {
-    ui.mdiArea->addSubWindow(m_internetConnector);
-    m_internetConnector.operator QMdiSubWindow*()->setWindowIcon(QPixmap(":/Images/connect_to_host.png"));
-    m_internetConnector.operator QMdiSubWindow*()->show();
+    m_internetConnector.activate();
+}
+
+void AirCoolControll::showDeviceLog()
+{
+    m_connectionLog.activate();
 }

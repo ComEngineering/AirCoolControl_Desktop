@@ -1,5 +1,6 @@
 #include "ExternalConnectionWindow.h"
 #include "Configurator.h"
+#include "externalconnector.h"
 
 ExternalConnectionWindow::ExternalConnectionWindow(QWidget *parent)
     : QWidget(parent),

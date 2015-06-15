@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>430</width>
+    <width>512</width>
     <height>155</height>
    </rect>
   </property>
@@ -37,7 +37,20 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="comboBoxCOM"/>
+          <widget class="QComboBox" name="comboBoxCOM">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>200</width>
+             <height>0</height>
+            </size>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -71,22 +84,22 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
-          <widget class="QSpinBox" name="spinBoxID">
-           <property name="minimum">
-            <number>1</number>
-           </property>
-           <property name="maximum">
-            <number>127</number>
-           </property>
-          </widget>
-         </item>
-         <item>
           <widget class="QLabel" name="label_3">
            <property name="text">
             <string>Device ID</string>
            </property>
            <property name="buddy">
             <cstring>spinBoxID</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QSpinBox" name="spinBoxID">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>127</number>
            </property>
           </widget>
          </item>
@@ -129,14 +142,6 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>QMdiSubWindow</class>
-   <extends>QWidget</extends>
-   <header>qmdisubwindow.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

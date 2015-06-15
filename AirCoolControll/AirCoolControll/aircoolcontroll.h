@@ -4,12 +4,14 @@
 #include <QtWidgets/QMainWindow>
 #include <qmdisubwindow.h>
 #include "ui_aircoolcontroll.h"
-#include "modbusdialog.h"
 #include "coolerstatewidget.h"
-#include "Cooller_ModbusController.h"
 #include "PreferencesWindow.h"
 #include "ExternalConnectionWindow.h"
+#include "UART_ConnectionWindow.h"
+#include "connectionlog.h"
 #include "MdiContainer.h"
+
+class Cooller_ModBusController;
 
 class AirCoolControll : public QMainWindow
 {
@@ -19,7 +21,11 @@ public:
     AirCoolControll(QWidget *parent = 0);
     ~AirCoolControll();
 
-    UART_ConnectionWindow * getUART_Configurator(void);
+    UART_ConnectionWindow * getUART_Configurator(void) const;
+    ConnectionLog * getConnectionLog(void) const;
+
+public slots:
+    void showDeviceLog();
 
 private slots:
     void showPreferencesDialog();
@@ -29,12 +35,13 @@ private slots:
     void hidePreferences();
 
 private:
-    Ui::AirCoolControllClass  ui;
-    Cooller_ModBusController* m_comunicator; 
-    QMdiSubWindow*            m_preferences;
+    Ui::AirCoolControllClass               ui;
+    Cooller_ModBusController*              m_comunicator; 
+    QMdiSubWindow*                         m_preferences;
 
     MdiContainer<UART_ConnectionWindow>    m_uartConnector;
     MdiContainer<ExternalConnectionWindow> m_internetConnector;
+    MdiContainer<ConnectionLog>            m_connectionLog;
 };
 
 #endif // AIRCOOLCONTROLL_H

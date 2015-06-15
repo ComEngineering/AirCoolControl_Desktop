@@ -65,12 +65,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_connectionlog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_modbusdialog.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_modbusdialog.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_coolerstatewidget.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -129,9 +123,6 @@
       <Filter>Source Files\Widgets</Filter>
     </ClCompile>
     <ClCompile Include="iplineedit.cpp">
-      <Filter>Source Files\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="modbusdialog.cpp">
       <Filter>Source Files\Widgets</Filter>
     </ClCompile>
     <ClCompile Include="externalconnector.cpp">
@@ -274,9 +265,6 @@
     <CustomBuild Include="connectionlog.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="modbusdialog.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="coolerstatewidget.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
@@ -293,9 +281,6 @@
       <Filter>Header Files\Widgets</Filter>
     </CustomBuild>
     <CustomBuild Include="iplineedit.h">
-      <Filter>Header Files\Widgets</Filter>
-    </CustomBuild>
-    <CustomBuild Include="modbusdialog.h">
       <Filter>Header Files\Widgets</Filter>
     </CustomBuild>
     <CustomBuild Include="externalconnector.h">
@@ -370,9 +355,6 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_connectionlog.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_modbusdialog.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_coolerstatewidget.h">

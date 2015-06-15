@@ -1,13 +1,14 @@
 #ifndef __Cooller_ModBusController__
 #define __Cooller_ModBusController__
 
-#include "coolerstatewidget.h"
-#include "modbusdialog.h"
-#include "externalcontrollmanager.h"
+
 #include <QtSerialPort\qserialportinfo.h>
 #include <QtSerialPort\qserialport.h>
 #include <qtimer.h>
 #include <memory>
+#include "coolerstatewidget.h"
+#include "externalcontrollmanager.h"
+#include "externalconnector.h"
 #include "DeviceExplorer.h"
 #include "ModbusDriver.h"
 #include "UART_DeviceStorage.h"
@@ -22,6 +23,8 @@ public:
     Cooller_ModBusController(AirCoolControll* mainWindow);
     ~Cooller_ModBusController();
 
+    void performConnection(int uart_number, int deviceIndex, int speedIndex);
+
 private:
     void checkConnectionState(void);
     static bool equalPredicat(QSerialPortInfo& first,QSerialPortInfo& second);
@@ -32,7 +35,6 @@ private:
 
 private slots:
     void updateState(void);
-    
     void sendConfiguration(void);
     void externalStateChanged(void);
     void externalListChanged(void);

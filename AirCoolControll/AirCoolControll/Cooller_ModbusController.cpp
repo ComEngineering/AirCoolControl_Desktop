@@ -4,7 +4,6 @@
     #define  _D_SCL_SECURE_NO_WARNINGS
 #endif
 
-
 #include <QtSerialPort\qserialportinfo.h>
 #include <qstring>
 #include <qobject>
@@ -70,7 +69,7 @@ Cooller_ModBusController::Cooller_ModBusController(AirCoolControll* mainWindow) 
         m_explorers.setConfigList(&m_configs);
     }
 
-  //  m_configDialog->setDeviceList(&m_explorers);
+    m_mainWindow->getConnectionLog()->setDeviceList(&m_explorers);
 }
 
 
@@ -100,7 +99,8 @@ void Cooller_ModBusController::addDevice(DeviceInfoShared info)
     else
     {
         m_explorers.addDevice(info);
-        //m_configDialog->refreshDeviceList();
+        m_mainWindow->getConnectionLog()->updateContent();
+        m_mainWindow->showDeviceLog();
     }
 }
 
@@ -148,16 +148,15 @@ void Cooller_ModBusController::checkConnectionState(void)
     }
 }
 
-void Cooller_ModBusController::newDevice()
+void Cooller_ModBusController::performConnection(int uart_number, int deviceIndex, int speedIndex)
 {
-    int com_index = m_mainWindow->getUART_Configurator()->getCOMindex();
-    if (-1 == com_index)
+    if (-1 == deviceIndex)
         return;
 
-    ModbusDriverShared modbus = m_info.getDriver(com_index);
+    ModbusDriverShared modbus = m_info.getDriver(uart_number);
     if (modbus->readyToWork())
     {
-        modbus->requestDeviceAproval(com_index);
+        modbus->requestDeviceAproval(deviceIndex);
     }
 }
 

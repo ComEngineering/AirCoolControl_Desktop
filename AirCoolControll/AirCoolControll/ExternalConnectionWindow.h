@@ -3,7 +3,9 @@
 
 #include <QWidget>
 #include "ui_ExternalConnectionWindow.h"
-#include "externalconnector.h"
+
+
+class ExternalConnector;
 
 class ExternalConnectionWindow : public QWidget
 {
