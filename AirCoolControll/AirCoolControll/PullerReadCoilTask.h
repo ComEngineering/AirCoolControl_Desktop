@@ -7,7 +7,7 @@ class PullerReadCoilTask :
     public PullerReadTask
 {
 public:
-    PullerReadCoilTask(int id, Interval& range);
+    PullerReadCoilTask(int id, int speed, Interval& range);
     ~PullerReadCoilTask();
 
     bool proceed(ModBusUART_Impl* modbus);

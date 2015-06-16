@@ -3,8 +3,8 @@
 #include "Configurator.h"
 
 
-PullerWriteTask::PullerWriteTask(int id, int regNumber, int value) :
-    PullerTaskBase(id),
+PullerWriteTask::PullerWriteTask(int id, int speed, int regNumber, int value) :
+    PullerTaskBase(id,speed),
     m_regNumber(regNumber),
     m_value(value)
 {
@@ -20,7 +20,7 @@ bool PullerWriteTask::proceed(ModBusUART_Impl* modbus)
 {
     bool rc = true;
 
-    if (!modbus->writeRegister(getID(), m_regNumber, m_value))
+    if (!modbus->writeRegister(getID(), getSpeed(), m_regNumber, m_value))
     {
         if (m_failCounter++ <  Configurator::getRetryCount())  
             rc = false;

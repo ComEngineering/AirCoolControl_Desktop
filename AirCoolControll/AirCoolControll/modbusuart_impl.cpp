@@ -17,7 +17,7 @@ ModBusUART_Impl::~ModBusUART_Impl()
     QMutexLocker locker(&m_mutex);
 }
 
-bool ModBusUART_Impl::startRequest(void)
+bool ModBusUART_Impl::startRequest(int speed)
 {
     if (m_port.open(QIODevice::ReadWrite)) 
     {
@@ -26,7 +26,7 @@ bool ModBusUART_Impl::startRequest(void)
             m_port.setFlowControl(QSerialPort::NoFlowControl) &&
             m_port.setStopBits(QSerialPort::OneStop) &&
             m_port.setParity(QSerialPort::NoParity) &&
-            m_port.setBaudRate(QSerialPort::Baud9600);
+            m_port.setBaudRate(speed);
     }
    
     return false;
@@ -37,14 +37,9 @@ void ModBusUART_Impl::stopRequest(void)
     m_port.close();
 }
 
-void ModBusUART_Impl::setSpeed(int speed)
+bool ModBusUART_Impl::readRegisterPool(quint16 id, int speed, quint16 regNumber, quint16 regCount,QVector<quint16>& o_list)
 {
-    m_port.setBaudRate(speed);
-}
-
-bool ModBusUART_Impl::readRegisterPool(quint16 id, quint16 regNumber, quint16 regCount,QVector<quint16>& o_list)
-{
-    if (!startRequest())
+    if (!startRequest(speed))
         return false;
 
     bool rc = false;
@@ -96,9 +91,9 @@ bool ModBusUART_Impl::readRegisterPool(quint16 id, quint16 regNumber, quint16 re
     return rc;
 }
 
-bool ModBusUART_Impl::writeRegister(quint16 id, quint16 regNumber, quint16 value)
+bool ModBusUART_Impl::writeRegister(quint16 id, int speed, quint16 regNumber, quint16 value)
 {
-    if (!startRequest())
+    if (!startRequest(speed))
         return false;
 
     bool rc = false;
@@ -139,9 +134,9 @@ bool ModBusUART_Impl::writeRegister(quint16 id, quint16 regNumber, quint16 value
     return rc;
 }
 
-bool ModBusUART_Impl::readCoilPool(quint16 id, quint16 regNumber, quint16 coilCount, QVector<quint16>& o_list)
+bool ModBusUART_Impl::readCoilPool(quint16 id, int speed, quint16 regNumber, quint16 coilCount, QVector<quint16>& o_list)
 {
-    if (!startRequest())
+    if (!startRequest(speed))
         return false;
 
     bool rc = false;
@@ -194,9 +189,9 @@ bool ModBusUART_Impl::readCoilPool(quint16 id, quint16 regNumber, quint16 coilCo
     return rc;
 }
 
-bool ModBusUART_Impl::writeCoil(quint16 id, quint16 regNumber, bool state)
+bool ModBusUART_Impl::writeCoil(quint16 id, int speed, quint16 regNumber, bool state)
 {
-    if (!startRequest())
+    if (!startRequest(speed))
         return false;
 
     bool rc = false;
@@ -236,9 +231,9 @@ bool ModBusUART_Impl::writeCoil(quint16 id, quint16 regNumber, bool state)
     return rc;
 }
 
-bool ModBusUART_Impl::readDeviceInfo(quint16 id, QString& vendor, QString& product, QString& version)
+bool ModBusUART_Impl::readDeviceInfo(quint16 id, int speed, QString& vendor, QString& product, QString& version)
 {
-    if (!startRequest())
+    if (!startRequest(speed))
         return false;
 
     bool rc = false;

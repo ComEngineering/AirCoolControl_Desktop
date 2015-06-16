@@ -24,7 +24,7 @@ private slots:
     void removeAllConnection(void);
 
 private:
-    void sellectionChanged();
+    void sellectionChanged(int n);
 
 private:
     Ui::ConnectionLog ui;

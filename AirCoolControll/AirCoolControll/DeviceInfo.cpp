@@ -1,8 +1,9 @@
 #include "DeviceInfo.h"
 
-DeviceInfo::DeviceInfo(const QString& uart, int id, const QString& ven, const QString& p, const QString& ver) :
+DeviceInfo::DeviceInfo(const QString& uart, int id, int speed, const QString& ven, const QString& p, const QString& ver) :
     m_uart(uart),
     m_id(id),
+    m_speed(speed),
     m_vendor(ven),
     m_product(p),
     m_version(ver),

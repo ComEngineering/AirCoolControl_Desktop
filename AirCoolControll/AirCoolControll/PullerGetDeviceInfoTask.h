@@ -8,7 +8,7 @@ class PullerGetDeviceInfoTask :
     public PullerTaskBase 
 {
 public:
-    PullerGetDeviceInfoTask(int id,const QString& uartName,ModbusDriver::detectionCallback cb);
+    PullerGetDeviceInfoTask(int id,int speed,const QString& uartName,ModbusDriver::detectionCallback cb);
     virtual ~PullerGetDeviceInfoTask();
 
     bool proceed(ModBusUART_Impl* modbus);

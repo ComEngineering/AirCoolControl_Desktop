@@ -23,6 +23,7 @@ public:
 
     UART_ConnectionWindow * getUART_Configurator(void) const;
     ConnectionLog * getConnectionLog(void) const;
+    QMdiArea*    getMdiArea(void) const;
 
 public slots:
     void showDeviceLog();

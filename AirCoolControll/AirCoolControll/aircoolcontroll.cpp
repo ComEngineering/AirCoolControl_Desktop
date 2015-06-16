@@ -10,6 +10,8 @@ AirCoolControll::AirCoolControll(QWidget *parent)
 {
     ui.setupUi(this);
 
+    setWindowState(windowState() ^ Qt::WindowMaximized);
+
     m_comunicator = new Cooller_ModBusController(this);
     m_uartConnector.widget<UART_ConnectionWindow>()->setController(m_comunicator);
     connect(m_comunicator, SIGNAL(newStatus(const QString&)), ui.statusBar, SLOT(showMessage(const QString&, int)));
@@ -35,6 +37,11 @@ AirCoolControll::AirCoolControll(QWidget *parent)
 AirCoolControll::~AirCoolControll()
 {
    
+}
+
+QMdiArea*    AirCoolControll::getMdiArea(void) const
+{
+    return ui.mdiArea;
 }
 
 UART_ConnectionWindow * AirCoolControll::getUART_Configurator(void) const
@@ -68,6 +75,10 @@ void AirCoolControll::hidePreferences(void)
 
 void AirCoolControll::showConnectDialog()
 {
+    QSize mainWindowSize = ui.mdiArea->frameSize();
+    QMdiSubWindow* container = m_uartConnector.container<UART_ConnectionWindow>();
+    QSize connectorSize = container->frameSize();
+    container->move(mainWindowSize.width() / 2 - connectorSize.width() / 2, mainWindowSize.height() / 2 - connectorSize.height() / 2);
     m_uartConnector.activate();
 }
 

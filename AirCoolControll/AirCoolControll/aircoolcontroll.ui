@@ -2,22 +2,14 @@
 <ui version="4.0">
  <class>AirCoolControllClass</class>
  <widget class="QMainWindow" name="AirCoolControllClass">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1200</width>
-    <height>685</height>
-   </rect>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>1200</width>
-    <height>685</height>
-   </size>
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
   </property>
   <property name="windowTitle">
-   <string>AirCoolControll</string>
+   <string notr="true">Air Cool Controll</string>
+  </property>
+  <property name="dockNestingEnabled">
+   <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -31,7 +23,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1200</width>
+     <width>658</width>
      <height>21</height>
     </rect>
    </property>

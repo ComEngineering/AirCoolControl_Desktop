@@ -6,7 +6,7 @@
 #include <QtSerialPort\qserialport.h>
 #include <qtimer.h>
 #include <memory>
-#include "coolerstatewidget.h"
+
 #include "externalcontrollmanager.h"
 #include "externalconnector.h"
 #include "DeviceExplorer.h"
@@ -29,9 +29,9 @@ private:
     void checkConnectionState(void);
     static bool equalPredicat(QSerialPortInfo& first,QSerialPortInfo& second);
     bool readXMLConfig(const QString& path);
-    void updateStateWidget(void);
     void allertError(QString errorDescription);
     void newDevice();
+    int  speedIndexToSpeed(int speedIndex);
 
 private slots:
     void updateState(void);
@@ -39,8 +39,6 @@ private slots:
     void externalStateChanged(void);
     void externalListChanged(void);
     void addDevice(DeviceInfoShared info);
-    void setActiveDevice(void);
-    void sendValueToDevice(int,QString&, int);
 
 signals:
     void newStatus(const QString&);
@@ -55,7 +53,6 @@ private:
     ConfigList              m_configs;
     
     ConnectedDeviceStorage  m_explorers;
-    DeviceExplorerShared    m_currentDevice;
 };
 
 #endif // __Cooller_ModBusController__

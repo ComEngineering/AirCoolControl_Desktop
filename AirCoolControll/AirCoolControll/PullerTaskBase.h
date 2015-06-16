@@ -10,16 +10,18 @@ class PullerTaskBase
 {
 
 public:
-    PullerTaskBase(int id);
+    PullerTaskBase(int id,int speed = 9600);
     virtual ~PullerTaskBase();
 
     virtual bool proceed(ModBusUART_Impl* modbus) = 0;
     virtual bool isItTimeToDo(void) const { return true; }
 
     int  getID() const;
+    int  getSpeed() const;
 
 private:
     int                      m_id;
+    int                      m_speed;
     
 protected:
     int                      m_failCounter;

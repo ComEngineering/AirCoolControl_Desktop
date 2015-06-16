@@ -44,10 +44,7 @@ Cooller_ModBusController::Cooller_ModBusController(AirCoolControll* mainWindow) 
 
     qRegisterMetaType<DeviceInfoShared>("DeviceInfoShared");
     connect(&m_info, SIGNAL(deviceDetected(DeviceInfoShared)), this, SLOT(addDevice(DeviceInfoShared)));
-    connect(&m_explorers, SIGNAL(activeChanged(void)), this, SLOT(setActiveDevice(void)));
-
- //   connect(m_view, SIGNAL(newRegisterValue(int,QString&, int)), this, SLOT(sendValueToDevice(int,QString&, int)));
-
+    
     connect(&m_info, SIGNAL(uartDisconnected(const QString&)), &m_explorers, SLOT(removeDevicesWithUART(const QString&)));
 
     QString configsPath = Configurator::getConfigFilesPath();
@@ -70,6 +67,7 @@ Cooller_ModBusController::Cooller_ModBusController(AirCoolControll* mainWindow) 
     }
 
     m_mainWindow->getConnectionLog()->setDeviceList(&m_explorers);
+    m_explorers.setMdiArea(mainWindow->getMdiArea());
 }
 
 
@@ -83,7 +81,7 @@ void Cooller_ModBusController::updateState(void)
 {
     checkConnectionState();
 
-    updateStateWidget();
+    m_explorers.updateDeviceTick();
 }
 
 void Cooller_ModBusController::allertError(QString errorDescription)
@@ -148,15 +146,22 @@ void Cooller_ModBusController::checkConnectionState(void)
     }
 }
 
+int  Cooller_ModBusController::speedIndexToSpeed(int speedIndex)
+{
+    return 9600; // TO DO convert
+}
+
 void Cooller_ModBusController::performConnection(int uart_number, int deviceIndex, int speedIndex)
 {
     if (-1 == deviceIndex)
         return;
 
+    int speed = speedIndexToSpeed(speedIndex);
+
     ModbusDriverShared modbus = m_info.getDriver(uart_number);
     if (modbus->readyToWork())
     {
-        modbus->requestDeviceAproval(deviceIndex);
+        modbus->requestDeviceAproval(deviceIndex,speed);
     }
 }
 
@@ -255,55 +260,3 @@ bool Cooller_ModBusController::readXMLConfig(const QString& path)
     return true;
 }
 
-void Cooller_ModBusController::updateStateWidget()
-{
-    if (m_currentDevice)
-    {
-        for (ConfigMap::RegisterType it = ConfigMap::REGISTER_PULL_FIRST; it < ConfigMap::REGISTER_PULL_COUNT; ConfigMap::NEXT(it))
-        {
-            const ConfigMap::ParameterList& parameters = m_currentDevice->getCurrentConfig()->getParametersList(it);
-            
-            for (int i = 0; i < parameters.size(); i++)
-            {
-                int value;
-                if (m_currentDevice->getRegisterValue(parameters[i].first, value))
-                {
-//                    m_view->updateParameter(i, value, it);
-                }
-            }
-        }
-    }
-}
-
-void Cooller_ModBusController::setActiveDevice(void)
-{
-    //DeviceInfoShared info = m_explorers.getActiveDevice();
-    //m_currentDevice = info ? info->getExplorer() : NULL;
-    //if (m_currentDevice)
-    //{
-    //    for (ConfigMap::RegisterType i = ConfigMap::REGISTER_PULL_FIRST; i < ConfigMap::REGISTER_PULL_COUNT; ConfigMap::NEXT(i))
-    //        m_view->setParameterList(m_currentDevice->getCurrentConfig()->getParametersList(i), i);
-    //}
-    //else
-    //{
-    //    m_view->clear();
-    //}
-    //m_configDialog->refreshDeviceList();
-}
-
-void Cooller_ModBusController::sendValueToDevice(int registerType,QString& name, int v)
-{
-    if (m_currentDevice)
-    {
-        switch (static_cast<ConfigMap::RegisterType>(registerType))
-        {
-        case ConfigMap::OUTPUT_REGISTER :
-            m_currentDevice->setRegisterValue(name.toStdString(), v);
-            break;
-        case ConfigMap::COIL :
-            m_currentDevice->setCoilState(name.toStdString(), static_cast<bool>(v));
-            break;
-        }
-        
-    }
-}

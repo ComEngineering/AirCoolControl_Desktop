@@ -69,6 +69,7 @@ void UART_ConnectionWindow::connectPressed(void)
 {
     if (m_controller)
         m_controller->performConnection(ui.comboBoxCOM->currentIndex(), ui.spinBoxID->value(), ui.comboBoxSpeed->currentIndex());
+    parentWidget()->close();
 }
 
 void UART_ConnectionWindow::setExternalPorts(const QList<QString>& list)

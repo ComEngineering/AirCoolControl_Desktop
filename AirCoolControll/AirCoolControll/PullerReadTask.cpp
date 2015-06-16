@@ -4,8 +4,8 @@
 #include "Configurator.h"
 
 
-PullerReadTask::PullerReadTask(int id,Interval& range) :
-    PullerTaskBase(id),
+PullerReadTask::PullerReadTask(int id,int speed,Interval& range) :
+    PullerTaskBase(id,speed),
     m_range(range),
     m_mutex(new QMutex())
 {
@@ -43,7 +43,7 @@ void PullerReadTask::setContent(const QVector<quint16>& list)
 bool PullerReadTask::proceed(ModBusUART_Impl* modbus)
 {
     QVector<quint16> res;
-    if (modbus->readRegisterPool(getID(), m_range.first, m_range.second - m_range.first + 1, res))
+    if (modbus->readRegisterPool(getID(), getSpeed(), m_range.first, m_range.second - m_range.first + 1, res))
     {
         setContent(res);
         m_lastSuccessfullAttemptTime = boost::posix_time::microsec_clock::local_time();

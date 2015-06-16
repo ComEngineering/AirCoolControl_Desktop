@@ -64,18 +64,18 @@ void ConnectionLog::updateContent(void)
 
         currentRow++;
     }
-    sellectionChanged();
+   // sellectionChanged();
 }
 
 void ConnectionLog::cellSelected(int row, int column)
 {
     m_devices->setActiveIndex(row);
-    sellectionChanged();
+    sellectionChanged(row);
 }
 
-void ConnectionLog::sellectionChanged()
+void ConnectionLog::sellectionChanged(int n)
 {
-    int nsel = m_devices->getActiveIndex();
+    int nsel = n;
     int nc = ui.tableWidget->rowCount();
     if (nsel == -1 || nsel >= nc)
         return;

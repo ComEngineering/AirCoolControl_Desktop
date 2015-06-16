@@ -11,7 +11,7 @@ class PullerReadTask : public PullerTaskBase
 {
 
 public:
-    PullerReadTask(int id, Interval& range);
+    PullerReadTask(int id, int speed, Interval& range);
     virtual ~PullerReadTask();
 
     bool proceed(ModBusUART_Impl* modbus);

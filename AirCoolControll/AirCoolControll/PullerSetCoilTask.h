@@ -7,7 +7,7 @@ class PullerSetCoilTask :
     public PullerTaskBase
 {
 public:
-    PullerSetCoilTask(int id, int regNumber, bool value);
+    PullerSetCoilTask(int id, int speed, int regNumber, bool value);
     ~PullerSetCoilTask();
 
     bool proceed(ModBusUART_Impl* modbus);
