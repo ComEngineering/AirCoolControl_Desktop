@@ -5,6 +5,14 @@
   <property name="windowModality">
    <enum>Qt::ApplicationModal</enum>
   </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1298</width>
+    <height>811</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string notr="true">Air Cool Controll</string>
   </property>
@@ -23,7 +31,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>658</width>
+     <width>1298</width>
      <height>21</height>
     </rect>
    </property>
@@ -67,6 +75,21 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionPreferences"/>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget">
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::BottomDockWidgetArea|Qt::TopDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Connected device list</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>8</number>
+   </attribute>
+   <widget class="ConnectionLog" name="deviceExplorerContent"/>
   </widget>
   <action name="actionConnect_to_device">
    <property name="icon">
@@ -121,6 +144,14 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>ConnectionLog</class>
+   <extends>QWidget</extends>
+   <header>connectionlog.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="aircoolcontroll.qrc"/>
  </resources>

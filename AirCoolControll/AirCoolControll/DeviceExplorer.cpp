@@ -24,6 +24,7 @@ DeviceExplorer::DeviceExplorer(const ConfigMapShared config, ModbusDriverShared 
             m_modbus->addPullerReadTask(m_registers[i]);
             m_localPull[i].resize(a_int.second - a_int.first + 1);
             m_view->setParameterList(m_currentMap->getParametersList(i), i);
+            m_registers[i]->setListener(this);
         }
     }
     connect(m_view, SIGNAL(newRegisterValue(int, QString&, int)), this, SLOT(sendValueToDevice(int, QString&, int)));
@@ -52,8 +53,6 @@ bool  DeviceExplorer::getRegisterValue(const std::string & key,int& value)
     if (m_registers[a_type] == NULL)
         return false;
 
-    if (m_registers[a_type]->isContentChanged())
-        m_registers[a_type]->getContent(m_localPull[a_type]);
     value = m_currentMap->getValue(key, m_localPull[a_type]);
     
     return true;
@@ -128,4 +127,16 @@ void DeviceExplorer::activateView(QMdiArea * area)
     m_mdi->show();
     m_mdi->setFocus();
     area->setActiveSubWindow(m_mdi);
+}
+
+void DeviceExplorer::somethingChanged()
+{
+    for (ConfigMap::RegisterType i = ConfigMap::REGISTER_PULL_FIRST; i < ConfigMap::REGISTER_PULL_COUNT; ConfigMap::NEXT(i))
+    {
+        if (m_registers[i]->isContentChanged())
+        {
+            m_registers[i]->getContent(m_localPull[i]);
+            break;
+        }
+    }
 }

@@ -26,7 +26,6 @@ public:
     QMdiArea*    getMdiArea(void) const;
 
 public slots:
-    void showDeviceLog();
 
 private slots:
     void showPreferencesDialog();
@@ -42,7 +41,6 @@ private:
 
     MdiContainer<UART_ConnectionWindow>    m_uartConnector;
     MdiContainer<ExternalConnectionWindow> m_internetConnector;
-    MdiContainer<ConnectionLog>            m_connectionLog;
 };
 
 #endif // AIRCOOLCONTROLL_H

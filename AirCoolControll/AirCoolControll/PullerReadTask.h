@@ -7,6 +7,8 @@
 #include  "Interval.h"
 #include  "PullerTaskBase.h"
 
+class DeviceExplorer;
+
 class PullerReadTask : public PullerTaskBase
 {
 
@@ -21,12 +23,15 @@ public:
     void getContent(QVector<quint16>& list);
     void setContent(const QVector<quint16>& list);
 
+    void setListener(DeviceExplorer* listener) { m_listener = listener; }
+
 protected:
     Interval                 m_range;
 private:
     QVector<quint16>         m_pull;
     bool                     m_isUpdated;
     mutable QMutex *         m_mutex;
+    DeviceExplorer *         m_listener;
 };
 
 typedef std::shared_ptr<PullerReadTask> PullerReadTaskShared;

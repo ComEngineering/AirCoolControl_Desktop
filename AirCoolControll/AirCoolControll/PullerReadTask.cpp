@@ -2,12 +2,14 @@
 #include <QMutexLocker>
 #include "modbusuart_impl.h"
 #include "Configurator.h"
+#include "DeviceExplorer.h"
 
 
 PullerReadTask::PullerReadTask(int id,int speed,Interval& range) :
     PullerTaskBase(id,speed),
     m_range(range),
-    m_mutex(new QMutex())
+    m_mutex(new QMutex()),
+    m_listener(NULL)
 {
     m_pull.resize(range.second - range.first + 1);
 }
@@ -34,9 +36,20 @@ void PullerReadTask::setContent(const QVector<quint16>& list)
 {
     if (list.size() == m_pull.size())
     {
-        QMutexLocker lock(m_mutex);
-        m_isUpdated = true;
-        m_pull = list;
+        for (QVector<quint16>::const_iterator it = list.begin(), it2 = m_pull.begin(); it != list.end(); it++, it2++)
+        {
+            if (*it != *it2)
+            {
+                {
+                    QMutexLocker lock(m_mutex);
+                    m_isUpdated = true;
+                    m_pull = list;
+                }
+                if (m_listener)
+                    m_listener->somethingChanged();
+                break;
+            }
+        }
     }
 }
 

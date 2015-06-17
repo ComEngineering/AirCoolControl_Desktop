@@ -98,7 +98,6 @@ void Cooller_ModBusController::addDevice(DeviceInfoShared info)
     {
         m_explorers.addDevice(info);
         m_mainWindow->getConnectionLog()->updateContent();
-        m_mainWindow->showDeviceLog();
     }
 }
 

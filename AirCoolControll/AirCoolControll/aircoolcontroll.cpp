@@ -5,8 +5,7 @@ AirCoolControll::AirCoolControll(QWidget *parent)
     : QMainWindow(parent),
     m_preferences(NULL),
     m_uartConnector(this),
-    m_internetConnector(this),
-    m_connectionLog(this)
+    m_internetConnector(this)
 {
     ui.setupUi(this);
 
@@ -22,8 +21,6 @@ AirCoolControll::AirCoolControll(QWidget *parent)
     m_internetConnector.container<ExternalConnectionWindow>()->setWindowIcon(QPixmap(":/Images/connect_to_host.png"));
     ui.mdiArea->addSubWindow(m_internetConnector.container<ExternalConnectionWindow>());
 
-    ui.mdiArea->addSubWindow(m_connectionLog.container<ConnectionLog>());
-  
    ///  Toolbox actions  ///////////////////////////////////////////////////////////////
 
     connect(ui.actionPreferences, SIGNAL(triggered(void)), this, SLOT(showPreferencesDialog()));
@@ -51,7 +48,7 @@ UART_ConnectionWindow * AirCoolControll::getUART_Configurator(void) const
 
 ConnectionLog * AirCoolControll::getConnectionLog(void) const
 {
-    return m_connectionLog.widget<ConnectionLog>();
+    return ui.deviceExplorerContent;
 }
 
 void AirCoolControll::showPreferencesDialog()
@@ -90,9 +87,4 @@ void AirCoolControll::showDisconnectDialog()
 void AirCoolControll::showConnectToHostDialog()
 {
     m_internetConnector.activate();
-}
-
-void AirCoolControll::showDeviceLog()
-{
-    m_connectionLog.activate();
 }

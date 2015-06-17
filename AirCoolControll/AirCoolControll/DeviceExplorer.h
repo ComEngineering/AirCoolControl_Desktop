@@ -36,6 +36,8 @@ public:
 
     void activateView(QMdiArea * area);
 
+    void somethingChanged();
+
 private slots:
     void sendValueToDevice(int, QString&, int);
 
