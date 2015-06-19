@@ -1,13 +1,13 @@
 #ifndef EXTERNALCONNECTIONWINDOW_H
 #define EXTERNALCONNECTIONWINDOW_H
 
-#include <QWidget>
+#include <QDialog>
 #include "ui_ExternalConnectionWindow.h"
 
 
 class ExternalConnector;
 
-class ExternalConnectionWindow : public QWidget
+class ExternalConnectionWindow : public QDialog
 {
     Q_OBJECT
 

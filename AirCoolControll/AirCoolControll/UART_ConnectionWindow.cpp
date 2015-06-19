@@ -3,7 +3,7 @@
 #include "aircoolcontroll.h"
 
 UART_ConnectionWindow::UART_ConnectionWindow(QWidget *parent)
-    : QWidget(parent),
+    : QDialog(parent),
     m_controller(NULL)
 {
     ui.setupUi(this);
@@ -69,7 +69,7 @@ void UART_ConnectionWindow::connectPressed(void)
 {
     if (m_controller)
         m_controller->performConnection(ui.comboBoxCOM->currentIndex(), ui.spinBoxID->value(), ui.comboBoxSpeed->currentIndex());
-    parentWidget()->close();
+    close();
 }
 
 void UART_ConnectionWindow::setExternalPorts(const QList<QString>& list)

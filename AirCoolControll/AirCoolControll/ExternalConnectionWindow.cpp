@@ -3,7 +3,7 @@
 #include "externalconnector.h"
 
 ExternalConnectionWindow::ExternalConnectionWindow(QWidget *parent)
-    : QWidget(parent),
+    : QDialog(parent),
     m_connector(NULL)
 {
     ui.setupUi(this);

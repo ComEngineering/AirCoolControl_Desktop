@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>PreferencesWindow</class>
- <widget class="QWidget" name="PreferencesWindow">
+ <widget class="QDialog" name="PreferencesWindow">
   <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
+   <enum>Qt::WindowModal</enum>
   </property>
   <property name="geometry">
    <rect>
@@ -26,16 +26,20 @@
    </size>
   </property>
   <property name="contextMenuPolicy">
-   <enum>Qt::NoContextMenu</enum>
+   <enum>Qt::ActionsContextMenu</enum>
   </property>
   <property name="windowTitle">
    <string>Preferences</string>
   </property>
-  <property name="autoFillBackground">
-   <bool>false</bool>
+  <property name="windowIcon">
+   <iconset resource="aircoolcontroll.qrc">
+    <normaloff>:/Images/preferences.png</normaloff>:/Images/preferences.png</iconset>
   </property>
-  <property name="inputMethodHints">
-   <set>Qt::ImhNone</set>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -239,6 +243,8 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="aircoolcontroll.qrc"/>
+ </resources>
  <connections/>
 </ui>

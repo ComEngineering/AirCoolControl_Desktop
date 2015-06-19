@@ -18,6 +18,11 @@ DeviceInfo::DeviceInfo(const QString& uart, int id) :
 {
 }
 
+DeviceInfo::~DeviceInfo()
+{
+
+}
+
 bool DeviceInfo::empty() const
 {
     return m_empty;

@@ -9,7 +9,7 @@
 #include "ExternalConnectionWindow.h"
 #include "UART_ConnectionWindow.h"
 #include "connectionlog.h"
-#include "MdiContainer.h"
+#include "UART_DisconnectWindow.h"
 
 class Cooller_ModBusController;
 
@@ -32,15 +32,15 @@ private slots:
     void showConnectDialog();
     void showDisconnectDialog();
     void showConnectToHostDialog();
-    void hidePreferences();
 
 private:
-    Ui::AirCoolControllClass               ui;
-    Cooller_ModBusController*              m_comunicator; 
-    QMdiSubWindow*                         m_preferences;
+    Ui::AirCoolControllClass   ui;
+    Cooller_ModBusController*  m_comunicator; 
+    PreferencesWindow*         m_preferences;
 
-    MdiContainer<UART_ConnectionWindow>    m_uartConnector;
-    MdiContainer<ExternalConnectionWindow> m_internetConnector;
+    UART_ConnectionWindow*     m_uartConnector;
+    UART_DisconnectWindow*     m_uartDisconnector;
+    ExternalConnectionWindow*  m_internetConnector;
 };
 
 #endif // AIRCOOLCONTROLL_H

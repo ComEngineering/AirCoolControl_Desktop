@@ -2,7 +2,7 @@
 #include "Configurator.h"
 
 PreferencesWindow::PreferencesWindow(QWidget *parent)
-    : QWidget(parent)
+    : QDialog(parent)
 {
     ui.setupUi(this);
      
@@ -11,7 +11,7 @@ PreferencesWindow::PreferencesWindow(QWidget *parent)
     ui.requestTimeout_spinBox->setValue(Configurator::getMaximunTimeout());
     ui.symbolTimeout_spinBox->setValue(Configurator::getChankTimeout());
 
-    connect(ui.okButton, SIGNAL(clicked()),this,SIGNAL(finished()));
+    connect(ui.okButton, SIGNAL(clicked()), this, SLOT(reject()));
 
     connect(ui.attempts_spinBox, SIGNAL(valueChanged(int)), this, SLOT(attemptChanged(int)));
     connect(ui.requestInterval_spinBox, SIGNAL(valueChanged(int)), this, SLOT(intervalChanged(int)));

@@ -4,6 +4,8 @@ MdiSubWindowPermanent::MdiSubWindowPermanent(QWidget *child,QWidget *parent)
     : QMdiSubWindow(parent)
 {
     setWidget(child);
+    QRect childGeometry = child->geometry();
+    setGeometry(childGeometry);
     hide();
     setWindowFlags(Qt::WindowCancelButtonHint | Qt::WindowMinimizeButtonHint | Qt::WindowSystemMenuHint);
 }

@@ -1,10 +1,10 @@
 #ifndef PREFERENCESWINDOW_H
 #define PREFERENCESWINDOW_H
 
-#include <QWidget>
+#include <QDialog>
 #include "ui_PreferencesWindow.h"
 
-class PreferencesWindow : public QWidget
+class PreferencesWindow : public QDialog
 {
     Q_OBJECT
 

@@ -43,7 +43,8 @@ private slots:
 
 private:
     State                     m_state;
-    DeviceInfoShared          m_deviceInfo;
+    int                       m_id;
+    int                       m_speed;
     QString                   m_errorString;
     ConfigMapShared           m_currentMap;
     ModbusDriverShared        m_modbus;

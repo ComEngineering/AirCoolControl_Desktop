@@ -29,6 +29,7 @@ private:
 private:
     Ui::ConnectionLog ui;
     ConnectedDeviceStorage* m_devices;
+    int                     m_currentIndex;
 
     static const QBrush  s_selected; 
     static const QBrush  s_free; 

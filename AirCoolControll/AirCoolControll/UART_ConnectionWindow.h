@@ -1,14 +1,14 @@
 #ifndef UART_CONNECTIONWINDOW_H
 #define UART_CONNECTIONWINDOW_H
 
-#include <QWidget>
+#include <QDialog>
 #include "ui_UART_ConnectionWindow.h"
 #include <QtSerialPort\qserialportinfo.h>
 #include "Cooller_ModbusController.h"
 
 class ExternalConnector;
 
-class UART_ConnectionWindow : public QWidget
+class UART_ConnectionWindow : public QDialog
 {
     Q_OBJECT
 

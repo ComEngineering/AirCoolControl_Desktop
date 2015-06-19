@@ -21,6 +21,8 @@ public:
     ModbusDriverShared getDriver(int com_index);
     ModbusDriverShared getDriver(const QString& name);
     ModbusDriverShared getDriverWithName(const QString& name);
+    void    releaseDriver(const QString& name);
+    std::vector<std::pair<QString, bool>> getDriverList(void) const;
 
 signals:
     void uartDisconnected(const QString& name);

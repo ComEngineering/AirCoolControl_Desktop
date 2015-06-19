@@ -12,6 +12,7 @@ class DeviceInfo
 public:
     DeviceInfo(const QString& uart, int id, int speed, const QString& ven, const QString& p, const QString& ver);
     DeviceInfo(const QString& uart, int id);
+    ~DeviceInfo();
 
     bool empty() const;
     const QString& getUART() const { return m_uart; }

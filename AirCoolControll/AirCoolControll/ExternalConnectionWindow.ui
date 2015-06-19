@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>ExternalConnectionWindow</class>
- <widget class="QWidget" name="ExternalConnectionWindow">
+ <widget class="QDialog" name="ExternalConnectionWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -12,6 +12,10 @@
   </property>
   <property name="windowTitle">
    <string>ExternalConnectionWindow</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="aircoolcontroll.qrc">
+    <normaloff>:/Images/connect_to_host.png</normaloff>:/Images/connect_to_host.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -146,6 +150,8 @@
    <header location="global">iplineedit.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="aircoolcontroll.qrc"/>
+ </resources>
  <connections/>
 </ui>

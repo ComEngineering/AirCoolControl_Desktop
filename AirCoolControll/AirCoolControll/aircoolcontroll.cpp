@@ -4,22 +4,17 @@
 AirCoolControll::AirCoolControll(QWidget *parent)
     : QMainWindow(parent),
     m_preferences(NULL),
-    m_uartConnector(this),
-    m_internetConnector(this)
+    m_internetConnector(NULL)
 {
     ui.setupUi(this);
 
     setWindowState(windowState() ^ Qt::WindowMaximized);
-
+    m_uartConnector = new UART_ConnectionWindow(this);
     m_comunicator = new Cooller_ModBusController(this);
-    m_uartConnector.widget<UART_ConnectionWindow>()->setController(m_comunicator);
+    m_uartDisconnector = new UART_DisconnectWindow(m_comunicator,this);
+    m_uartConnector->setController(m_comunicator);
+    
     connect(m_comunicator, SIGNAL(newStatus(const QString&)), ui.statusBar, SLOT(showMessage(const QString&, int)));
-
-    m_uartConnector.container<UART_ConnectionWindow>()->setWindowIcon(QPixmap(":/Images/connect.png"));
-    ui.mdiArea->addSubWindow(m_uartConnector.container<UART_ConnectionWindow>());
-
-    m_internetConnector.container<ExternalConnectionWindow>()->setWindowIcon(QPixmap(":/Images/connect_to_host.png"));
-    ui.mdiArea->addSubWindow(m_internetConnector.container<ExternalConnectionWindow>());
 
    ///  Toolbox actions  ///////////////////////////////////////////////////////////////
 
@@ -43,7 +38,7 @@ QMdiArea*    AirCoolControll::getMdiArea(void) const
 
 UART_ConnectionWindow * AirCoolControll::getUART_Configurator(void) const
 {
-    return m_uartConnector.widget<UART_ConnectionWindow>();
+    return m_uartConnector;
 }
 
 ConnectionLog * AirCoolControll::getConnectionLog(void) const
@@ -55,36 +50,33 @@ void AirCoolControll::showPreferencesDialog()
 {
     if (NULL == m_preferences)
     {
-        PreferencesWindow*  preferences = new PreferencesWindow(this);
-        m_preferences = ui.mdiArea->addSubWindow(preferences);
-        m_preferences->setWindowFlags(Qt::WindowTitleHint);
-        m_preferences->setWindowIcon(QPixmap(":/Images/preferences.png"));
-        connect(preferences, SIGNAL(finished(void)), this, SLOT(hidePreferences()));
+        m_preferences = new PreferencesWindow(this);
     }
-
-    m_preferences->show();
-}
-
-void AirCoolControll::hidePreferences(void)
-{
-    m_preferences->hide();
+    QRect mainWindowSize = geometry();
+    QRect connectorSize = m_preferences->geometry();
+    m_preferences->move(mainWindowSize.x() + mainWindowSize.width() - connectorSize.width() - 20, mainWindowSize.y() + 50);
+    
+    m_preferences->exec();
 }
 
 void AirCoolControll::showConnectDialog()
 {
-    QSize mainWindowSize = ui.mdiArea->frameSize();
-    QMdiSubWindow* container = m_uartConnector.container<UART_ConnectionWindow>();
-    QSize connectorSize = container->frameSize();
-    container->move(mainWindowSize.width() / 2 - connectorSize.width() / 2, mainWindowSize.height() / 2 - connectorSize.height() / 2);
-    m_uartConnector.activate();
+    m_uartConnector->exec();
 }
 
 void AirCoolControll::showDisconnectDialog()
 {
-
+    m_uartDisconnector->exec();
 }
 
 void AirCoolControll::showConnectToHostDialog()
 {
-    m_internetConnector.activate();
+    if (m_internetConnector == NULL)
+    {
+        m_internetConnector = new ExternalConnectionWindow(this);   
+    } 
+    QSize mainWindowSize = ui.mdiArea->frameSize();
+    QSize connectorSize = m_internetConnector->frameSize();
+
+    m_internetConnector->exec();
 }

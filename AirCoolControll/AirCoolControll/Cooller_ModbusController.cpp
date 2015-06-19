@@ -259,3 +259,14 @@ bool Cooller_ModBusController::readXMLConfig(const QString& path)
     return true;
 }
 
+std::vector<std::pair<QString, bool>> Cooller_ModBusController::getDriverList(void) const
+{
+    return m_info.getDriverList();
+}
+
+void Cooller_ModBusController::releaseDriverWithName(const QString& driverName)
+{
+    m_explorers.removeDevicesWithUART(driverName);
+    m_info.releaseDriver(driverName);
+    m_mainWindow->getConnectionLog()->updateContent();
+}
