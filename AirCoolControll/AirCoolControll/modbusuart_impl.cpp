@@ -37,7 +37,7 @@ void ModBusUART_Impl::stopRequest(void)
     m_port.close();
 }
 
-bool ModBusUART_Impl::readRegisterPool(quint16 id, int speed, quint16 regNumber, quint16 regCount,QVector<quint16>& o_list)
+bool ModBusUART_Impl::readRegisterPool(quint16 id, int speed, quint16 regNumber, quint16 regCount,std::vector<quint16>& o_list)
 {
     if (!startRequest(speed))
         return false;
@@ -134,7 +134,7 @@ bool ModBusUART_Impl::writeRegister(quint16 id, int speed, quint16 regNumber, qu
     return rc;
 }
 
-bool ModBusUART_Impl::readCoilPool(quint16 id, int speed, quint16 regNumber, quint16 coilCount, QVector<quint16>& o_list)
+bool ModBusUART_Impl::readCoilPool(quint16 id, int speed, quint16 regNumber, quint16 coilCount, std::vector<quint16>& o_list)
 {
     if (!startRequest(speed))
         return false;

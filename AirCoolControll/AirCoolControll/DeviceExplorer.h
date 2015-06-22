@@ -8,6 +8,7 @@
 #include "PullerReadCoilTask.h"
 #include "coolerstatewidget.h"
 #include "MdiSubWindowPermanent.h"
+#include "RegestryHistory.h"
 
 class DeviceExplorer : public QObject
 {
@@ -48,12 +49,14 @@ private:
     QString                   m_errorString;
     ConfigMapShared           m_currentMap;
     ModbusDriverShared        m_modbus;
-    QVector<quint16>          m_localPull[ConfigMap::REGISTER_PULL_COUNT];
+    std::vector<quint16>      m_localPull[ConfigMap::REGISTER_PULL_COUNT];
     
     PullerReadTaskShared      m_registers[ConfigMap::REGISTER_PULL_COUNT];
 
     CoolerStateWidget*        m_view;
     MdiSubWindowPermanent*    m_mdi;
+
+    RegestryHistory           m_history;
 };
 
 typedef std::shared_ptr<DeviceExplorer> DeviceExplorerShared;

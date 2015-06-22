@@ -50,7 +50,7 @@ public:
     ConfigMap::RegisterType getVariableType(const std::string& name) const;
     int  getRegisterNumber(const std::string& name) const;
     bool haveVariableWithName(const std::string& name) const;
-    unsigned int  getValue(const std::string& name, const QVector<quint16>& array) const;
+    unsigned int  getValue(const std::string& name, const std::vector<quint16>& array) const;
     bool isVariableBool(const std::string& name, int& bitNumber);
     Interval& getInterval(int n);
     bool  isSupport(const DeviceInfoShared info) const;

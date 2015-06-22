@@ -12,6 +12,7 @@ public:
     void add(int);
     bool in(int) const;
     bool empty(void) const;
+    int  length(void) const;
 };
 
 #endif // __INTERVAL__

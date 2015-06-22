@@ -14,20 +14,24 @@ DeviceExplorer::DeviceExplorer(const ConfigMapShared config, ModbusDriverShared 
     m_mdi(NULL)
 {
     m_view = new CoolerStateWidget();
+    int regCount = 0;
     
     for (ConfigMap::RegisterType i = ConfigMap::REGISTER_PULL_FIRST; i < ConfigMap::REGISTER_PULL_COUNT; ConfigMap::NEXT(i))
     {
         Interval a_int = m_currentMap->getInterval(i);
         if (!a_int.empty())
         {
-            m_registers[i] = i != ConfigMap::COIL ? std::make_shared<PullerReadTask>(m_id, m_speed, a_int) :
+            m_registers[i] = (i != ConfigMap::COIL) ? std::make_shared<PullerReadTask>(m_id, m_speed, a_int) :
                 std::make_shared<PullerReadCoilTask>(m_id, m_speed, a_int);
             m_modbus->addPullerReadTask(m_registers[i]);
             m_localPull[i].resize(a_int.second - a_int.first + 1);
             m_view->setParameterList(m_currentMap->getParametersList(i), i);
             m_registers[i]->setListener(this);
+            regCount += a_int.length();
         }
     }
+    m_history.setSnapshortSize(regCount);
+
     connect(m_view, SIGNAL(newRegisterValue(int, QString&, int)), this, SLOT(sendValueToDevice(int, QString&, int)));
 }
 
@@ -132,12 +136,16 @@ void DeviceExplorer::activateView(QMdiArea * area)
 
 void DeviceExplorer::somethingChanged()
 {
+    std::vector<quint16> snapshort;
+    
     for (ConfigMap::RegisterType i = ConfigMap::REGISTER_PULL_FIRST; i < ConfigMap::REGISTER_PULL_COUNT; ConfigMap::NEXT(i))
     {
         if (m_registers[i]->isContentChanged())
         {
             m_registers[i]->getContent(m_localPull[i]);
-            break;
         }
+        snapshort.insert(snapshort.end(),m_localPull[i].begin(),m_localPull[i].end());
     }
+
+    m_history.addSnapshort(snapshort);
 }

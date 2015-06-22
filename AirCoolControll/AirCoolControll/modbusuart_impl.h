@@ -17,10 +17,10 @@ public:
 
     void   setSpeed(int speed);
     
-    bool   readRegisterPool(quint16 id, int speed, quint16 regNumber,quint16 regCount,QVector<quint16>& list);
+    bool   readRegisterPool(quint16 id, int speed, quint16 regNumber,quint16 regCount,std::vector<quint16>& list);
     bool   writeRegister(quint16 id, int speed, quint16 regNumber, quint16 value);
 
-    bool   readCoilPool(quint16 id, int speed, quint16 regNumber, quint16 regCount, QVector<quint16>& list);
+    bool   readCoilPool(quint16 id, int speed, quint16 regNumber, quint16 regCount, std::vector<quint16>& list);
     bool   writeCoil(quint16 id, int speed, quint16 regNumber, bool state);
 
     bool   readDeviceInfo(quint16 id, int speed, QString& vendor, QString& product, QString& version);

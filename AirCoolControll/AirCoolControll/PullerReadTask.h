@@ -1,7 +1,7 @@
 #ifndef __PullerReadTask__
 #define __PullerReadTask__
 
-#include  <QVector>
+#include  <vector>
 #include  <QMutex>
 #include  <memory>
 #include  "Interval.h"
@@ -20,15 +20,15 @@ public:
     virtual bool isItTimeToDo(void) const;
 
     bool isContentChanged();
-    void getContent(QVector<quint16>& list);
-    void setContent(const QVector<quint16>& list);
+    void getContent(std::vector<quint16>& list);
+    void setContent(const std::vector<quint16>& list);
 
     void setListener(DeviceExplorer* listener) { m_listener = listener; }
 
 protected:
     Interval                 m_range;
 private:
-    QVector<quint16>         m_pull;
+    std::vector<quint16>     m_pull;
     bool                     m_isUpdated;
     mutable QMutex *         m_mutex;
     DeviceExplorer *         m_listener;

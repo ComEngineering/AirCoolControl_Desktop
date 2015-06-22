@@ -25,18 +25,18 @@ bool PullerReadTask::isContentChanged()
     return m_isUpdated;
 }
 
-void PullerReadTask::getContent(QVector<quint16>& list)
+void PullerReadTask::getContent(std::vector<quint16>& list)
 {
     QMutexLocker lock(m_mutex);
     m_isUpdated = false;
     list = m_pull;
 }
 
-void PullerReadTask::setContent(const QVector<quint16>& list)
+void PullerReadTask::setContent(const std::vector<quint16>& list)
 {
     if (list.size() == m_pull.size())
     {
-        for (QVector<quint16>::const_iterator it = list.begin(), it2 = m_pull.begin(); it != list.end(); it++, it2++)
+        for (std::vector<quint16>::const_iterator it = list.begin(), it2 = m_pull.begin(); it != list.end(); it++, it2++)
         {
             if (*it != *it2)
             {
@@ -55,7 +55,7 @@ void PullerReadTask::setContent(const QVector<quint16>& list)
 
 bool PullerReadTask::proceed(ModBusUART_Impl* modbus)
 {
-    QVector<quint16> res;
+    std::vector<quint16> res;
     if (modbus->readRegisterPool(getID(), getSpeed(), m_range.first, m_range.second - m_range.first + 1, res))
     {
         setContent(res);

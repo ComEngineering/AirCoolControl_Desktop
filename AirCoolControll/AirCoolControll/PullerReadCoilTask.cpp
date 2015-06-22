@@ -15,7 +15,7 @@ PullerReadCoilTask::~PullerReadCoilTask()
 
 bool PullerReadCoilTask::proceed(ModBusUART_Impl* modbus)
 {
-    QVector<quint16> res;
+    std::vector<quint16> res;
     if (modbus->readCoilPool(getID(),getSpeed(), m_range.first, m_range.second - m_range.first + 1, res))
     {
         setContent(res);
