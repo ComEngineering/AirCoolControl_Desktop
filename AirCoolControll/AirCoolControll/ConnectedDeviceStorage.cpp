@@ -1,5 +1,6 @@
 #include "ConnectedDeviceStorage.h"
 #include "UART_DeviceStorage.h"
+#include <algorithm>
 
 ConnectedDeviceStorage::ConnectedDeviceStorage(UART_DeviceStorage& drivers, QObject *parent)
     : QObject(parent),
@@ -97,4 +98,11 @@ void ConnectedDeviceStorage::setActiveIndex(int n)
             (*it)->getExplorer()->activateView(m_mdiArea);
             break;
         }
+}
+
+void ConnectedDeviceStorage::getDevicesConnectedToDriver(const QString& name, std::vector<QString>& vector) const
+{
+    for (auto i = begin(); i != end(); i++)
+        if (name == (*i)->getUART())
+            vector.push_back((*i)->getUART() + ':' + QString::number((*i)->getID()) + '(' + (*i)->getVendor() + '.' + (*i)->getProduct() + '.' + (*i)->getVersion() + ')');
 }

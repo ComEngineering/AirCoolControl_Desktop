@@ -25,6 +25,7 @@ public:
 
     void performConnection(int uart_number, int deviceIndex, int speedIndex);
     std::vector<std::pair<QString, bool>> getDriverList(void) const;
+    void getDevicesConnectedToDriver(const QString& name, std::vector<QString>& vector) const;
     void releaseDriverWithName(const QString& driverName);
 
 private:

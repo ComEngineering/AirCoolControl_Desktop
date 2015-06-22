@@ -270,3 +270,8 @@ void Cooller_ModBusController::releaseDriverWithName(const QString& driverName)
     m_info.releaseDriver(driverName);
     m_mainWindow->getConnectionLog()->updateContent();
 }
+
+void Cooller_ModBusController::getDevicesConnectedToDriver(const QString& name, std::vector<QString>& vector) const
+{
+    m_explorers.getDevicesConnectedToDriver(name, vector);
+}

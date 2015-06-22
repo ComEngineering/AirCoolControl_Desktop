@@ -21,6 +21,7 @@ public:
 
     void setConfigList(const ConfigList * configs) { m_configs = configs; }
     bool addDevice(DeviceInfoShared a_info);
+    void getDevicesConnectedToDriver(const QString& name,std::vector<QString>& vector) const;
 
     void setMdiArea(QMdiArea * area) { m_mdiArea = area; }
 
