@@ -27,3 +27,8 @@ bool DeviceInfo::empty() const
 {
     return m_empty;
 }
+
+QString DeviceInfo::getDescription() const
+{
+    return getUART() + ':' + QString::number(getID()) + '(' + getVendor() + '.' + getProduct() + '.' + getVersion() + ')';
+}

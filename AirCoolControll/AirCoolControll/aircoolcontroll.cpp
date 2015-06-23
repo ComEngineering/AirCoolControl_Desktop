@@ -24,6 +24,7 @@ AirCoolControll::AirCoolControll(QWidget *parent)
     connect(ui.actionConnect_to_host, SIGNAL(triggered(void)), this, SLOT(showConnectToHostDialog()));
 
    /////////////////////////////////////////////////////////////////////////////////////
+    connect(ui.mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(newActiveWindow(QMdiSubWindow*)));
 }
 
 AirCoolControll::~AirCoolControll()
@@ -79,4 +80,9 @@ void AirCoolControll::showConnectToHostDialog()
     QSize connectorSize = m_internetConnector->frameSize();
 
     m_internetConnector->exec();
+}
+
+void AirCoolControll::newActiveWindow(QMdiSubWindow* w)
+{
+
 }

@@ -68,6 +68,7 @@ Cooller_ModBusController::Cooller_ModBusController(AirCoolControll* mainWindow) 
 
     m_mainWindow->getConnectionLog()->setDeviceList(&m_explorers);
     m_explorers.setMdiArea(mainWindow->getMdiArea());
+    m_explorers.setListView(m_mainWindow->getConnectionLog());
 }
 
 

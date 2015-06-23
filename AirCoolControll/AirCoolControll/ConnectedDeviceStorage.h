@@ -10,6 +10,7 @@
 #include "DeviceExplorer.h"
 
 class UART_DeviceStorage;
+class ConnectionLog;
 
 class ConnectedDeviceStorage : public QObject, public std::list<DeviceInfoShared>
 {
@@ -24,8 +25,10 @@ public:
     void getDevicesConnectedToDriver(const QString& name,std::vector<QString>& vector) const;
 
     void setMdiArea(QMdiArea * area) { m_mdiArea = area; }
+    void setListView(ConnectionLog* view) { m_listView = view; }
 
     void removeDeviceFromList(int n);
+    int  findDeviceIndex(const QString& uart_name, int id) const;
 
     void updateDeviceTick();
 
@@ -44,6 +47,7 @@ private:
     const ConfigList *  m_configs;
     UART_DeviceStorage& m_drivers;
     QMdiArea*           m_mdiArea;
+    ConnectionLog*      m_listView;
 };
 
 #endif // CONNECTEDDEVICESTORAGE_H

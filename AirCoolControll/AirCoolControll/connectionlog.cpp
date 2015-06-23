@@ -1,4 +1,5 @@
 #include "connectionlog.h"
+#include "ConnectedDeviceStorage.h"
 
 const QBrush ConnectionLog::s_selected = QBrush(Qt::yellow);
 const QBrush ConnectionLog::s_free = QBrush(Qt::white);
@@ -10,7 +11,6 @@ ConnectionLog::ConnectionLog(QWidget *parent)
 {
     ui.setupUi(this);
 
-   // ui.tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui.tableWidget->resizeColumnsToContents();
 
     connect(ui.tableWidget, SIGNAL(cellClicked(int, int)), this, SLOT(cellSelected(int, int)));
@@ -70,7 +70,6 @@ void ConnectionLog::updateContent(void)
 
         currentRow++;
     }
-   // sellectionChanged();
 }
 
 void ConnectionLog::cellSelected(int row, int column)
@@ -111,4 +110,11 @@ void ConnectionLog::removeAllConnection(void)
     if (m_devices)
         m_devices->removeDeviceFromList(ConnectedDeviceStorage::DISCONNECT_ALL);
     updateContent();
+}
+
+void ConnectionLog::activateDevice(const QString& uart_name, int id)
+{
+    int n = m_devices->findDeviceIndex(uart_name, id);
+    if (-1 != n)
+        sellectionChanged(n, s_selected);
 }

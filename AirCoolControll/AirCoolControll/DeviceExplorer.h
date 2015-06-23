@@ -9,18 +9,13 @@
 #include "coolerstatewidget.h"
 #include "MdiSubWindowPermanent.h"
 #include "RegestryHistory.h"
+#include "connectionlog.h"
 
 class DeviceExplorer : public QObject
 {
     Q_OBJECT
 
 public:
-    enum State{
-        Ready = 0,
-        DeviceNotReady,
-        ConfigNotFound
-    };
-
     DeviceExplorer(const ConfigMapShared config, ModbusDriverShared modbus, DeviceInfoShared info, QObject *parent = NULL);
     ~DeviceExplorer();
 
@@ -30,7 +25,6 @@ public:
 
     QString errorString();
     ConfigMapShared getCurrentConfig(){ return m_currentMap; }
-    State getState(){ return m_state; }
     void  stopTasks();
 
     void updateStateWidget(void);
@@ -39,14 +33,16 @@ public:
 
     void somethingChanged();
 
+    void setListView(ConnectionLog* view);
+
 private slots:
     void sendValueToDevice(int, QString&, int);
+    void viewStateChanged(Qt::WindowStates , Qt::WindowStates);
 
 private:
-    State                     m_state;
-    int                       m_id;
-    int                       m_speed;
+    DeviceInfo                m_info;
     QString                   m_errorString;
+
     ConfigMapShared           m_currentMap;
     ModbusDriverShared        m_modbus;
     std::vector<quint16>      m_localPull[ConfigMap::REGISTER_PULL_COUNT];
@@ -55,6 +51,7 @@ private:
 
     CoolerStateWidget*        m_view;
     MdiSubWindowPermanent*    m_mdi;
+    ConnectionLog*            m_listView;
 
     RegestryHistory           m_history;
 };

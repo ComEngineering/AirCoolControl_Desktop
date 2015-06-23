@@ -37,10 +37,13 @@ bool ConnectedDeviceStorage::addDevice(DeviceInfoShared a_info)
     
     if (rc)
     {
-        a_info->setExplorer(std::make_shared<DeviceExplorer>(currentMap, driver, a_info));
+        DeviceExplorerShared d = std::make_shared<DeviceExplorer>(currentMap, driver, a_info);
+        d->setListView(m_listView);
+        a_info->setExplorer(d);
     }
 
     push_back(a_info);
+    setActiveIndex(size() - 1);
 
     return true;
 }
@@ -116,5 +119,21 @@ void ConnectedDeviceStorage::getDevicesConnectedToDriver(const QString& name, st
 {
     for (auto i = begin(); i != end(); i++)
         if (name == (*i)->getUART())
-            vector.push_back((*i)->getUART() + ':' + QString::number((*i)->getID()) + '(' + (*i)->getVendor() + '.' + (*i)->getProduct() + '.' + (*i)->getVersion() + ')');
+            vector.push_back((*i)->getDescription());
+}
+
+int  ConnectedDeviceStorage::findDeviceIndex(const QString& uart_name, int id) const
+{
+    int i = 0;
+    int rc = -1;
+    for (auto it : *this)
+    {
+        if (it->getUART() == uart_name && it->getID() == id)
+        {
+            rc = i;
+            break;
+        }
+        i++;
+    }
+    return rc;
 }

@@ -21,6 +21,8 @@ public:
     QString        getVersion() const { return QString(m_version); } 
     int            getID() const { return m_id; }
     int            getSpeed() const { return m_speed; }
+
+    QString        getDescription() const;
     
     bool checkVersion(const VersionStorage& min, const VersionStorage& max)const
     {

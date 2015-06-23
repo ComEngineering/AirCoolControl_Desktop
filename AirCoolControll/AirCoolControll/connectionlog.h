@@ -5,7 +5,8 @@
 #include <qbrush.h>
 #include "ui_connectionlog.h"
 #include "modbusuart_impl.h"
-#include "ConnectedDeviceStorage.h"
+
+class ConnectedDeviceStorage;
 
 class ConnectionLog : public QWidget
 {
@@ -17,6 +18,8 @@ public:
 
     void setDeviceList(ConnectedDeviceStorage* devices);
     void updateContent(void);
+
+    void activateDevice(const QString& uart_name, int id);
 
 private slots:
     void cellSelected(int row, int column);

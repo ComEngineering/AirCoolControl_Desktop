@@ -12,12 +12,14 @@
   <?define Qt5Widgets="Qt5Widgetsd"?>
   <?define Qt5SerialPort="Qt5SerialPortd"?>
   <?define Qt5Network="Qt5Networkd"?>
+  <?define Qt5PrintSupport="Qt5PrintSupportd"?> 
 <?else?>
   <?define Qt5Core="Qt5Core"?>
   <?define Qt5Gui="Qt5Gui"?>
   <?define Qt5Widgets="Qt5Widgets"?>
   <?define Qt5SerialPort="Qt5SerialPort"?>
   <?define Qt5Network="Qt5Network"?>
+  <?define Qt5PrintSupport="Qt5PrintSupport"?> 
 <?endif?>
 
   <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
@@ -97,6 +99,9 @@
       </Component>
       <Component Id="QtComponent8">
           <File Id='network' DiskId='1' Source='$(env.QTDIR)/bin/$(var.Qt5Network).dll '/>
+      </Component>
+      <Component Id="QtComponent9">
+          <File Id='printsupport' DiskId='1' Source='$(env.QTDIR)/bin/$(var.Qt5PrintSupport).dll '/>
       </Component>
 		</ComponentGroup>
 	</Fragment>

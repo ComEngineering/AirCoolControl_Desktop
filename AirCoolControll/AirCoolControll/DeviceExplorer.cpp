@@ -5,13 +5,12 @@
 
 DeviceExplorer::DeviceExplorer(const ConfigMapShared config, ModbusDriverShared modbus, DeviceInfoShared info, QObject *parent)
     : QObject(parent),
-    m_state(Ready),
-    m_id(info->getID()),
-    m_speed(info->getSpeed()),
+    m_info(*info),
     m_modbus(modbus),
     m_currentMap(config),
     m_errorString(tr("Working")),
-    m_mdi(NULL)
+    m_mdi(NULL),
+    m_listView(NULL)
 {
     m_view = new CoolerStateWidget();
     int regCount = 0;
@@ -21,8 +20,8 @@ DeviceExplorer::DeviceExplorer(const ConfigMapShared config, ModbusDriverShared 
         Interval a_int = m_currentMap->getInterval(i);
         if (!a_int.empty())
         {
-            m_registers[i] = (i != ConfigMap::COIL) ? std::make_shared<PullerReadTask>(m_id, m_speed, a_int) :
-                std::make_shared<PullerReadCoilTask>(m_id, m_speed, a_int);
+            m_registers[i] = (i != ConfigMap::COIL) ? std::make_shared<PullerReadTask>(m_info.getID(), m_info.getSpeed(), a_int) :
+                std::make_shared<PullerReadCoilTask>(m_info.getID(), m_info.getSpeed(), a_int);
             m_modbus->addPullerReadTask(m_registers[i]);
             m_localPull[i].resize(a_int.second - a_int.first + 1);
             m_view->setParameterList(m_currentMap->getParametersList(i), i);
@@ -46,12 +45,12 @@ DeviceExplorer::~DeviceExplorer()
 
 void DeviceExplorer::stopTasks()
 {
-    m_modbus->removeTaskWithID(m_id);
+    m_modbus->removeTaskWithID(m_info.getID());
 }
 
 bool  DeviceExplorer::getRegisterValue(const std::string & key,int& value)
 {
-    if (m_state != Ready || ! m_currentMap->haveVariableWithName(key))
+    if (! m_currentMap->haveVariableWithName(key))
         return false;
 
     ConfigMap::RegisterType a_type = m_currentMap->getVariableType(key);
@@ -74,7 +73,7 @@ void DeviceExplorer::setRegisterValue(const std::string & key,int value)
             getRegisterValue(key, currentValue);
             value = (bool)value ? currentValue | (1 << bitNumber) : currentValue & ~(1 << bitNumber);
         }
-        m_modbus->writeRegister(m_id, m_speed, m_currentMap->getRegisterNumber(key), value);
+        m_modbus->writeRegister(m_info.getID(), m_info.getSpeed(), m_currentMap->getRegisterNumber(key), value);
     }
 }
 
@@ -82,7 +81,7 @@ void  DeviceExplorer::setCoilState(const std::string & key, bool state)
 {
     if (m_currentMap->haveVariableWithName(key))
     {
-        m_modbus->setCoil(m_id, m_speed, m_currentMap->getRegisterNumber(key), state);
+        m_modbus->setCoil(m_info.getID(), m_info.getSpeed(), m_currentMap->getRegisterNumber(key), state);
     }
 }
 
@@ -127,6 +126,8 @@ void DeviceExplorer::activateView(QMdiArea * area)
     if (NULL == m_mdi)
     {
         m_mdi = new MdiSubWindowPermanent(m_view,area);
+        m_mdi->setWindowTitle(m_info.getDescription());
+        connect(m_mdi, SIGNAL(windowStateChanged(Qt::WindowStates, Qt::WindowStates)), this, SLOT(viewStateChanged(Qt::WindowStates, Qt::WindowStates)));
         area->addSubWindow(m_mdi);
     }
     m_mdi->show();
@@ -148,4 +149,17 @@ void DeviceExplorer::somethingChanged()
     }
 
     m_history.addSnapshort(snapshort);
+}
+
+void DeviceExplorer::viewStateChanged(Qt::WindowStates oldState, Qt::WindowStates newState)
+{
+    if (newState == Qt::WindowActive && m_listView)
+    {
+        m_listView->activateDevice(m_info.getUART(), m_info.getID());
+    }
+}
+
+void DeviceExplorer::setListView(ConnectionLog* view)
+{
+    m_listView = view;
 }
