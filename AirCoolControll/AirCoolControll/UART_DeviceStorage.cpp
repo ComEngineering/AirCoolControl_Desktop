@@ -116,3 +116,24 @@ ModbusDriverShared UART_DeviceStorage::getDriver(const QString& name)
 
     return rc;
 }
+
+void UART_DeviceStorage::releaseDriver(const QString& name)
+{
+    for (auto i : m_storage)
+    {
+        if (i.second.first == name)
+        {
+            i.second.second = NULL;
+            break;
+        }
+    }
+}
+
+std::vector<std::pair<QString, bool>> UART_DeviceStorage::getDriverList(void) const
+{
+    std::vector<std::pair<QString, bool>> rc;
+    for (auto i : m_storage)
+        rc.push_back(std::pair<QString, bool>(i.second.first,static_cast<bool>(i.second.second)));
+
+    return rc;
+}

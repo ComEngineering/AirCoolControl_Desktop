@@ -44,7 +44,7 @@ bool ConfigMap::haveVariableWithName(const std::string& name) const
     return m_map.find(name) != m_map.end();
 }
 
-unsigned int  ConfigMap::getValue(const std::string& name, const QVector<quint16>& array) const
+unsigned int  ConfigMap::getValue(const std::string& name, const std::vector<quint16>& array) const
 {
     if (!haveVariableWithName(name))
         return -1;

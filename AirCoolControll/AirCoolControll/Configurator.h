@@ -25,7 +25,8 @@ public:
     DEFINE_PROPERTY(RetryCount, 3);
     DEFINE_PROPERTY(ChankTimeout, 20);
     DEFINE_PROPERTY(MaximunTimeout, 50);
-    DEFINE_PROPERTY(PullInterval,1000)
+    DEFINE_PROPERTY(PullInterval, 1000);
+    DEFINE_PROPERTY(HistoryLength, 24 * 60 * 60);
 
 private:
     const static QString s_version;

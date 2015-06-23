@@ -22,9 +22,9 @@ public:
     ~ModbusDriver();
 
     void addPullerReadTask(PullerTaskShared a_task);
-    void requestDeviceAproval(quint16 id);
-    void writeRegister(quint16 id, quint16 regNumber, quint16 value);
-    void setCoil(quint16 id, quint16 regNumber, bool state);
+    void requestDeviceAproval(quint16 id, int speed);
+    void writeRegister(quint16 id, int speed, quint16 regNumber, quint16 value);
+    void setCoil(quint16 id, int speed, quint16 regNumber, bool state);
     bool readyToWork() const;
     void removeTaskWithID(int id);
     void onDeviceDetected(DeviceInfoShared a_info);

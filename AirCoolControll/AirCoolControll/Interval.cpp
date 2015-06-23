@@ -23,3 +23,9 @@ bool Interval::empty(void) const
 {
     return first > second;
 }
+
+int  Interval::length(void) const
+{
+    int rc = second - first + 1;
+    return rc > 0 ? rc : 0;
+}

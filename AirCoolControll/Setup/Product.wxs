@@ -6,6 +6,20 @@
 <?define UpgradeCode="d340f6da-1e73-47f9-83c8-ec8301b499c8"?>
 <?define Manufacturer="TECO Ltd"?>
 
+<?if   $(var.AirCoolControll.Configuration)="Debug"?>
+  <?define Qt5Core="Qt5Cored"?>
+  <?define Qt5Gui="Qt5Guid"?>
+  <?define Qt5Widgets="Qt5Widgetsd"?>
+  <?define Qt5SerialPort="Qt5SerialPortd"?>
+  <?define Qt5Network="Qt5Networkd"?>
+<?else?>
+  <?define Qt5Core="Qt5Core"?>
+  <?define Qt5Gui="Qt5Gui"?>
+  <?define Qt5Widgets="Qt5Widgets"?>
+  <?define Qt5SerialPort="Qt5SerialPort"?>
+  <?define Qt5Network="Qt5Network"?>
+<?endif?>
+
   <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<Product Id="$(var.ProductCode)" Name="$(var.ProductName)" Language="1049" Version="$(var.ProductVersion)" Manufacturer="$(var.Manufacturer)" UpgradeCode="d340f6da-1e73-47f9-83c8-ec8301b499c8">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
@@ -70,19 +84,19 @@
           <File Id='icuuc53' DiskId='1' Source='$(env.QTDIR)/bin/icuuc53.dll '/>
       </Component>
       <Component Id="QtComponent4">
-          <File Id='core' DiskId='1' Source='$(env.QTDIR)/bin/Qt5Core.dll '/>
+          <File Id='core' DiskId='1' Source='$(env.QTDIR)/bin/$(var.Qt5Core).dll '/>
       </Component>
       <Component Id="QtComponent5">
-          <File Id='gui' DiskId='1' Source='$(env.QTDIR)/bin/Qt5Gui.dll '/>
+          <File Id='gui' DiskId='1' Source='$(env.QTDIR)/bin/$(var.Qt5Gui).dll '/>
       </Component>
       <Component Id="QtComponent6">
-          <File Id='widgets' DiskId='1' Source='$(env.QTDIR)/bin/Qt5Widgets.dll '/>
+          <File Id='widgets' DiskId='1' Source='$(env.QTDIR)/bin/$(var.Qt5Widgets).dll '/>
       </Component>
       <Component Id="QtComponent7">
-          <File Id='serialport' DiskId='1' Source='$(env.QTDIR)/bin/Qt5SerialPort.dll '/>
+          <File Id='serialport' DiskId='1' Source='$(env.QTDIR)/bin/$(var.Qt5SerialPort).dll '/>
       </Component>
       <Component Id="QtComponent8">
-          <File Id='network' DiskId='1' Source='$(env.QTDIR)/bin/Qt5Network.dll '/>
+          <File Id='network' DiskId='1' Source='$(env.QTDIR)/bin/$(var.Qt5Network).dll '/>
       </Component>
 		</ComponentGroup>
 	</Fragment>

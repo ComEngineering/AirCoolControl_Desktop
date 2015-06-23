@@ -1,49 +1,53 @@
 #ifndef __Cooller_ModBusController__
 #define __Cooller_ModBusController__
 
-#include "coolerstatewidget.h"
-#include "modbusdialog.h"
-#include "externalcontrollmanager.h"
+
 #include <QtSerialPort\qserialportinfo.h>
 #include <QtSerialPort\qserialport.h>
 #include <qtimer.h>
 #include <memory>
+
+#include "externalcontrollmanager.h"
+#include "externalconnector.h"
 #include "DeviceExplorer.h"
 #include "ModbusDriver.h"
 #include "UART_DeviceStorage.h"
 #include "ConnectedDeviceStorage.h"
 
+class AirCoolControll;
+
 class Cooller_ModBusController : public QObject
 {
     Q_OBJECT
 public:
-    Cooller_ModBusController(CoolerStateWidget *view, ModBusDialog *config);
+    Cooller_ModBusController(AirCoolControll* mainWindow);
     ~Cooller_ModBusController();
+
+    void performConnection(int uart_number, int deviceIndex, int speedIndex);
+    std::vector<std::pair<QString, bool>> getDriverList(void) const;
+    void getDevicesConnectedToDriver(const QString& name, std::vector<QString>& vector) const;
+    void releaseDriverWithName(const QString& driverName);
 
 private:
     void checkConnectionState(void);
     static bool equalPredicat(QSerialPortInfo& first,QSerialPortInfo& second);
     bool readXMLConfig(const QString& path);
-    void updateStateWidget(void);
     void allertError(QString errorDescription);
+    void newDevice();
+    int  speedIndexToSpeed(int speedIndex);
 
 private slots:
     void updateState(void);
-    void newDevice(int);
     void sendConfiguration(void);
     void externalStateChanged(void);
     void externalListChanged(void);
     void addDevice(DeviceInfoShared info);
-    void setActiveDevice(void);
-    void sendValueToDevice(int,QString&, int);
 
 signals:
     void newStatus(const QString&);
 
 private:
-    CoolerStateWidget *     m_view;
-    ModBusDialog *          m_configDialog;
-
+    AirCoolControll*        m_mainWindow;
     UART_DeviceStorage      m_info;
     QTimer   *              m_recheckTimer;
     bool                    m_available;
@@ -52,7 +56,6 @@ private:
     ConfigList              m_configs;
     
     ConnectedDeviceStorage  m_explorers;
-    DeviceExplorerShared    m_currentDevice;
 };
 
 #endif // __Cooller_ModBusController__

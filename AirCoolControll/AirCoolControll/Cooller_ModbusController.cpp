@@ -4,7 +4,6 @@
     #define  _D_SCL_SECURE_NO_WARNINGS
 #endif
 
-
 #include <QtSerialPort\qserialportinfo.h>
 #include <qstring>
 #include <qobject>
@@ -18,39 +17,34 @@
 #include "Logger.h"
 #include "Cooller_ModbusController.h"
 #include "ConfigMap.h"
+#include "aircoolcontroll.h"
 
-Cooller_ModBusController::Cooller_ModBusController(CoolerStateWidget *view, ModBusDialog *config) :
-    m_view(view), 
-    m_configDialog(config),
+Cooller_ModBusController::Cooller_ModBusController(AirCoolControll* mainWindow) :
+    m_mainWindow(mainWindow),
     m_recheckTimer(new QTimer(this)),
     m_available(false),
     //m_comunicationSpeedIndex(6), //9600
-    m_connector(this),
     m_externalManager(this),
     m_info(this),
-    m_explorers(m_info,this)
+    m_explorers(m_info,this),
+    m_connector(this)
 {
     connect(m_recheckTimer, SIGNAL(timeout()), this, SLOT(updateState()));
     m_recheckTimer->setInterval(500);
     m_recheckTimer->start();
-    config->setExternalCommunicator(&m_connector);
+//    config->setExternalCommunicator(&m_connector);
 
-    connect(m_configDialog, SIGNAL(deviceIDChanged(int)), this, SLOT(newDevice(int)));
-
-    connect(&m_connector, SIGNAL(connectionEstablished()), config, SLOT(connectionEstablished()));
-    connect(&m_connector, SIGNAL(connectionEstablished()), this, SLOT(sendConfiguration()));
-    connect(&m_connector, SIGNAL(connectionBroken()), config, SLOT(connectionBroken()));
-    connect(&m_connector, SIGNAL(connectionErrorOccured(QString)), config, SLOT(connectionErrorOccured(QString)));
-    
+    //connect(&m_connector, SIGNAL(connectionEstablished()), config, SLOT(connectionEstablished()));
+    //connect(&m_connector, SIGNAL(connectionEstablished()), this, SLOT(sendConfiguration()));
+    //connect(&m_connector, SIGNAL(connectionBroken()), config, SLOT(connectionBroken()));
+    //connect(&m_connector, SIGNAL(connectionErrorOccured(QString)), config, SLOT(connectionErrorOccured(QString)));
+    //
     connect(&m_externalManager, SIGNAL(stateChanged()), this, SLOT(externalStateChanged()));
     connect(&m_externalManager, SIGNAL(listChanged()), this, SLOT(externalListChanged()));
 
     qRegisterMetaType<DeviceInfoShared>("DeviceInfoShared");
     connect(&m_info, SIGNAL(deviceDetected(DeviceInfoShared)), this, SLOT(addDevice(DeviceInfoShared)));
-    connect(&m_explorers, SIGNAL(activeChanged(void)), this, SLOT(setActiveDevice(void)));
-
-    connect(m_view, SIGNAL(newRegisterValue(int,QString&, int)), this, SLOT(sendValueToDevice(int,QString&, int)));
-
+    
     connect(&m_info, SIGNAL(uartDisconnected(const QString&)), &m_explorers, SLOT(removeDevicesWithUART(const QString&)));
 
     QString configsPath = Configurator::getConfigFilesPath();
@@ -72,7 +66,8 @@ Cooller_ModBusController::Cooller_ModBusController(CoolerStateWidget *view, ModB
         m_explorers.setConfigList(&m_configs);
     }
 
-    m_configDialog->setDeviceList(&m_explorers);
+    m_mainWindow->getConnectionLog()->setDeviceList(&m_explorers);
+    m_explorers.setMdiArea(mainWindow->getMdiArea());
 }
 
 
@@ -86,7 +81,7 @@ void Cooller_ModBusController::updateState(void)
 {
     checkConnectionState();
 
-    updateStateWidget();
+    m_explorers.updateDeviceTick();
 }
 
 void Cooller_ModBusController::allertError(QString errorDescription)
@@ -102,7 +97,7 @@ void Cooller_ModBusController::addDevice(DeviceInfoShared info)
     else
     {
         m_explorers.addDevice(info);
-        m_configDialog->refreshDeviceList();
+        m_mainWindow->getConnectionLog()->updateContent();
     }
 }
 
@@ -112,16 +107,16 @@ void Cooller_ModBusController::checkConnectionState(void)
 
     if (m_info.empty())
     {
-        m_configDialog->setError(QObject::tr("COM ports aren't available"), true);
-        m_configDialog->setCOMindex(-1);
+        m_mainWindow->getUART_Configurator()->setError(QObject::tr("COM ports aren't available"), true);
+        m_mainWindow->getUART_Configurator()->setCOMindex(-1);
         m_available = false;
         return;
     }
     
     if (uart_list_changed)
     {
-        m_configDialog->setCOMlist(m_info.getPortList());
-        int n = m_configDialog->getCOMindex();
+        m_mainWindow->getUART_Configurator()->setCOMlist(m_info.getPortList());
+        int n = m_mainWindow->getUART_Configurator()->getCOMindex();
         if (-1 != n)
         {
             QString currentPortName = m_info.portName(n);
@@ -139,27 +134,33 @@ void Cooller_ModBusController::checkConnectionState(void)
         if (!m_available)
         {
             m_available = true;
-            m_configDialog->clearError();
+            m_mainWindow->getUART_Configurator()->clearError();
         }
         
         n = (-1 != n) ? n : 0;
-        m_configDialog->setCOMindex(n);
+        m_mainWindow->getUART_Configurator()->setCOMindex(n);
 
         if (m_connector.isActive())
             sendConfiguration();
     }
 }
 
-void Cooller_ModBusController::newDevice(int n)
+int  Cooller_ModBusController::speedIndexToSpeed(int speedIndex)
 {
-    int com_index = m_configDialog->getCOMindex();
-    if (-1 == com_index)
+    return 9600; // TO DO convert
+}
+
+void Cooller_ModBusController::performConnection(int uart_number, int deviceIndex, int speedIndex)
+{
+    if (-1 == deviceIndex)
         return;
 
-    ModbusDriverShared modbus = m_info.getDriver(com_index);
+    int speed = speedIndexToSpeed(speedIndex);
+
+    ModbusDriverShared modbus = m_info.getDriver(uart_number);
     if (modbus->readyToWork())
     {
-        modbus->requestDeviceAproval(n);
+        modbus->requestDeviceAproval(deviceIndex,speed);
     }
 }
 
@@ -178,17 +179,17 @@ void Cooller_ModBusController::externalStateChanged(void)
 {
     if (m_externalManager.isActiveConnection())
     {
-        m_configDialog->setExternalConnection(m_externalManager.getExternalIP());
+//        m_configDialog->setExternalConnection(m_externalManager.getExternalIP());
     }
     else
     {
-        m_configDialog->dropExternalConnection();
+//        m_configDialog->dropExternalConnection();
     }
 }
 
 void Cooller_ModBusController::externalListChanged(void)
 {
-    m_configDialog->setExternalPorts(m_externalManager.getExternalPortsList());
+    m_mainWindow->getUART_Configurator()->setExternalPorts(m_externalManager.getExternalPortsList());
 }
 
 bool Cooller_ModBusController::readXMLConfig(const QString& path)
@@ -258,55 +259,19 @@ bool Cooller_ModBusController::readXMLConfig(const QString& path)
     return true;
 }
 
-void Cooller_ModBusController::updateStateWidget()
+std::vector<std::pair<QString, bool>> Cooller_ModBusController::getDriverList(void) const
 {
-    if (m_currentDevice)
-    {
-        for (ConfigMap::RegisterType it = ConfigMap::REGISTER_PULL_FIRST; it < ConfigMap::REGISTER_PULL_COUNT; ConfigMap::NEXT(it))
-        {
-            const ConfigMap::ParameterList& parameters = m_currentDevice->getCurrentConfig()->getParametersList(it);
-            
-            for (int i = 0; i < parameters.size(); i++)
-            {
-                int value;
-                if (m_currentDevice->getRegisterValue(parameters[i].first, value))
-                {
-                    m_view->updateParameter(i, value, it);
-                }
-            }
-        }
-    }
+    return m_info.getDriverList();
 }
 
-void Cooller_ModBusController::setActiveDevice(void)
+void Cooller_ModBusController::releaseDriverWithName(const QString& driverName)
 {
-    DeviceInfoShared info = m_explorers.getActiveDevice();
-    m_currentDevice = info ? info->getExplorer() : NULL;
-    if (m_currentDevice)
-    {
-        for (ConfigMap::RegisterType i = ConfigMap::REGISTER_PULL_FIRST; i < ConfigMap::REGISTER_PULL_COUNT; ConfigMap::NEXT(i))
-            m_view->setParameterList(m_currentDevice->getCurrentConfig()->getParametersList(i), i);
-    }
-    else
-    {
-        m_view->clear();
-    }
-    m_configDialog->refreshDeviceList();
+    m_explorers.removeDevicesWithUART(driverName);
+    m_info.releaseDriver(driverName);
+    m_mainWindow->getConnectionLog()->updateContent();
 }
 
-void Cooller_ModBusController::sendValueToDevice(int registerType,QString& name, int v)
+void Cooller_ModBusController::getDevicesConnectedToDriver(const QString& name, std::vector<QString>& vector) const
 {
-    if (m_currentDevice)
-    {
-        switch (static_cast<ConfigMap::RegisterType>(registerType))
-        {
-        case ConfigMap::OUTPUT_REGISTER :
-            m_currentDevice->setRegisterValue(name.toStdString(), v);
-            break;
-        case ConfigMap::COIL :
-            m_currentDevice->setCoilState(name.toStdString(), static_cast<bool>(v));
-            break;
-        }
-        
-    }
+    m_explorers.getDevicesConnectedToDriver(name, vector);
 }

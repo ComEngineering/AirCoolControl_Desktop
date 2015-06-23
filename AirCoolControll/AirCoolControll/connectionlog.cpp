@@ -4,7 +4,8 @@ const QBrush ConnectionLog::s_selected = QBrush(Qt::yellow);
 const QBrush ConnectionLog::s_free = QBrush(Qt::white);
 
 ConnectionLog::ConnectionLog(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent),
+    m_currentIndex(-1)
 {
     ui.setupUi(this);
 
@@ -64,28 +65,28 @@ void ConnectionLog::updateContent(void)
 
         currentRow++;
     }
-    sellectionChanged();
+   // sellectionChanged();
 }
 
 void ConnectionLog::cellSelected(int row, int column)
 {
     m_devices->setActiveIndex(row);
-    sellectionChanged();
+    sellectionChanged(row);
 }
 
-void ConnectionLog::sellectionChanged()
+void ConnectionLog::sellectionChanged(int n)
 {
-    int nsel = m_devices->getActiveIndex();
     int nc = ui.tableWidget->rowCount();
-    if (nsel == -1 || nsel >= nc)
+    if (n == -1 || n >= nc)
         return;
 
+    m_currentIndex = n;
     for (int y = 0; y < nc; y++)
     {
         for (int x = 0; x < ui.tableWidget->columnCount(); x++)
         {
             QTableWidgetItem* a_item = ui.tableWidget->item(y, x);
-            if (y == nsel)
+            if (y == n)
                 a_item->setBackground(s_selected);
             else
                 a_item->setBackground(s_free);
@@ -96,11 +97,13 @@ void ConnectionLog::sellectionChanged()
 void ConnectionLog::removeConnection(void)
 {
     if (m_devices)
-        m_devices->removeDeviceFromList(ConnectedDeviceStorage::DISCONNECT_CURRENT);
+        m_devices->removeDeviceFromList(m_currentIndex);
+    updateContent();
 }
 
 void ConnectionLog::removeAllConnection(void)
 {
     if (m_devices)
         m_devices->removeDeviceFromList(ConnectedDeviceStorage::DISCONNECT_ALL);
+    updateContent();
 }

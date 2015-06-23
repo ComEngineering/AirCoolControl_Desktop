@@ -4,7 +4,7 @@
 #include <QObject>
 #include <list>
 #include <QString>
-//#include "ConfigMap.h"
+#include <qmdiarea.h>
 
 #include "DeviceInfo.h"
 #include "DeviceExplorer.h"
@@ -21,12 +21,15 @@ public:
 
     void setConfigList(const ConfigList * configs) { m_configs = configs; }
     bool addDevice(DeviceInfoShared a_info);
+    void getDevicesConnectedToDriver(const QString& name,std::vector<QString>& vector) const;
 
-    void setActiveIndex(int index);
-    int  getActiveIndex(void) const{ return m_currentIndex; }
-    
-    DeviceInfoShared getActiveDevice(void);
+    void setMdiArea(QMdiArea * area) { m_mdiArea = area; }
+
     void removeDeviceFromList(int n);
+
+    void updateDeviceTick();
+
+    void setActiveIndex(int n);
 
     static const int DISCONNECT_ALL = -1;
     static const int DISCONNECT_CURRENT = -2;
@@ -38,9 +41,9 @@ signals:
     void activeChanged();
 
 private:
-    int                 m_currentIndex;
     const ConfigList *  m_configs;
     UART_DeviceStorage& m_drivers;
+    QMdiArea*           m_mdiArea;
 };
 
 #endif // CONNECTEDDEVICESTORAGE_H
