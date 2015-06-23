@@ -39,6 +39,9 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionConnect_to_device"/>
+    <addaction name="actionConnect_to_host"/>
+    <addaction name="actionDisconnect_from_UART"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
