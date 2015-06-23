@@ -29,7 +29,7 @@ public:
 
     void updateDeviceTick();
 
-    void setActiveIndex(int n);
+    bool setActiveIndex(int n);
 
     static const int DISCONNECT_ALL = -1;
     static const int DISCONNECT_CURRENT = -2;

@@ -2,6 +2,7 @@
 
 const QBrush ConnectionLog::s_selected = QBrush(Qt::yellow);
 const QBrush ConnectionLog::s_free = QBrush(Qt::white);
+const QBrush ConnectionLog::s_unsuported = QBrush(Qt::gray);
 
 ConnectionLog::ConnectionLog(QWidget *parent)
     : QWidget(parent),
@@ -51,7 +52,8 @@ void ConnectionLog::updateContent(void)
         ui.tableWidget->setItem(currentRow, 3, newItem);
 
         newItem = new QTableWidgetItem(); 
-        if (!info->getExplorer())
+        DeviceExplorerShared a_device = info->getExplorer();
+        if (!a_device)
         {
             newItem->setText(tr("Unsupported device"));
         }
@@ -63,6 +65,9 @@ void ConnectionLog::updateContent(void)
         newItem->setFlags( Qt::ItemIsEnabled);
         ui.tableWidget->setItem(currentRow, 4, newItem);
 
+        if (!a_device)
+            sellectionChanged(currentRow, s_unsuported);
+
         currentRow++;
     }
    // sellectionChanged();
@@ -70,11 +75,11 @@ void ConnectionLog::updateContent(void)
 
 void ConnectionLog::cellSelected(int row, int column)
 {
-    m_devices->setActiveIndex(row);
-    sellectionChanged(row);
+    if (m_devices->setActiveIndex(row))
+        sellectionChanged(row, s_selected);
 }
 
-void ConnectionLog::sellectionChanged(int n)
+void ConnectionLog::sellectionChanged(int n, const QBrush& brush)
 {
     int nc = ui.tableWidget->rowCount();
     if (n == -1 || n >= nc)
@@ -87,7 +92,7 @@ void ConnectionLog::sellectionChanged(int n)
         {
             QTableWidgetItem* a_item = ui.tableWidget->item(y, x);
             if (y == n)
-                a_item->setBackground(s_selected);
+                a_item->setBackground(brush);
             else
                 a_item->setBackground(s_free);
         }

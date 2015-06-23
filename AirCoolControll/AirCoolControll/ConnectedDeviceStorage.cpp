@@ -83,21 +83,33 @@ void ConnectedDeviceStorage::removeDeviceFromList(int n)
 void ConnectedDeviceStorage::updateDeviceTick()
 {
     for (auto it = begin(); it != end(); it++)
-        (*it)->getExplorer()->updateStateWidget();
+    {
+        DeviceExplorerShared a_device = (*it)->getExplorer();
+        if (a_device)
+            a_device->updateStateWidget();
+    }
 }
 
-void ConnectedDeviceStorage::setActiveIndex(int n)
+bool ConnectedDeviceStorage::setActiveIndex(int n)
 {
-    if (n >= size() || NULL == m_mdiArea)
-        return;
-
-    int counter = 0;
-    for (std::list<DeviceInfoShared>::iterator it = begin(); it != end(); it++)
-        if (counter++ == n)
-        {
-            (*it)->getExplorer()->activateView(m_mdiArea);
-            break;
-        }
+    bool rc = false;
+    
+    if (n < size() && NULL != m_mdiArea)
+    {
+        int counter = 0;
+        for (std::list<DeviceInfoShared>::iterator it = begin(); it != end(); it++)
+            if (counter++ == n)
+            {
+                DeviceExplorerShared a_device = (*it)->getExplorer();
+                if (a_device)
+                {
+                    a_device->activateView(m_mdiArea);
+                    rc = true;
+                }
+                break;
+            }
+    }
+    return rc;
 }
 
 void ConnectedDeviceStorage::getDevicesConnectedToDriver(const QString& name, std::vector<QString>& vector) const

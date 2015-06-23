@@ -24,7 +24,7 @@ private slots:
     void removeAllConnection(void);
 
 private:
-    void sellectionChanged(int n);
+    void sellectionChanged(int n,const QBrush& brush);
 
 private:
     Ui::ConnectionLog ui;
@@ -33,6 +33,7 @@ private:
 
     static const QBrush  s_selected; 
     static const QBrush  s_free; 
+    static const QBrush  s_unsuported;
 };
 
 #endif // CONNECTIONLOG_H
