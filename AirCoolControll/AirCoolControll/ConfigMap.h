@@ -2,7 +2,6 @@
 #define __CONFIGMAP__
 
 #include <string>
-#include <unordered_map>
 #include <qvector.h>
 #include <Interval.h>
 #include <qstring.h>
@@ -44,7 +43,7 @@ public:
     } Parameter;
 
     typedef std::vector<std::pair<std::string, std::string>> ParameterList;
-    typedef std::unordered_map<std::string, Parameter> ParameterMap;
+    typedef std::vector<std::pair<std::string, Parameter>> ParameterMap;
 
     void addVariable(int n,const std::string& name, const Parameter& p);
     ConfigMap::RegisterType getVariableType(const std::string& name) const;
@@ -56,6 +55,7 @@ public:
     bool  isSupport(const DeviceInfoShared info) const;
     ParameterList getParametersList(ConfigMap::RegisterType e);
     void  setUI_Config(const std::string& type, const std::string& configFile);
+    ParameterMap::const_iterator findParameter(const std::string& name) const;
 
 private:
     static qint16 decodeWithMethod(qint16 value, const std::string& method);

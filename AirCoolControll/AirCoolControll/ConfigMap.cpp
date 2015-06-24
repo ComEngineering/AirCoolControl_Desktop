@@ -1,6 +1,7 @@
 #include "ConfigMap.h"
 #include <boost/property_tree/xml_parser.hpp>
 #include "DeviceInfo.h"
+#include <algorithm>
 
 ConfigMap::ConfigMap(const std::string& vendor, const std::string& product, const std::string& versionMin, const std::string& versionMax) :
     m_vendor(vendor),
@@ -20,7 +21,7 @@ ConfigMap::~ConfigMap()
 
 void ConfigMap::addVariable(int n,const std::string& name, const Parameter& p)
 {
-    m_map[name] = p;
+    m_map.push_back(std::pair<std::string, Parameter>(name,p));
     
     if (p.m_registerNumber < m_registersIntervals[n].first)
         m_registersIntervals[n].first = p.m_registerNumber;
@@ -35,21 +36,23 @@ int  ConfigMap::getRegisterNumber(const std::string& name) const
     if (!haveVariableWithName(name))
         return -1;
 
-    Parameter p = m_map.at(name);
+    Parameter p = findParameter(name)->second;
     return p.m_registerNumber;
 }
 
 bool ConfigMap::haveVariableWithName(const std::string& name) const
 {
-    return m_map.find(name) != m_map.end();
+    ParameterMap::const_iterator f = findParameter(name);
+    return f != m_map.end();
 }
 
 unsigned int  ConfigMap::getValue(const std::string& name, const std::vector<quint16>& array) const
 {
-    if (!haveVariableWithName(name))
+    ParameterMap::const_iterator f = findParameter(name);
+    if (f == m_map.end())
         return -1;
 
-    Parameter p = m_map.at(name);
+    Parameter p = f->second;
     
     int index = p.m_registerNumber - m_registersIntervals[p.m_type].first;
   
@@ -70,7 +73,7 @@ bool ConfigMap::isVariableBool(const std::string& name, int& bitNumber)
 {
     assert(haveVariableWithName(name));
 
-    Parameter p = m_map.at(name);
+    Parameter p = findParameter(name)->second;
     if (p.m_isBool)
     {
         bitNumber = p.m_bitNumber;
@@ -87,7 +90,7 @@ Interval& ConfigMap::getInterval(int n)
 
 ConfigMap::RegisterType ConfigMap::getVariableType(const std::string& name) const
 {
-    return m_map.at(name).m_type;
+    return findParameter(name)->second.m_type;
 }
 
 bool  ConfigMap::isSupport(const DeviceInfoShared info) const
@@ -128,4 +131,10 @@ void  ConfigMap::setUI_Config(const std::string& type, const std::string& config
 {
     m_UI_type = type;
     m_UI_config = configFile;
+}
+
+ConfigMap::ParameterMap::const_iterator ConfigMap::findParameter(const std::string& name) const
+{
+    ParameterMap::const_iterator f = std::find_if(m_map.begin(), m_map.end(), [name](const std::pair<std::string, Parameter>& e){return name == e.first; });
+    return f;
 }
