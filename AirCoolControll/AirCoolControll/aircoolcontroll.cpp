@@ -84,5 +84,5 @@ void AirCoolControll::showConnectToHostDialog()
 
 void AirCoolControll::newActiveWindow(QMdiSubWindow* w)
 {
-
+    // TO DO activate current item in list
 }

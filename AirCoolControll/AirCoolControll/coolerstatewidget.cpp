@@ -1,4 +1,5 @@
 #include "coolerstatewidget.h"
+#include <qtoolbutton.h>
 
 CoolerStateWidget::CoolerStateWidget(QWidget *parent)
     : QWidget(parent)
@@ -11,7 +12,6 @@ CoolerStateWidget::CoolerStateWidget(QWidget *parent)
     m_tables[ConfigMap::OUTPUT_REGISTER] = ui.outputParametersTable;
     m_tables[ConfigMap::COIL] = ui.coilsTable;
     connect(ui.outputParametersTable, SIGNAL(itemChanged(QTableWidgetItem *)), this, SLOT(registerSet(QTableWidgetItem *)));
-    connect(ui.coilsTable, SIGNAL(itemChanged(QTableWidgetItem *)), this, SLOT(registerSet(QTableWidgetItem *)));
 }
 
 CoolerStateWidget::~CoolerStateWidget()
@@ -44,11 +44,23 @@ void CoolerStateWidget::setParameterList(const std::vector<std::pair<std::string
         newItem->setFlags(Qt::ItemIsEnabled);
         m_tables[type]->setItem(currentRow, 1, newItem);
 
-        newItem = new QTableWidgetItem(QString());
-        newItem->setFlags(f);
-        newItem->setData(Qt::UserRole,QVariant(QString::fromStdString(a_line.first)));
-        newItem->setData(Qt::UserRole + 1, QVariant(static_cast<quint16>(type)));
-        m_tables[type]->setItem(currentRow, 0, newItem);
+        if (type == ConfigMap::COIL)
+        {
+            QToolButton* button = new QToolButton();
+            button->setCheckable(true);
+            button->setProperty("name", QVariant(QString::fromStdString(a_line.first)));
+            button->setText(tr("Off"));
+            connect(button, SIGNAL(clicked()),this, SLOT(onCoilChanged()));
+            m_tables[type]->setCellWidget(currentRow, 0, button);
+        }
+        else
+        {
+            newItem = new QTableWidgetItem(QString());
+            newItem->setFlags(f);
+            newItem->setData(Qt::UserRole, QVariant(QString::fromStdString(a_line.first)));
+            newItem->setData(Qt::UserRole + 1, QVariant(static_cast<quint16>(type)));
+            m_tables[type]->setItem(currentRow, 0, newItem);
+        }
         currentRow++;
     }
     
@@ -64,22 +76,21 @@ void CoolerStateWidget::updateParameter(int n, int value, ConfigMap::RegisterTyp
     m_tables[type]->blockSignals(false);
 }
 
-void CoolerStateWidget::registerSet(QTableWidgetItem *item)
-{
-    QString text = item->data(Qt::DisplayRole).toString();
-    bool ok;
-    int d = text.toInt(&ok);
-    if (ok)
-    {
-        QString name = item->data(Qt::UserRole).toString();
-        int registerType  = item->data(Qt::UserRole + 1).toInt();
-        emit newRegisterValue(registerType, name, d);
-    }
-}
-
 void CoolerStateWidget::clear()
 {
     for (QTableWidget* a_widget : m_tables)
         while ( a_widget->rowCount())
             a_widget->removeRow(0);
+}
+
+void CoolerStateWidget::onCoilChanged()
+{
+    QToolButton* button = qobject_cast<QToolButton*>(sender());
+    if (!button) return;
+    QVariant var = button->property("name");
+    if (!var.isValid()) return;
+    QString name = var.toString();
+    int d = button->isChecked() ? 1 : 0;
+    button->setText(d ? tr("On") : tr("Off"));
+    emit newRegisterValue(ConfigMap::COIL, name, d);
 }

@@ -21,7 +21,7 @@ public:
     void clear();
 
 private slots:
-    void registerSet(QTableWidgetItem *);
+    void onCoilChanged();
 
 signals:
     void newRegisterValue(int,QString&, int);

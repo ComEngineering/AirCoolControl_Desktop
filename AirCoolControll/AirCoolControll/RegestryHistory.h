@@ -15,25 +15,26 @@ public:
     void addSnapshort(std::vector<quint16>& snapshort);
 
 private:
-    void shiftStorage(boost::posix_time::ptime fromTime);
+    void shiftStorage(boost::posix_time::time_duration fromTime);
 
 private:
-    static const int k_preallocSize = 1000; // TODO optimize
     int              m_snapshortSize;
 
     struct SnapshortInfo
     {
-        boost::posix_time::seconds m_timeFromStart;
-        int                        m_offset;
-        SnapshortInfo(boost::posix_time::seconds timeFromStart, int offset) :
+        boost::posix_time::time_duration m_timeFromStart;
+        quint16                    m_value;
+
+        SnapshortInfo(boost::posix_time::seconds timeFromStart, quint16 value) :
             m_timeFromStart(timeFromStart),
-            m_offset(offset) {}
-        SnapshortInfo() : m_timeFromStart(0){}
+            m_value(value) {}
+        SnapshortInfo()  {}
     };
 
+    typedef std::vector<SnapshortInfo> ValueHistory;
+    
     boost::posix_time::ptime   m_startTime;
-    std::vector<SnapshortInfo> m_snapshorts;
-    std::vector<quint16>       m_storage;
+    std::vector<ValueHistory>  m_all_history;
 };
 
 #endif //__REGESTRYHISTORY__
