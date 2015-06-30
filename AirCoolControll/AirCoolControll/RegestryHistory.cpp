@@ -29,35 +29,33 @@ void RegestryHistory::addSnapshort(std::vector<quint16>& snapshort)
     assert(snapshort.size() == m_snapshortSize);
 
     boost::posix_time::time_duration diff = boost::posix_time::second_clock::local_time() - m_startTime;
-    boost::posix_time::time_duration limit = boost::posix_time::seconds (100);// (Configurator::getHistoryLength());
+    boost::posix_time::time_duration limit = boost::posix_time::seconds(Configurator::getHistoryLength());//boost::posix_time::seconds (100);// 
 
-    if (diff > limit)
-    {
-       // boost::posix_time::seconds duration(diff.seconds());
-        shiftStorage(diff - limit);
-        diff = boost::posix_time::second_clock::local_time() - m_startTime;
-    }
-
-    boost::posix_time::seconds a_timeFromStart(diff.seconds());
     for (int i = 0; i < snapshort.size(); i++)
     {
         if (m_all_history[i].size() == 0)
         {
-            m_all_history[i].push_back(SnapshortInfo(a_timeFromStart, snapshort[i]));
+            m_all_history[i].push_back(SnapshortInfo(diff, snapshort[i]));
         }
         else 
         {
-            if (((m_all_history[i].end() - 1)->m_timeFromStart == a_timeFromStart) ||
+            if (((m_all_history[i].end() - 1)->m_timeFromStart == diff) ||
                 (m_all_history[i].size() > 1 && ((m_all_history[i].end() - 1)->m_value == snapshort[i]) && ((m_all_history[i].end() - 2)->m_value == snapshort[i])))
             {
                 (m_all_history[i].end() - 1)->m_value = snapshort[i];
-                (m_all_history[i].end() - 1)->m_timeFromStart = a_timeFromStart;
+                (m_all_history[i].end() - 1)->m_timeFromStart = diff;
             }
             else
             {
-                m_all_history[i].push_back(SnapshortInfo(a_timeFromStart, snapshort[i]));
+                m_all_history[i].push_back(SnapshortInfo(diff, snapshort[i]));
             }
         }
+    }
+    
+    if (diff > limit)
+    {
+        shiftStorage(diff - limit);
+        m_startTime = boost::posix_time::second_clock::local_time();
     }
 }
 

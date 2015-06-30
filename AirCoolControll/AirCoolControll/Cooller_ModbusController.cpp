@@ -23,7 +23,6 @@ Cooller_ModBusController::Cooller_ModBusController(AirCoolControll* mainWindow) 
     m_mainWindow(mainWindow),
     m_recheckTimer(new QTimer(this)),
     m_available(false),
-    //m_comunicationSpeedIndex(6), //9600
     m_externalManager(this),
     m_info(this),
     m_explorers(m_info,this),
@@ -61,11 +60,9 @@ Cooller_ModBusController::Cooller_ModBusController(AirCoolControll* mainWindow) 
     {
         emit newStatus(tr("No config files were found"));
     }
-    else
-    {
-        m_explorers.setConfigList(&m_configs);
-    }
-
+    
+    m_explorers.setConfigList(&m_configs);
+    
     m_mainWindow->getConnectionLog()->setDeviceList(&m_explorers);
     m_explorers.setMdiArea(mainWindow->getMdiArea());
     m_explorers.setListView(m_mainWindow->getConnectionLog());
@@ -240,6 +237,16 @@ bool Cooller_ModBusController::readXMLConfig(const QString& path)
                 {
                     a_parameter.m_isBool = false;
                 }
+
+                boost::property_tree::ptree errorDetectionSection = p.second.get_child("errors", boost::property_tree::ptree());
+                for (const std::pair<std::string, boost::property_tree::ptree> &a_error : errorDetectionSection)
+                {
+                    std::string type = a_error.first;
+                    std::string description = a_error.second.get<std::string>("<xmlattr>.d", "error");
+                    int value = a_error.second.get<int>("<xmlattr>.v"); //mandatory
+                    a_parameter.m_errorDetector.addError(type, description, value);
+                }
+
                 a_map->addVariable(i,name, a_parameter);
             }
         }
@@ -252,6 +259,11 @@ bool Cooller_ModBusController::readXMLConfig(const QString& path)
         return false;
     }
     catch (boost::property_tree::ptree_bad_data& err)
+    {
+        Logger::log(err.what(), Logger::Error);
+        return false;
+    }
+    catch (boost::property_tree::ptree_bad_path& err)
     {
         Logger::log(err.what(), Logger::Error);
         return false;

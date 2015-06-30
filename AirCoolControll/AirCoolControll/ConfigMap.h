@@ -2,7 +2,10 @@
 #define __CONFIGMAP__
 
 #include <string>
-#include <qvector.h>
+#include <map>
+#include <unordered_map>
+#include <vector>
+#include <list>
 #include <Interval.h>
 #include <qstring.h>
 #include <memory>
@@ -30,6 +33,103 @@ public:
         return c;
     }
 
+    class ErrorDetector
+    {
+    public:
+        ErrorDetector(){}
+        
+        struct Error
+        {
+            enum DetectionType
+            {
+                EQ,
+                GT,
+                LT,
+                GTE,
+                LTE,
+                AND,
+                OR,
+                UNSUPPORT
+            };
+            const static std::unordered_map<std::string, DetectionType> s_error_map;
+
+            DetectionType m_type = UNSUPPORT;
+            std::string   m_description;
+            int           m_value;
+
+            Error(std::string name, std::string desc, int v)
+            {
+                std::unordered_map<std::string, DetectionType>::const_iterator f = s_error_map.find(name);
+                if (f == s_error_map.end())
+                {
+                    m_type = UNSUPPORT;
+                }
+                else
+                {
+                    m_type = f->second;
+                    m_description = desc;
+                    m_value = v;
+                }
+            }
+
+            bool check(qint16 value) const 
+            {
+                bool rc = false;
+                switch (m_type) 
+                {
+                case EQ:
+                    rc = value == m_value;
+                    break;
+                case GT:
+                    rc = value > m_value;
+                    break;
+                case LT:
+                    rc = value < m_value;
+                    break;
+                case GTE:
+                    rc = value >= m_value;
+                    break;
+                case LTE:
+                    rc = value <= m_value;
+                    break;
+                case AND:
+                    rc = value & m_value;
+                    break;
+                case OR:
+                    rc = value | m_value;
+                    break;
+                }
+
+                return rc;
+            }
+        };
+
+        void addError(std::string name, std::string desc, int v)
+        {
+            Error e(name, desc, v);
+            if (e.m_type != Error::UNSUPPORT)
+            {
+                m_detection_list.push_back(e);
+            }
+        }
+
+        bool isValid(qint16 value) const
+        {
+            bool rc = true;
+            for (const auto& i : m_detection_list)
+            {
+                if (i.check(value))
+                {
+                    rc = false;
+                    break;
+                }
+            }
+            return rc;
+        }
+    private:
+        std::vector<Error> m_detection_list;
+    };
+
     typedef struct 
     {
         int                     m_registerNumber;
@@ -38,8 +138,9 @@ public:
         ConfigMap::RegisterType m_type;
         int                     m_bitNumber;
         std::string             m_decodeMethod;
-        float                   m_minValue;
-        float                   m_maxValue;
+        int                     m_minValue;
+        int                     m_maxValue;
+        ErrorDetector           m_errorDetector;
     } Parameter;
 
     typedef std::vector<std::pair<std::string, std::string>> ParameterList;

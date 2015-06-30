@@ -83,6 +83,18 @@ void CoolerStateWidget::clear()
             a_widget->removeRow(0);
 }
 
+void CoolerStateWidget::registerSet(QTableWidgetItem *item)
+{
+    QString text = item->data(Qt::DisplayRole).toString();
+    bool ok;
+    int d = text.toInt(&ok);
+    if (ok)
+    {
+        QString name = item->data(Qt::UserRole).toString();
+        emit newRegisterValue(ConfigMap::OUTPUT_REGISTER,name, d);
+    }
+}
+
 void CoolerStateWidget::onCoilChanged()
 {
     QToolButton* button = qobject_cast<QToolButton*>(sender());

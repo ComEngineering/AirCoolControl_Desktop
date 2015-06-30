@@ -23,9 +23,9 @@ private:
     struct SnapshortInfo
     {
         boost::posix_time::time_duration m_timeFromStart;
-        quint16                    m_value;
+        quint16                          m_value;
 
-        SnapshortInfo(boost::posix_time::seconds timeFromStart, quint16 value) :
+        SnapshortInfo(boost::posix_time::time_duration timeFromStart, quint16 value) :
             m_timeFromStart(timeFromStart),
             m_value(value) {}
         SnapshortInfo()  {}

@@ -3,6 +3,9 @@
 #include "DeviceInfo.h"
 #include <algorithm>
 
+using ert = ConfigMap::ErrorDetector::Error;
+const std::unordered_map<std::string, ert::DetectionType> ert::s_error_map = { { "EQ", ert::EQ }, { "GT", ert::GT }, { "LT", ert::LT }, { "GTE", ert::GTE }, { "LTE", ert::LTE }, { "AND", ert::AND }, { "OR", ert::OR } };
+
 ConfigMap::ConfigMap(const std::string& vendor, const std::string& product, const std::string& versionMin, const std::string& versionMax) :
     m_vendor(vendor),
     m_product(product),
@@ -57,6 +60,11 @@ unsigned int  ConfigMap::getValue(const std::string& name, const std::vector<qui
     int index = p.m_registerNumber - m_registersIntervals[p.m_type].first;
   
     qint16 ret = array[index];
+
+    if (!f->second.m_errorDetector.isValid(ret))
+    {
+        return -1;
+    }
 
     if (p.m_isBool)
     {

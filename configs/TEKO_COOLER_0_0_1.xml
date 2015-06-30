@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Config>
-    <Vendor>Teco</Vendor>
+    <Vendor>****</Vendor>
     <Product>Aircool</Product>
     <Version>
         <min>0.0.0</min>
@@ -31,14 +31,56 @@
 		  <E_FOULTFREE R="1" B="5">Неисправность фрикулинга</E_FOULTFREE>
 		
 		  <!-- Input registers -->
-		  <TINSIDE R="2" D="AT">Температура внутренняя (от -55 до  +125°C)</TINSIDE>
-		  <TOUTSIDE R="3" D="AT">Температура окружающая (от -55 до  +125°C) </TOUTSIDE>
-		  <TKONDENSATOR R="4" D="AT">Температура на сливе конденсатора (от -55 до  +125°C)</TKONDENSATOR>
-		  <TKARTER R="5" D="AT">Температура картера (от -55 до  +125°C)</TKARTER> 
-		  <TOUTFREEZER R="6" D="AT">Температура на выходе испарителя (от -55 до  +125°C)</TOUTFREEZER>
-		  <TINFREEZER R="7" D="AT">Температура S2 на всасывающей трубе на выходе испарителя(от -55 до  +125°C)</TINFREEZER>
-		  <TOUTFREECOOLER R="8" D="AT">Температура наружного воздуха на выходе фрикулинга (от -55 до  +125°C)</TOUTFREECOOLER>
-		  <TINFREECOOLER R="9" D="AT">Температура на входе фрикулинга (внутренний поток) (от -55 до  +125°C)</TINFREECOOLER>
+		  <TINSIDE R="2" D="AT">Температура внутренняя (от -55 до  +125°C)
+         <errors>
+           <EQ v="256" d="обрыв"></EQ>
+           <EQ v="512" d="К.З."></EQ>
+         </errors>
+      </TINSIDE>
+		  <TOUTSIDE R="3" D="AT">Температура окружающая (от -55 до  +125°C) 
+        <errors>
+          <EQ v="256" d="обрыв"></EQ>
+          <EQ v="512" d="К.З."></EQ>
+        </errors>
+      </TOUTSIDE>
+		  <TKONDENSATOR R="4" D="AT">Температура на сливе конденсатора (от -55 до  +125°C)
+        <errors>
+          <EQ v="256" d="обрыв"></EQ>
+          <EQ v="512" d="К.З."></EQ>
+        </errors>
+      </TKONDENSATOR>
+		  <TKARTER R="5" D="AT">
+        Температура картера (от -55 до  +125°C)
+        <errors>
+          <EQ v="256" d="обрыв"></EQ>
+          <EQ v="512" d="К.З."></EQ>
+        </errors>
+      </TKARTER> 
+		  <TOUTFREEZER R="6" D="AT">
+        Температура на выходе испарителя (от -55 до  +125°C)
+        <errors>
+          <EQ v="256" d="обрыв"></EQ>
+          <EQ v="512" d="К.З."></EQ>
+        </errors>
+      </TOUTFREEZER>
+		  <TINFREEZER R="7" D="AT">Температура S2 на всасывающей трубе на выходе испарителя(от -55 до  +125°C)
+        <errors>
+          <EQ v="256" d="обрыв"></EQ>
+          <EQ v="512" d="К.З."></EQ>
+        </errors>
+      </TINFREEZER>
+		  <TOUTFREECOOLER R="8" D="AT">Температура наружного воздуха на выходе фрикулинга (от -55 до  +125°C)
+        <errors>
+          <EQ v="256" d="обрыв"></EQ>
+          <EQ v="512" d="К.З."></EQ>
+        </errors>
+      </TOUTFREECOOLER>
+		  <TINFREECOOLER R="9" D="AT">Температура на входе фрикулинга (внутренний поток) (от -55 до  +125°C)
+        <errors>
+          <EQ v="256" d="обрыв"></EQ>
+          <EQ v="512" d="К.З."></EQ>
+        </errors>
+      </TINFREECOOLER>
 		  <FANSPEEDKOND R="10">Скорость вращения вентилятора конденсатора  % </FANSPEEDKOND>
 		  <!--
 		  <FANSPEEDFREZER R="11">Скорость вращения вентилятора испарителя  % </FANSPEEDFREZER>
