@@ -4,7 +4,9 @@
 #include <algorithm>
 
 using ert = ConfigMap::ErrorDetector::Error;
-const std::unordered_map<std::string, ert::DetectionType> ert::s_error_map = { { "EQ", ert::EQ }, { "GT", ert::GT }, { "LT", ert::LT }, { "GTE", ert::GTE }, { "LTE", ert::LTE }, { "AND", ert::AND }, { "OR", ert::OR } };
+const std::unordered_map<std::string, ert::DetectionType> ert::s_error_map = { 
+    { "EQ", ert::EQ }, { "GT", ert::GT }, { "LT", ert::LT }, { "GTE", ert::GTE }, { "LTE", ert::LTE }, { "AND", ert::AND }, { "XOR", ert::XOR } 
+};
 
 ConfigMap::ConfigMap(const std::string& vendor, const std::string& product, const std::string& versionMin, const std::string& versionMax) :
     m_vendor(vendor),
@@ -49,21 +51,22 @@ bool ConfigMap::haveVariableWithName(const std::string& name) const
     return f != m_map.end();
 }
 
-unsigned int  ConfigMap::getValue(const std::string& name, const std::vector<quint16>& array) const
+QVariant ConfigMap::getValue(const std::string& name, const std::vector<quint16>& array) const
 {
     ParameterMap::const_iterator f = findParameter(name);
     if (f == m_map.end())
-        return -1;
+        return QVariant(QString(QObject::tr("undefined")));
 
     Parameter p = f->second;
     
     int index = p.m_registerNumber - m_registersIntervals[p.m_type].first;
   
-    qint16 ret = array[index];
+    int ret = array[index];
 
-    if (!f->second.m_errorDetector.isValid(ret))
+    QString errorDescription;
+    if (!f->second.m_errorDetector.isValid(ret,errorDescription))
     {
-        return -1;
+        return QVariant(errorDescription);
     }
 
     if (p.m_isBool)
@@ -74,7 +77,7 @@ unsigned int  ConfigMap::getValue(const std::string& name, const std::vector<qui
     if (!p.m_decodeMethod.empty())
         ret = decodeWithMethod(ret, p.m_decodeMethod);
 
-    return ret;
+    return QVariant(ret);
 }
 
 bool ConfigMap::isVariableBool(const std::string& name, int& bitNumber)

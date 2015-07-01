@@ -8,6 +8,7 @@
 #include <list>
 #include <Interval.h>
 #include <qstring.h>
+#include <qvariant.h>
 #include <memory>
 #include "DeviceInfo.h"
 #include "VersionStorage.h"
@@ -48,7 +49,7 @@ public:
                 GTE,
                 LTE,
                 AND,
-                OR,
+                XOR,
                 UNSUPPORT
             };
             const static std::unordered_map<std::string, DetectionType> s_error_map;
@@ -95,8 +96,8 @@ public:
                 case AND:
                     rc = value & m_value;
                     break;
-                case OR:
-                    rc = value | m_value;
+                case XOR:
+                    rc = value ^ m_value;
                     break;
                 }
 
@@ -113,7 +114,7 @@ public:
             }
         }
 
-        bool isValid(qint16 value) const
+        bool isValid(qint16 value,QString& errorDescription) const
         {
             bool rc = true;
             for (const auto& i : m_detection_list)
@@ -121,6 +122,7 @@ public:
                 if (i.check(value))
                 {
                     rc = false;
+                    errorDescription = QString::fromStdString(i.m_description);
                     break;
                 }
             }
@@ -150,7 +152,7 @@ public:
     ConfigMap::RegisterType getVariableType(const std::string& name) const;
     int  getRegisterNumber(const std::string& name) const;
     bool haveVariableWithName(const std::string& name) const;
-    unsigned int  getValue(const std::string& name, const std::vector<quint16>& array) const;
+    QVariant getValue(const std::string& name, const std::vector<quint16>& array) const;
     bool isVariableBool(const std::string& name, int& bitNumber);
     Interval& getInterval(int n);
     bool  isSupport(const DeviceInfoShared info) const;

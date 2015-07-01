@@ -19,25 +19,25 @@ public:
     DeviceExplorer(const ConfigMapShared config, ModbusDriverShared modbus, DeviceInfoShared info, QObject *parent = NULL);
     ~DeviceExplorer();
 
-    bool  getRegisterValue(const std::string & key,int& value);
-    void  setRegisterValue(const std::string & key,int value);
-    void  setCoilState(const std::string & key, bool state);
+    QVariant getRegisterValue(const std::string & key);
+    void     setRegisterValue(const std::string & key,int value);
+    void     setCoilState(const std::string & key, bool state);
 
-    QString errorString();
+    QString  errorString();
     ConfigMapShared getCurrentConfig(){ return m_currentMap; }
-    void  stopTasks();
+    void     stopTasks();
 
-    void updateStateWidget(void);
+    void     updateStateWidget(void);
 
-    void activateView(QMdiArea * area);
+    void     activateView(QMdiArea * area);
 
-    void somethingChanged();
+    void     somethingChanged();
 
-    void setListView(ConnectionLog* view);
+    void     setListView(ConnectionLog* view);
 
 private slots:
-    void sendValueToDevice(int, QString&, int);
-    void viewStateChanged(Qt::WindowStates , Qt::WindowStates);
+    void     sendValueToDevice(int, QString&, int);
+    void     viewStateChanged(Qt::WindowStates , Qt::WindowStates);
 
 private:
     DeviceInfo                m_info;

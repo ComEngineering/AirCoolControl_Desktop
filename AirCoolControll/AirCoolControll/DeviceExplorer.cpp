@@ -48,18 +48,13 @@ void DeviceExplorer::stopTasks()
     m_modbus->removeTaskWithID(m_info.getID());
 }
 
-bool  DeviceExplorer::getRegisterValue(const std::string & key,int& value)
+QVariant  DeviceExplorer::getRegisterValue(const std::string & key)
 {
-    if (! m_currentMap->haveVariableWithName(key))
-        return false;
-
     ConfigMap::RegisterType a_type = m_currentMap->getVariableType(key);
     if (m_registers[a_type] == NULL)
-        return false;
+        return QVariant(QString(QObject::tr("undefined")));
 
-    value = m_currentMap->getValue(key, m_localPull[a_type]);
-    
-    return true;
+    return m_currentMap->getValue(key, m_localPull[a_type]);
 }
 
 void DeviceExplorer::setRegisterValue(const std::string & key,int value)
@@ -69,8 +64,10 @@ void DeviceExplorer::setRegisterValue(const std::string & key,int value)
         int bitNumber;
         if (m_currentMap->isVariableBool(key, bitNumber))
         {
-            int currentValue;
-            getRegisterValue(key, currentValue);
+            bool isValid;
+            int currentValue = getRegisterValue(key).toInt(&isValid);
+            if (!isValid)
+                return;
             value = (bool)value ? currentValue | (1 << bitNumber) : currentValue & ~(1 << bitNumber);
         }
         m_modbus->writeRegister(m_info.getID(), m_info.getSpeed(), m_currentMap->getRegisterNumber(key), value);
@@ -112,11 +109,7 @@ void DeviceExplorer::updateStateWidget()
 
         for (int i = 0; i < parameters.size(); i++)
         {
-            int value;
-            if (getRegisterValue(parameters[i].first, value))
-            {
-                m_view->updateParameter(i, value, it);
-            }
+            m_view->updateParameter(i, getRegisterValue(parameters[i].first), it);
         }
     }
 }

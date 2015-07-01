@@ -66,13 +66,27 @@ void CoolerStateWidget::setParameterList(const std::vector<std::pair<std::string
     
 }
 
-void CoolerStateWidget::updateParameter(int n, int value, ConfigMap::RegisterType type)
+void CoolerStateWidget::updateParameter(int n, QVariant value, ConfigMap::RegisterType type)
 {
     m_tables[type]->blockSignals(true);
     
     QTableWidgetItem *aItem = m_tables[type]->item(n, 0);
-    if(NULL != aItem)
-        aItem->setText(QString::number(value));
+    if (NULL != aItem)
+    {
+        bool isValid;
+        int number = value.toInt(&isValid);
+        if (isValid)
+        {
+            aItem->setText(QString::number(number));
+            aItem->setBackgroundColor(QColor(Qt::white));
+        }
+        else
+        {
+            aItem->setText(value.toString());
+            aItem->setBackgroundColor(QColor(Qt::red));
+        }
+    }
+
     m_tables[type]->blockSignals(false);
 }
 

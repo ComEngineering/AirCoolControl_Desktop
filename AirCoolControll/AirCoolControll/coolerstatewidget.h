@@ -16,7 +16,7 @@ public:
 
     void setParameterList(const std::vector<std::pair<std::string, std::string>>& list, ConfigMap::RegisterType type);
     
-    void updateParameter(int n, int value, ConfigMap::RegisterType type);
+    void updateParameter(int n, QVariant value, ConfigMap::RegisterType type);
 
     void clear();
 
