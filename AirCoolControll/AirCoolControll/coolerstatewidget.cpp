@@ -12,6 +12,9 @@ CoolerStateWidget::CoolerStateWidget(QWidget *parent)
     m_tables[ConfigMap::OUTPUT_REGISTER] = ui.outputParametersTable;
     m_tables[ConfigMap::COIL] = ui.coilsTable;
     connect(ui.outputParametersTable, SIGNAL(itemChanged(QTableWidgetItem *)), this, SLOT(registerSet(QTableWidgetItem *)));
+
+    ui.frame->resize(500,ui.frame->height());
+    initPlotter();
 }
 
 CoolerStateWidget::~CoolerStateWidget()
@@ -90,13 +93,6 @@ void CoolerStateWidget::updateParameter(int n, QVariant value, ConfigMap::Regist
     m_tables[type]->blockSignals(false);
 }
 
-void CoolerStateWidget::clear()
-{
-    for (QTableWidget* a_widget : m_tables)
-        while ( a_widget->rowCount())
-            a_widget->removeRow(0);
-}
-
 void CoolerStateWidget::registerSet(QTableWidgetItem *item)
 {
     QString text = item->data(Qt::DisplayRole).toString();
@@ -119,4 +115,26 @@ void CoolerStateWidget::onCoilChanged()
     int d = button->isChecked() ? 1 : 0;
     button->setText(d ? tr("On") : tr("Off"));
     emit newRegisterValue(ConfigMap::COIL, name, d);
+}
+
+void CoolerStateWidget::initPlotter(void)
+{
+    ui.plotView->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes | QCP::iSelectLegend | QCP::iSelectPlottables);
+    ui.plotView->xAxis->setRange(0, 3600);
+    ui.plotView->yAxis->setRange(-20, 100);
+    ui.plotView->axisRect()->setupFullAxesBox();
+
+    ui.plotView->plotLayout()->insertRow(0);
+    ui.plotView->plotLayout()->addElement(0, 0, new QCPPlotTitle(ui.plotView, tr("History")));
+
+    ui.plotView->xAxis->setLabel(tr("Time"));
+    ui.plotView->xAxis->setTickLabelType(QCPAxis::ltDateTime);
+    ui.plotView->yAxis->setLabel(tr("Value"));
+
+    ui.plotView->legend->setVisible(true);
+    QFont legendFont = font();
+    legendFont.setPointSize(10);
+    ui.plotView->legend->setFont(legendFont);
+    ui.plotView->legend->setSelectedFont(legendFont);
+    ui.plotView->legend->setSelectableParts(QCPLegend::spItems);
 }

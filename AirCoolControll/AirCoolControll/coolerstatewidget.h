@@ -17,8 +17,8 @@ public:
     void setParameterList(const std::vector<std::pair<std::string, std::string>>& list, ConfigMap::RegisterType type);
     
     void updateParameter(int n, QVariant value, ConfigMap::RegisterType type);
-
-    void clear();
+private:
+    void initPlotter(void);
 
 private slots:
     void onCoilChanged();
