@@ -12,7 +12,7 @@ DeviceExplorer::DeviceExplorer(const ConfigMapShared config, ModbusDriverShared 
     m_mdi(NULL),
     m_listView(NULL)
 {
-    m_view = new CoolerStateWidget();
+    m_view = new CoolerStateWidget(this);
     int regCount = 0;
     
     for (ConfigMap::RegisterType i = ConfigMap::REGISTER_PULL_FIRST; i < ConfigMap::REGISTER_PULL_COUNT; ConfigMap::NEXT(i))
@@ -30,8 +30,6 @@ DeviceExplorer::DeviceExplorer(const ConfigMapShared config, ModbusDriverShared 
         }
     }
     m_history.setSnapshortSize(regCount);
-
-    connect(m_view, SIGNAL(newRegisterValue(int, QString&, int)), this, SLOT(sendValueToDevice(int, QString&, int)));
 }
 
 DeviceExplorer::~DeviceExplorer()

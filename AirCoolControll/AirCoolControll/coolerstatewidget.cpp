@@ -1,9 +1,11 @@
 #include "coolerstatewidget.h"
 #include <qtoolbutton.h>
 #include <QMutexLocker>
+#include "DeviceExplorer.h"
 
-CoolerStateWidget::CoolerStateWidget(QWidget *parent)
-    : QWidget(parent)
+CoolerStateWidget::CoolerStateWidget(DeviceExplorer *parent)
+    : QWidget(NULL),
+    m_parent(parent)
 { 
     ui.setupUi(this);
 
@@ -29,10 +31,8 @@ void CoolerStateWidget::timerEvent(QTimerEvent *event)
 {
     QMutexLocker locker(&m_updateMutex);
 
-    /*for (QWidget* i : m_tables)
-        i->update();*/
-
-    update();
+    for (auto i : m_tables)
+        i->update();
 }
 
 void CoolerStateWidget::setParameterList(const std::vector<std::pair<std::string, std::string>>& list, ConfigMap::RegisterType type)
@@ -58,7 +58,12 @@ void CoolerStateWidget::setParameterList(const std::vector<std::pair<std::string
     {
         QTableWidgetItem* newItem = new QTableWidgetItem(QString::fromStdString(a_line.second));
         newItem->setFlags(Qt::ItemIsEnabled);
-        m_tables[type]->setItem(currentRow, 1, newItem);
+        m_tables[type]->setItem(currentRow, 2, newItem);
+
+        QCheckBox* check = new QCheckBox();
+        m_tables[type]->setCellWidget(currentRow, 1, check);
+        check->setProperty("name", QVariant(QString::fromStdString(a_line.first)));
+        connect(check, SIGNAL(clicked()), this, SLOT(onPlotCheckChanged()));
 
         if (type == ConfigMap::COIL)
         {
@@ -116,7 +121,7 @@ void CoolerStateWidget::registerSet(QTableWidgetItem *item)
     if (ok)
     {
         QString name = item->data(Qt::UserRole).toString();
-        emit newRegisterValue(ConfigMap::OUTPUT_REGISTER,name, d);
+        m_parent->sendValueToDevice(ConfigMap::OUTPUT_REGISTER, name, d);
     }
 }
 
@@ -129,7 +134,29 @@ void CoolerStateWidget::onCoilChanged()
     QString name = var.toString();
     int d = button->isChecked() ? 1 : 0;
     button->setText(d ? tr("On") : tr("Off"));
-    emit newRegisterValue(ConfigMap::COIL, name, d);
+    m_parent->sendValueToDevice(ConfigMap::OUTPUT_REGISTER, name, d);
+}
+
+void CoolerStateWidget::onPlotCheckChanged()
+{
+    QCheckBox* check = qobject_cast<QCheckBox*>(sender());
+    if (!check) return;
+    QVariant var = check->property("name");
+    if (!var.isValid()) return;
+    QString name = var.toString();
+    
+    if (check->isChecked())
+    {
+        QCPGraph* graph = ui.plotView->addGraph();
+        m_plotList[name] = graph;
+        graph->setName(QString::fromStdString(m_parent->getCurrentConfig()->getParameterDescription(name.toStdString())));    
+    }
+    else
+    {
+        ui.plotView->removeGraph(m_plotList[name]);
+        m_plotList.erase(name);
+    }
+    ui.plotView->replot();
 }
 
 void CoolerStateWidget::initPlotter(void)

@@ -51,6 +51,15 @@ bool ConfigMap::haveVariableWithName(const std::string& name) const
     return f != m_map.end();
 }
 
+std::string ConfigMap::getParameterDescription(const std::string& name) const
+{
+    std::string rc;
+    ParameterMap::const_iterator f = findParameter(name);
+    if (f != m_map.end())
+        rc = f->second.m_description;
+    return rc;
+}
+
 QVariant ConfigMap::getValue(const std::string& name, const std::vector<quint16>& array) const
 {
     ParameterMap::const_iterator f = findParameter(name);

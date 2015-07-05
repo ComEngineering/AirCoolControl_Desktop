@@ -159,6 +159,7 @@ public:
     ParameterList getParametersList(ConfigMap::RegisterType e);
     void  setUI_Config(const std::string& type, const std::string& configFile);
     ParameterMap::const_iterator findParameter(const std::string& name) const;
+    std::string getParameterDescription(const std::string& name) const;
 
 private:
     static qint16 decodeWithMethod(qint16 value, const std::string& method);

@@ -35,8 +35,9 @@ public:
 
     void     setListView(ConnectionLog* view);
 
-private slots:
     void     sendValueToDevice(int, QString&, int);
+
+private slots:
     void     viewStateChanged(Qt::WindowStates , Qt::WindowStates);
 
 private:
