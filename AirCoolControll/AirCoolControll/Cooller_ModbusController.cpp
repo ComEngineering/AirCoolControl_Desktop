@@ -42,6 +42,9 @@ Cooller_ModBusController::Cooller_ModBusController(AirCoolControll* mainWindow) 
     connect(&m_externalManager, SIGNAL(listChanged()), this, SLOT(externalListChanged()));
 
     qRegisterMetaType<DeviceInfoShared>("DeviceInfoShared");
+    qRegisterMetaType<QSerialPort::SerialPortError>("QSerialPort::SerialPortError");
+    qRegisterMetaType<QVector<int>>("QVector<int>");
+
     connect(&m_info, SIGNAL(deviceDetected(DeviceInfoShared)), this, SLOT(addDevice(DeviceInfoShared)));
     
     connect(&m_info, SIGNAL(uartDisconnected(const QString&)), &m_explorers, SLOT(removeDevicesWithUART(const QString&)));
@@ -78,8 +81,6 @@ Cooller_ModBusController::~Cooller_ModBusController()
 void Cooller_ModBusController::updateState(void)
 {
     checkConnectionState();
-
-    m_explorers.updateDeviceTick();
 }
 
 void Cooller_ModBusController::allertError(QString errorDescription)
@@ -145,7 +146,27 @@ void Cooller_ModBusController::checkConnectionState(void)
 
 int  Cooller_ModBusController::speedIndexToSpeed(int speedIndex)
 {
-    return 9600; // TO DO convert
+    const static int convertStorage[] = {
+        110,
+        300,
+        600,
+        1200,
+        2400,
+        4800,
+        9600,
+        14400,
+        19200,
+        38400,
+        56000,
+        57600,
+        115200,
+        128000,
+        256000
+    };
+
+    assert(speedIndex >= 0 && speedIndex < sizeof(convertStorage) / sizeof(int));
+    
+    return convertStorage[speedIndex]; 
 }
 
 void Cooller_ModBusController::performConnection(int uart_number, int deviceIndex, int speedIndex)
@@ -156,10 +177,7 @@ void Cooller_ModBusController::performConnection(int uart_number, int deviceInde
     int speed = speedIndexToSpeed(speedIndex);
 
     ModbusDriverShared modbus = m_info.getDriver(uart_number);
-    if (modbus->readyToWork())
-    {
-        modbus->requestDeviceAproval(deviceIndex,speed);
-    }
+    modbus->requestDeviceAproval(deviceIndex,speed);
 }
 
 void Cooller_ModBusController::sendConfiguration(void)

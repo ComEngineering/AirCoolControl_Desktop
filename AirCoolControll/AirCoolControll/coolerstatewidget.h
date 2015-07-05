@@ -5,6 +5,7 @@
 #include "ui_coolerstatewidget.h"
 #include <qstandarditemmodel.h>
 #include "ConfigMap.h"
+#include "qmutex.h"
 
 class CoolerStateWidget : public QWidget
 {
@@ -27,9 +28,13 @@ private slots:
 signals:
     void newRegisterValue(int,QString&, int);
 
+protected:
+    void timerEvent(QTimerEvent *event);
+
 private:
     Ui::CoolerStateWidget ui;    
     QTableWidget*         m_tables[ConfigMap::REGISTER_PULL_COUNT];
+    mutable  QMutex       m_updateMutex;
 };
 
 #endif // COOLERSTATEWIDGET_H

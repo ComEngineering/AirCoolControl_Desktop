@@ -7,8 +7,6 @@
 ModBusUART_Impl::ModBusUART_Impl(const QString& name, QObject *parent)
     : QObject(parent)
 {
- // connect(&m_port, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(communicationError(QSerialPort::SerialPortError)));
-
     m_port.setPortName(name);
 }
 
@@ -21,6 +19,7 @@ bool ModBusUART_Impl::startRequest(int speed)
 {
     if (m_port.open(QIODevice::ReadWrite)) 
     {
+        connect(&m_port, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(communicationError(QSerialPort::SerialPortError)));
         return  
             m_port.setDataBits(QSerialPort::Data8) &&
             m_port.setFlowControl(QSerialPort::NoFlowControl) &&
@@ -34,6 +33,7 @@ bool ModBusUART_Impl::startRequest(int speed)
 
 void ModBusUART_Impl::stopRequest(void)
 {
+    disconnect(&m_port, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(communicationError(QSerialPort::SerialPortError)));
     m_port.close();
 }
 

@@ -2,12 +2,10 @@
 #define MODBUSDRIVER_H
 
 #include <QObject>
-#include <qmutex.h>
 #include <map>
 #include <memory>
 #include <functional>
 #include "VersionStorage.h"
-#include "modbusuart_impl.h"
 #include "ModbusPuller.h"
 #include "DeviceInfo.h"
 
@@ -38,10 +36,8 @@ private slots:
     void UARTfail(void);
 
 private:
-    ModBusUART_Impl*      m_modbus;
     ModbusPuller          m_puller;
     QString               m_currentPortName;
-    mutable QMutex *      m_mutex;
 };
 
 typedef std::shared_ptr<ModbusDriver> ModbusDriverShared;

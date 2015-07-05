@@ -119,7 +119,7 @@ ModbusDriverShared UART_DeviceStorage::getDriver(const QString& name)
 
 void UART_DeviceStorage::releaseDriver(const QString& name)
 {
-    for (auto i : m_storage)
+    for (auto& i : m_storage)
     {
         if (i.second.first == name)
         {

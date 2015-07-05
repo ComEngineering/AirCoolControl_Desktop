@@ -14,7 +14,7 @@ AirCoolControll::AirCoolControll(QWidget *parent)
     m_uartDisconnector = new UART_DisconnectWindow(m_comunicator,this);
     m_uartConnector->setController(m_comunicator);
     
-    connect(m_comunicator, SIGNAL(newStatus(const QString&)), ui.statusBar, SLOT(showMessage(const QString&, int)));
+    connect(m_comunicator, SIGNAL(newStatus(const QString&)), this,SLOT(newStatus(const QString&)));
 
    ///  Toolbox actions  ///////////////////////////////////////////////////////////////
 
@@ -80,6 +80,11 @@ void AirCoolControll::showConnectToHostDialog()
     QSize connectorSize = m_internetConnector->frameSize();
 
     m_internetConnector->exec();
+}
+
+void AirCoolControll::newStatus(const QString& statusString)
+{
+    ui.statusBar->showMessage(statusString);
 }
 
 void AirCoolControll::newActiveWindow(QMdiSubWindow* w)

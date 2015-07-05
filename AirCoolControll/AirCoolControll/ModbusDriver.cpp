@@ -9,29 +9,21 @@ ModbusDriver::ModbusDriver(const QString& name, QObject *parent)
     : QObject(parent),
     m_puller(this)
 { 
-    m_modbus =  new ModBusUART_Impl(name,this);
-    connect(m_modbus, SIGNAL(fatalError()), this, SLOT(UARTfail()));
-    
-    if (m_modbus->isOpen())
-    {
-        m_currentPortName = name;
-        m_puller.startPulling(m_modbus);
-        m_puller.start();
-    }
+    m_currentPortName = name;
+    m_puller.startPulling(name);
+    m_puller.start();
 }
 
 ModbusDriver::~ModbusDriver()
 {
     m_puller.stopPulling();
     m_puller.wait();
-    delete m_modbus;
 }
 
 void ModbusDriver::UARTfail()
 {
     m_puller.stopPulling();
     m_puller.wait();
-    delete m_modbus;
     emit connectionFail();
 }
 
@@ -67,9 +59,4 @@ void ModbusDriver::setCoil(quint16 id, int speed, quint16 regNumber, bool state)
 void ModbusDriver::removeTaskWithID(int id)
 {
     m_puller.removeTaskWithID(id);
-}
-
-bool ModbusDriver::readyToWork() const
-{
-    return  (m_modbus != NULL && m_modbus->isOpen());
 }

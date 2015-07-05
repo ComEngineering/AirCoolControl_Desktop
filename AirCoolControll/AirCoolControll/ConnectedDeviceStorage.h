@@ -30,8 +30,6 @@ public:
     void removeDeviceFromList(int n);
     int  findDeviceIndex(const QString& uart_name, int id) const;
 
-    void updateDeviceTick();
-
     bool setActiveIndex(int n);
 
     static const int DISCONNECT_ALL = -1;

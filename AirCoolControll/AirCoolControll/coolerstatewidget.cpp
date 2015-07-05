@@ -1,5 +1,6 @@
 #include "coolerstatewidget.h"
 #include <qtoolbutton.h>
+#include <QMutexLocker>
 
 CoolerStateWidget::CoolerStateWidget(QWidget *parent)
     : QWidget(parent)
@@ -15,11 +16,23 @@ CoolerStateWidget::CoolerStateWidget(QWidget *parent)
 
     ui.frame->resize(500,ui.frame->height());
     initPlotter();
+    setUpdatesEnabled(true);
+    startTimer(500);
 }
 
 CoolerStateWidget::~CoolerStateWidget()
 {
 
+}
+
+void CoolerStateWidget::timerEvent(QTimerEvent *event)
+{
+    QMutexLocker locker(&m_updateMutex);
+
+    /*for (QWidget* i : m_tables)
+        i->update();*/
+
+    update();
 }
 
 void CoolerStateWidget::setParameterList(const std::vector<std::pair<std::string, std::string>>& list, ConfigMap::RegisterType type)
@@ -71,7 +84,9 @@ void CoolerStateWidget::setParameterList(const std::vector<std::pair<std::string
 
 void CoolerStateWidget::updateParameter(int n, QVariant value, ConfigMap::RegisterType type)
 {
-    m_tables[type]->blockSignals(true);
+    QMutexLocker locker(&m_updateMutex);
+
+   // m_tables[type]->blockSignals(true);
     
     QTableWidgetItem *aItem = m_tables[type]->item(n, 0);
     if (NULL != aItem)
@@ -90,7 +105,7 @@ void CoolerStateWidget::updateParameter(int n, QVariant value, ConfigMap::Regist
         }
     }
 
-    m_tables[type]->blockSignals(false);
+   // m_tables[type]->blockSignals(false);
 }
 
 void CoolerStateWidget::registerSet(QTableWidgetItem *item)

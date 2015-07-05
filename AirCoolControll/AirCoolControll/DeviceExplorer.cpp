@@ -142,13 +142,14 @@ void DeviceExplorer::somethingChanged()
     }
 
     m_history.addSnapshort(snapshort);
+    updateStateWidget();
 }
 
 void DeviceExplorer::viewStateChanged(Qt::WindowStates oldState, Qt::WindowStates newState)
 {
     if (newState == Qt::WindowActive && m_listView)
     {
-        m_listView->activateDevice(m_info.getUART(), m_info.getID());
+        m_listView->activateDevice(m_info.getUART(), m_info.getID());//TODO identification device
     }
 }
 

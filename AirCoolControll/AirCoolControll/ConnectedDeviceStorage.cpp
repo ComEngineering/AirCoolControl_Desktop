@@ -83,16 +83,6 @@ void ConnectedDeviceStorage::removeDeviceFromList(int n)
     }
 }
 
-void ConnectedDeviceStorage::updateDeviceTick()
-{
-    for (auto it = begin(); it != end(); it++)
-    {
-        DeviceExplorerShared a_device = (*it)->getExplorer();
-        if (a_device)
-            a_device->updateStateWidget();
-    }
-}
-
 bool ConnectedDeviceStorage::setActiveIndex(int n)
 {
     bool rc = false;

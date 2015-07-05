@@ -45,6 +45,9 @@ void ModbusPuller::run(void)
         if (m_isStoped)
             QThread::yieldCurrentThread();
 
+        if (!m_modbus)
+            m_modbus = new ModBusUART_Impl(m_uartName);
+
         for (QList<PullerTaskShared>::iterator task = m_tasks.begin(); task != m_tasks.end(); )
         {
             if ((*task)->isItTimeToDo() && true == (*task)->proceed(m_modbus))
@@ -92,12 +95,16 @@ void ModbusPuller::run(void)
             }
         }
     }
+    
+    if (m_modbus)
+        delete m_modbus;
+
     m_endProcessingSemaphore.release(1);
 }
 
-void ModbusPuller::startPulling(ModBusUART_Impl* modbus)
+void ModbusPuller::startPulling(const QString& uartName)
 {
-    m_modbus = modbus;
+    m_uartName = uartName;
     m_isStoped = false;
 }
 

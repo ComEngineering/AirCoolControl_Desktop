@@ -12,7 +12,7 @@ class ModBusUART_Impl : public QObject
     Q_OBJECT
 
 public:
-    ModBusUART_Impl(const QString& info,QObject *parent);
+    ModBusUART_Impl(const QString& info,QObject *parent = NULL);
     ~ModBusUART_Impl();
 
     void   setSpeed(int speed);
