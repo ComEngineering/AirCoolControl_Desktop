@@ -37,6 +37,8 @@ public:
 
     void     sendValueToDevice(int, QString&, int);
 
+    bool     getHistoryForRegesty(const QString& name, QVector<qreal>& timeLabels, QVector<qreal>& values) const;
+
 private slots:
     void     viewStateChanged(Qt::WindowStates , Qt::WindowStates);
 

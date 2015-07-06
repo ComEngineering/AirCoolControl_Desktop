@@ -42,7 +42,8 @@ private:
     mutable  QMutex              m_updateMutex;
     std::map<QString,QCPGraph*>  m_plotList;
     DeviceExplorer *             m_parent;
-
+    bool                         m_needSetTimeRange;
+    int                          m_colorEnumerator;
 };
 
 #endif // COOLERSTATEWIDGET_H

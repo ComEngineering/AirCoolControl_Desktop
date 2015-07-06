@@ -1,6 +1,7 @@
 #include "RegestryHistory.h"
 #include "Configurator.h"
 #include <algorithm>
+#include <QMutexLocker>
 
 
 RegestryHistory::RegestryHistory() :
@@ -30,6 +31,8 @@ void RegestryHistory::addSnapshort(std::vector<quint16>& snapshort)
 
     boost::posix_time::time_duration diff = boost::posix_time::second_clock::local_time() - m_startTime;
     boost::posix_time::time_duration limit = boost::posix_time::seconds(Configurator::getHistoryLength());//boost::posix_time::seconds (100);// 
+
+    QMutexLocker locker(&m_accessMutex);
 
     for (int i = 0; i < snapshort.size(); i++)
     {
@@ -77,4 +80,35 @@ void RegestryHistory::shiftStorage(boost::posix_time::time_duration fromTime)
         a_history.erase(a_history.begin(), before);
         std::for_each(a_history.begin(), a_history.end(), [fromTime](SnapshortInfo& a_value){a_value.m_timeFromStart -= fromTime; });
     }
+}
+
+void RegestryHistory::getOneHistory(int n, QVector<qreal>& timeLabels, QVector<qreal>& values) const
+{
+    assert(n < m_all_history.size() && n >= 0);
+
+    QMutexLocker locker(&m_accessMutex);
+
+    time_t startTime = to_time_t(m_startTime);
+
+    ValueHistory a_history = m_all_history[n];
+    for (const auto& i : a_history)
+    {
+        double i_time = startTime + i.m_timeFromStart.total_seconds();
+        timeLabels.push_back(i_time);
+        values.push_back(i.m_value);
+    }
+    
+    if (values.size())
+    {
+        timeLabels.push_back(to_time_t(boost::posix_time::second_clock::local_time()));
+        values.push_back(*(values.end() - 1));
+    }
+}
+
+time_t RegestryHistory::to_time_t(boost::posix_time::ptime t)
+{
+    boost::posix_time::ptime epoch(boost::gregorian::date(1970, 1, 1));
+    boost::posix_time::time_duration::sec_type x = (t - epoch).total_seconds();
+
+    return time_t(x);
 }

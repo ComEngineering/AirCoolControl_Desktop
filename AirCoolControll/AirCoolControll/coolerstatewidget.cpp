@@ -5,7 +5,9 @@
 
 CoolerStateWidget::CoolerStateWidget(DeviceExplorer *parent)
     : QWidget(NULL),
-    m_parent(parent)
+    m_parent(parent),
+    m_needSetTimeRange(true),
+    m_colorEnumerator(0)
 { 
     ui.setupUi(this);
 
@@ -33,6 +35,21 @@ void CoolerStateWidget::timerEvent(QTimerEvent *event)
 
     for (auto i : m_tables)
         i->update();
+
+    QVector<qreal> x, y;
+    for (const auto& i : m_plotList)
+    {
+        m_parent->getHistoryForRegesty(i.first, x, y);
+        if (m_needSetTimeRange && x.size() > 0)
+        {
+            ui.plotView->xAxis->setRange(x[0], x[0] + 3600.);
+            m_needSetTimeRange = false;
+        }
+        i.second->addData(x, y);
+        ui.plotView->replot();
+        x.clear();
+        y.clear();
+    }
 }
 
 void CoolerStateWidget::setParameterList(const std::vector<std::pair<std::string, std::string>>& list, ConfigMap::RegisterType type)
@@ -148,6 +165,7 @@ void CoolerStateWidget::onPlotCheckChanged()
     if (check->isChecked())
     {
         QCPGraph* graph = ui.plotView->addGraph();
+        graph->setPen(QPen(Qt::GlobalColor(Qt::red + (m_colorEnumerator++ % (Qt::darkYellow - Qt::red)))));
         m_plotList[name] = graph;
         graph->setName(QString::fromStdString(m_parent->getCurrentConfig()->getParameterDescription(name.toStdString())));    
     }
@@ -162,7 +180,7 @@ void CoolerStateWidget::onPlotCheckChanged()
 void CoolerStateWidget::initPlotter(void)
 {
     ui.plotView->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectAxes | QCP::iSelectLegend | QCP::iSelectPlottables);
-    ui.plotView->xAxis->setRange(0, 3600);
+    
     ui.plotView->yAxis->setRange(-20, 100);
     ui.plotView->axisRect()->setupFullAxesBox();
 

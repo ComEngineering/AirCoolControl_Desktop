@@ -21,7 +21,7 @@ DeviceExplorer::DeviceExplorer(const ConfigMapShared config, ModbusDriverShared 
         if (!a_int.empty())
         {
             m_registers[i] = (i != ConfigMap::COIL) ? std::make_shared<PullerReadTask>(m_info.getID(), m_info.getSpeed(), a_int) :
-                std::make_shared<PullerReadCoilTask>(m_info.getID(), m_info.getSpeed(), a_int);
+                                                      std::make_shared<PullerReadCoilTask>(m_info.getID(), m_info.getSpeed(), a_int);
             m_modbus->addPullerReadTask(m_registers[i]);
             m_localPull[i].resize(a_int.second - a_int.first + 1);
             m_view->setParameterList(m_currentMap->getParametersList(i), i);
@@ -154,4 +154,26 @@ void DeviceExplorer::viewStateChanged(Qt::WindowStates oldState, Qt::WindowState
 void DeviceExplorer::setListView(ConnectionLog* view)
 {
     m_listView = view;
+}
+
+bool DeviceExplorer::getHistoryForRegesty(const QString& name, QVector<qreal>& timeLabels, QVector<qreal>& values) const
+{
+    int regNumber = m_currentMap->getRegisterNumber(name.toStdString());
+    int snapshortNumber = 0;
+    for (ConfigMap::RegisterType i = ConfigMap::REGISTER_PULL_FIRST; i < ConfigMap::REGISTER_PULL_COUNT; ConfigMap::NEXT(i))
+    {
+        Interval a_int = m_currentMap->getInterval(i);
+        if (a_int.in(regNumber))
+        {
+            snapshortNumber += regNumber - a_int.first;
+            m_history.getOneHistory(snapshortNumber, timeLabels, values);
+            return true;
+        }
+        else
+        {
+            snapshortNumber += a_int.length();
+        }
+    }
+
+    return false;
 }
