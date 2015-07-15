@@ -13,6 +13,7 @@
 #include "ModbusDriver.h"
 #include "UART_DeviceStorage.h"
 #include "ConnectedDeviceStorage.h"
+#include "ConfigStorage.h"
 
 class AirCoolControll;
 
@@ -53,7 +54,7 @@ private:
     bool                    m_available;
     ExternalConnector       m_connector;
     ExternalControllManager m_externalManager;
-    ConfigList              m_configs;
+    ConfigStorage           m_configs;
     
     ConnectedDeviceStorage  m_explorers;
 };

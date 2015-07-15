@@ -5,7 +5,6 @@
 
 
 RegestryHistory::RegestryHistory() :
-    m_snapshortSize(-1),
     m_startTime(boost::posix_time::second_clock::local_time())
 {
 }
@@ -16,42 +15,30 @@ RegestryHistory::~RegestryHistory()
 
 }
 
-
-void RegestryHistory::setSnapshortSize(int snapshortSize)
+void RegestryHistory::addValue(const QString& name, qint16 value)
 {
-    m_snapshortSize = snapshortSize;
-    m_all_history.resize(snapshortSize);
-}
-
-
-void RegestryHistory::addSnapshort(std::vector<quint16>& snapshort)
-{
-    assert(m_snapshortSize != -1);
-    assert(snapshort.size() == m_snapshortSize);
-
     boost::posix_time::time_duration diff = boost::posix_time::second_clock::local_time() - m_startTime;
-    boost::posix_time::time_duration limit = boost::posix_time::seconds(Configurator::getHistoryLength());//boost::posix_time::seconds (100);// 
+    boost::posix_time::time_duration limit = boost::posix_time::seconds(Configurator::getHistoryLength());
 
     QMutexLocker locker(&m_accessMutex);
 
-    for (int i = 0; i < snapshort.size(); i++)
+    if (m_all_history.find(name) == m_all_history.end())
     {
-        if (m_all_history[i].size() == 0)
+        m_all_history[name] = ValueHistory();
+        m_all_history[name].push_back(SnapshortInfo(diff, value));
+    }
+    else
+    {
+        ValueHistory& a_history = m_all_history[name];
+        if (((a_history.end() - 1)->m_timeFromStart == diff) ||
+             (a_history.size() > 1 && ((a_history.end() - 1)->m_value == value) && ((a_history.end() - 2)->m_value == value)))
         {
-            m_all_history[i].push_back(SnapshortInfo(diff, snapshort[i]));
+            (a_history.end() - 1)->m_value = value;
+            (a_history.end() - 1)->m_timeFromStart = diff;
         }
-        else 
+        else
         {
-            if (((m_all_history[i].end() - 1)->m_timeFromStart == diff) ||
-                (m_all_history[i].size() > 1 && ((m_all_history[i].end() - 1)->m_value == snapshort[i]) && ((m_all_history[i].end() - 2)->m_value == snapshort[i])))
-            {
-                (m_all_history[i].end() - 1)->m_value = snapshort[i];
-                (m_all_history[i].end() - 1)->m_timeFromStart = diff;
-            }
-            else
-            {
-                m_all_history[i].push_back(SnapshortInfo(diff, snapshort[i]));
-            }
+            a_history.push_back(SnapshortInfo(diff, value));
         }
     }
     
@@ -65,8 +52,9 @@ void RegestryHistory::addSnapshort(std::vector<quint16>& snapshort)
 
 void RegestryHistory::shiftStorage(boost::posix_time::time_duration fromTime)
 {
-    for (auto a_history : m_all_history)
+    for (auto& it  : m_all_history)
     {
+        auto& a_history = it.second;
         if (a_history.empty())
             continue;
         ValueHistory::iterator f = std::find_if(a_history.begin(), a_history.end(), [fromTime](const SnapshortInfo& a_value){return a_value.m_timeFromStart > fromTime; });
@@ -82,15 +70,15 @@ void RegestryHistory::shiftStorage(boost::posix_time::time_duration fromTime)
     }
 }
 
-void RegestryHistory::getOneHistory(int n, QVector<qreal>& timeLabels, QVector<qreal>& values) const
+void RegestryHistory::getOneHistory(const QString& name, QVector<qreal>& timeLabels, QVector<qreal>& values) 
 {
-    assert(n < m_all_history.size() && n >= 0);
+    assert(m_all_history.find(name) != m_all_history.end());
 
     QMutexLocker locker(&m_accessMutex);
 
     time_t startTime = to_time_t(m_startTime);
 
-    ValueHistory a_history = m_all_history[n];
+    const ValueHistory& a_history = m_all_history[name];
     for (const auto& i : a_history)
     {
         double i_time = startTime + i.m_timeFromStart.total_seconds();

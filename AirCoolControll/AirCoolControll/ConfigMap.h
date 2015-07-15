@@ -2,7 +2,6 @@
 #define __CONFIGMAP__
 
 #include <string>
-#include <map>
 #include <unordered_map>
 #include <vector>
 #include <list>
@@ -134,29 +133,30 @@ public:
 
     typedef struct 
     {
-        int                     m_registerNumber;
-        std::string             m_description;
-        bool                    m_isBool;
-        ConfigMap::RegisterType m_type;
-        int                     m_bitNumber;
-        std::string             m_decodeMethod;
-        int                     m_minValue;
-        int                     m_maxValue;
-        ErrorDetector           m_errorDetector;
+        int                        m_registerNumber;
+        std::string                m_description;
+        bool                       m_isBool;
+        int                        m_bitNumber;
+        std::string                m_decodeMethod;
+        int                        m_minValue;
+        int                        m_maxValue;
+        RegisterType               m_type;
+        ErrorDetector              m_errorDetector;
+        std::map<std::string, int> m_enumeration;
     } Parameter;
 
     typedef std::vector<std::pair<std::string, std::string>> ParameterList;
     typedef std::vector<std::pair<std::string, Parameter>> ParameterMap;
 
     void addVariable(int n,const std::string& name, const Parameter& p);
-    ConfigMap::RegisterType getVariableType(const std::string& name) const;
     int  getRegisterNumber(const std::string& name) const;
     bool haveVariableWithName(const std::string& name) const;
     QVariant getValue(const std::string& name, const std::vector<quint16>& array) const;
     bool isVariableBool(const std::string& name, int& bitNumber);
     Interval& getInterval(int n);
     bool  isSupport(const DeviceInfoShared info) const;
-    ParameterList getParametersList(ConfigMap::RegisterType e);
+    const ParameterList& getParametersList(ConfigMap::RegisterType e);
+    RegisterType getVariableType(const std::string& key) const;
     void  setUI_Config(const std::string& type, const std::string& configFile);
     ParameterMap::const_iterator findParameter(const std::string& name) const;
     std::string getParameterDescription(const std::string& name) const;
@@ -179,6 +179,5 @@ private:
 };
 
 typedef std::shared_ptr<ConfigMap> ConfigMapShared;
-typedef std::list<ConfigMapShared> ConfigList;
 
 #endif // __CONFIGMAP__

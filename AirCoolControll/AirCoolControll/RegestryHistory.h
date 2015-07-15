@@ -2,6 +2,7 @@
 #define __REGESTRYHISTORY__
 
 #include <vector>
+#include <map>
 #include "boost/date_time/posix_time/posix_time.hpp" 
 #include <qglobal.h>
 #include <qmutex.h>
@@ -16,7 +17,7 @@ public:
     struct SnapshortInfo
     {
         boost::posix_time::time_duration m_timeFromStart;
-        quint16                          m_value;
+        qint16                          m_value;
 
         SnapshortInfo(boost::posix_time::time_duration timeFromStart, quint16 value) :
             m_timeFromStart(timeFromStart),
@@ -26,19 +27,17 @@ public:
     
     typedef std::vector<SnapshortInfo> ValueHistory;
     
-    void setSnapshortSize(int snapshortSize);
-    void addSnapshort(std::vector<quint16>& snapshort);
-    void getOneHistory(int n, QVector<qreal>& timeLabels, QVector<qreal>& values) const;
+    void addValue(const QString& name,qint16 value);
+    void getOneHistory(const QString& name, QVector<qreal>& timeLabels, QVector<qreal>& values) ;
 
 private:
     void shiftStorage(boost::posix_time::time_duration fromTime);
     static time_t to_time_t(boost::posix_time::ptime t);
   
 private:
-    int              m_snapshortSize;
-    mutable QMutex   m_accessMutex;
-    boost::posix_time::ptime   m_startTime;
-    std::vector<ValueHistory>  m_all_history;
+    mutable QMutex                  m_accessMutex;
+    boost::posix_time::ptime        m_startTime;
+    std::map<QString,ValueHistory>  m_all_history;
 };
 
 #endif //__REGESTRYHISTORY__

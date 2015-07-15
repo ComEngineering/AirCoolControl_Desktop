@@ -29,7 +29,6 @@ DeviceExplorer::DeviceExplorer(const ConfigMapShared config, ModbusDriverShared 
             regCount += a_int.length();
         }
     }
-    m_history.setSnapshortSize(regCount);
 }
 
 DeviceExplorer::~DeviceExplorer()
@@ -128,18 +127,25 @@ void DeviceExplorer::activateView(QMdiArea * area)
 
 void DeviceExplorer::somethingChanged()
 {
-    std::vector<quint16> snapshort;
-    
     for (ConfigMap::RegisterType i = ConfigMap::REGISTER_PULL_FIRST; i < ConfigMap::REGISTER_PULL_COUNT; ConfigMap::NEXT(i))
     {
         if (m_registers[i]->isContentChanged())
         {
             m_registers[i]->getContent(m_localPull[i]);
+     
+            const ConfigMap::ParameterList& parameters = m_currentMap->getParametersList(i);
+            for (auto& it : parameters)
+            {
+                QVariant value = m_currentMap->getValue(it.first, m_localPull[i]);
+                bool isCorrect;
+                qint16 digit = value.toInt(&isCorrect);
+                if (!isCorrect)
+                    digit = 0x8000;
+                m_history.addValue(QString::fromStdString(it.first), digit);
+            }
         }
-        snapshort.insert(snapshort.end(),m_localPull[i].begin(),m_localPull[i].end());
     }
 
-    m_history.addSnapshort(snapshort);
     updateStateWidget();
 }
 
@@ -156,24 +162,7 @@ void DeviceExplorer::setListView(ConnectionLog* view)
     m_listView = view;
 }
 
-bool DeviceExplorer::getHistoryForRegesty(const QString& name, QVector<qreal>& timeLabels, QVector<qreal>& values) const
+void DeviceExplorer::getHistoryForRegesty(const QString& name, QVector<qreal>& timeLabels, QVector<qreal>& values)
 {
-    int regNumber = m_currentMap->getRegisterNumber(name.toStdString());
-    int snapshortNumber = 0;
-    for (ConfigMap::RegisterType i = ConfigMap::REGISTER_PULL_FIRST; i < ConfigMap::REGISTER_PULL_COUNT; ConfigMap::NEXT(i))
-    {
-        Interval a_int = m_currentMap->getInterval(i);
-        if (a_int.in(regNumber))
-        {
-            snapshortNumber += regNumber - a_int.first;
-            m_history.getOneHistory(snapshortNumber, timeLabels, values);
-            return true;
-        }
-        else
-        {
-            snapshortNumber += a_int.length();
-        }
-    }
-
-    return false;
+    m_history.getOneHistory(name, timeLabels, values);
 }

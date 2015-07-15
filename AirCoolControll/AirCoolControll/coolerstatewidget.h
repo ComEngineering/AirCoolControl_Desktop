@@ -27,7 +27,7 @@ private:
 
 private slots:
     void onCoilChanged();
-    void registerSet(QTableWidgetItem *);
+    void registerSet(int);
     void onPlotCheckChanged();
 
 signals:

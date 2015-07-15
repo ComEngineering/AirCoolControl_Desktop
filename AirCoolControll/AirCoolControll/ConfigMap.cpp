@@ -67,8 +67,15 @@ QVariant ConfigMap::getValue(const std::string& name, const std::vector<quint16>
         return QVariant(QString(QObject::tr("undefined")));
 
     Parameter p = f->second;
-    
-    int index = p.m_registerNumber - m_registersIntervals[p.m_type].first;
+    int index = -1;
+    for (auto interval : m_registersIntervals)
+        if (interval.in(p.m_registerNumber))
+        {
+            index = p.m_registerNumber - interval.first;
+            break;
+        }
+
+    assert(index != -1);
   
     int ret = array[index];
 
@@ -108,30 +115,12 @@ Interval& ConfigMap::getInterval(int n)
     return m_registersIntervals[n];
 }
 
-ConfigMap::RegisterType ConfigMap::getVariableType(const std::string& name) const
-{
-    return findParameter(name)->second.m_type;
-}
-
 bool  ConfigMap::isSupport(const DeviceInfoShared info) const
 {
     if (QString::compare(info->getVendor(), QString::fromStdString(m_vendor), Qt::CaseInsensitive) != 0 || QString::compare(info->getProduct(), QString::fromStdString(m_product), Qt::CaseInsensitive) != 0)
         return false;
 
     return info->checkVersion(m_versionMin,m_versionMax);
-}
-
-ConfigMap::ParameterList ConfigMap::getParametersList(ConfigMap::RegisterType e)
-{
-    if (m_parameters[e].empty())
-    {
-        for (std::pair<std::string, Parameter> a_record : m_map)
-        {
-            if (a_record.second.m_type == e)
-                m_parameters[e].push_back(std::pair<std::string, std::string>(a_record.first, a_record.second.m_description));
-        }
-    }
-    return m_parameters[e];
 }
 
 qint16 ConfigMap::decodeWithMethod(qint16 value, const std::string& method)
@@ -156,5 +145,18 @@ void  ConfigMap::setUI_Config(const std::string& type, const std::string& config
 ConfigMap::ParameterMap::const_iterator ConfigMap::findParameter(const std::string& name) const
 {
     ParameterMap::const_iterator f = std::find_if(m_map.begin(), m_map.end(), [name](const std::pair<std::string, Parameter>& e){return name == e.first; });
+    assert(f != m_map.end());
     return f;
+}
+
+const ConfigMap::ParameterList& ConfigMap::getParametersList(ConfigMap::RegisterType e)
+{
+    return m_parameters[e];
+}
+
+ConfigMap::RegisterType ConfigMap::getVariableType(const std::string& key) const
+{
+    const ParameterMap::const_iterator a_parameter = findParameter(key);
+    
+    return a_parameter->second.m_type;
 }

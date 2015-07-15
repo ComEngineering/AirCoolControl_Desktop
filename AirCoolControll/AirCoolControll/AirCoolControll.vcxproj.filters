@@ -275,6 +275,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_qcustomplot.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="ConfigStorage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="aircoolcontroll.ui">
@@ -433,6 +436,9 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="RegestryHistory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigStorage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

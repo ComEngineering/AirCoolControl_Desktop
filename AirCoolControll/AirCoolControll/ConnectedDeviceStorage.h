@@ -8,6 +8,7 @@
 
 #include "DeviceInfo.h"
 #include "DeviceExplorer.h"
+#include "ConfigStorage.h"
 
 class UART_DeviceStorage;
 class ConnectionLog;
@@ -20,7 +21,7 @@ public:
     ConnectedDeviceStorage(UART_DeviceStorage& drivers,QObject *parent);
     ~ConnectedDeviceStorage();
 
-    void setConfigList(const ConfigList * configs) { m_configs = configs; }
+    void setConfigList(const ConfigStorage * configs) { m_configs = configs; }
     bool addDevice(DeviceInfoShared a_info);
     void getDevicesConnectedToDriver(const QString& name,std::vector<QString>& vector) const;
 
@@ -42,7 +43,7 @@ signals:
     void activeChanged();
 
 private:
-    const ConfigList *  m_configs;
+    const ConfigStorage*m_configs;
     UART_DeviceStorage& m_drivers;
     QMdiArea*           m_mdiArea;
     ConnectionLog*      m_listView;
