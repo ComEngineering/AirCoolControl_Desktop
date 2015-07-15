@@ -151,6 +151,14 @@ ConfigMap::ParameterMap::const_iterator ConfigMap::findParameter(const std::stri
 
 const ConfigMap::ParameterList& ConfigMap::getParametersList(ConfigMap::RegisterType e)
 {
+    if (m_parameters[e].empty())
+    {
+        for (std::pair<std::string, Parameter> a_record : m_map)
+        {
+            if (a_record.second.m_type == e)
+                m_parameters[e].push_back(std::pair<std::string, std::string>(a_record.first, a_record.second.m_description));
+        }
+    }
     return m_parameters[e];
 }
 
