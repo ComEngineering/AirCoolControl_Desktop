@@ -19,15 +19,13 @@ public:
     CoolerStateWidget(DeviceExplorer *parent);
     ~CoolerStateWidget();
 
-    void setParameterList(const std::vector<std::pair<std::string, std::string>>& list, ConfigMap::RegisterType type);
+    void setParameterList(ConfigMapShared config);
     
     void updateParameter(int n, QVariant value, ConfigMap::RegisterType type);
 private:
     void initPlotter(void);
 
 private slots:
-    void onCoilChanged();
-    void registerSet(int);
     void onPlotCheckChanged();
 
 signals:

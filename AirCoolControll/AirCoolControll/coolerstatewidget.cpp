@@ -1,10 +1,12 @@
 #include "coolerstatewidget.h"
-#include <qtoolbutton.h>
-#include <qspinbox.h>
 #include <QMutexLocker>
 #include "DeviceExplorer.h"
 #include <QIntValidator>
 #include "Configurator.h"
+
+#include "InputValueFieldWidget.h"
+#include "CoilValueFieldWidget.h"
+#include "OutValueWidget.h"
 
 CoolerStateWidget::CoolerStateWidget(DeviceExplorer *parent)
     : QWidget(NULL),
@@ -64,122 +66,66 @@ void CoolerStateWidget::timerEvent(QTimerEvent *event)
     }
 }
 
-void CoolerStateWidget::setParameterList(const std::vector<std::pair<std::string, std::string>>& list, ConfigMap::RegisterType type)
+void CoolerStateWidget::setParameterList(ConfigMapShared config)
 {
-    m_tables[type]->blockSignals(true);
-    m_tables[type]->setRowCount(list.size());
+    int currentRow[ConfigMap::REGISTER_PULL_COUNT];
 
-    int currentRow = 0;
-    for (std::pair<std::string, std::string> a_line : list)
+    for (ConfigMap::RegisterType i = ConfigMap::REGISTER_PULL_FIRST; i < ConfigMap::REGISTER_PULL_COUNT; ConfigMap::NEXT(i))
     {
-        QTableWidgetItem* newItem = new QTableWidgetItem(QString::fromStdString(a_line.second));
-        newItem->setFlags(Qt::ItemIsEnabled);
-        m_tables[type]->setItem(currentRow, 2, newItem);
+        m_tables[i]->blockSignals(true);
+        m_tables[i]->setRowCount(config->getParametersList(i).size());
+        currentRow[i] = 0;
+    }
 
+    for (int i = 0; i < config->size(); i++)
+    {
+        const ConfigMap::Parameter& a_parameter = (*config)[i].second;
+        std::string a_name = (*config)[i].first;
+        ConfigMap::RegisterType a_type = a_parameter.m_type;
+
+        /// Description
+        QTableWidgetItem* newItem = new QTableWidgetItem(QString::fromStdString(a_parameter.m_description));
+        newItem->setFlags(Qt::ItemIsEnabled);
+        m_tables[a_type]->setItem(currentRow[a_type], 2, newItem);
+
+        /// Plot check box
         QCheckBox* check = new QCheckBox(this);
-        m_tables[type]->setCellWidget(currentRow, 1, check);
-        check->setProperty("name", QVariant(QString::fromStdString(a_line.first)));
+        m_tables[a_type]->setCellWidget(currentRow[a_type], 1, check);
+        check->setProperty("name", QVariant(QString::fromStdString(a_name)));
         connect(check, SIGNAL(clicked()), this, SLOT(onPlotCheckChanged()));
 
-        if (type == ConfigMap::COIL)
+        /// Value
+        QWidget* valueWidget;
+        if (a_type == ConfigMap::COIL)
         {
-            QToolButton* button = new QToolButton(this);
-            button->setCheckable(true);
-            button->setProperty("name", QVariant(QString::fromStdString(a_line.first)));
-            button->setText(tr("Off"));
-            connect(button, SIGNAL(clicked()), this, SLOT(onCoilChanged()));
-            m_tables[type]->setCellWidget(currentRow, 0, button);
+            valueWidget = new CoilValueFieldWidget(m_parent,a_name,this);
         }
-        else if (type == ConfigMap::INPUT_REGISTER)
+        else if (a_type == ConfigMap::INPUT_REGISTER)
         {
-            newItem = new QTableWidgetItem(QString());
-            newItem->setData(Qt::UserRole, QVariant(QString::fromStdString(a_line.first)));
-            newItem->setData(Qt::UserRole + 1, QVariant(static_cast<quint16>(type)));
-            m_tables[type]->setItem(currentRow, 0, newItem);
+            valueWidget = new InputValueFieldWidget(m_parent, a_name, this);
         }
-        else if (type == ConfigMap::OUTPUT_REGISTER)
+        else if (a_type == ConfigMap::OUTPUT_REGISTER)
         {
-            QSpinBox * edit = new QSpinBox(this);
-            edit->setProperty("name", QVariant(QString::fromStdString(a_line.first)));
-            edit->setMaximum(10000);
-            edit->setMinimum(-10000);
-            edit->setSingleStep(1);
-            edit->setFrame(false);
-            connect(edit, SIGNAL(valueChanged(int)), this, SLOT(registerSet(int)));
-            m_tables[type]->setCellWidget(currentRow, 0, edit);
+            valueWidget = new OutValueWidget(m_parent,a_name,a_parameter,this);
         }
         else
         {
             assert(false);
         }
-        currentRow++;
+        m_tables[a_type]->setCellWidget(currentRow[a_type], 0, valueWidget);
+        currentRow[a_type]++;
     }
 
-    m_tables[type]->blockSignals(false);
+    for (auto table : m_tables)
+        table->blockSignals(false);
 }
 
 void CoolerStateWidget::updateParameter(int n, QVariant value, ConfigMap::RegisterType type)
 {
     QMutexLocker locker(&m_updateMutex);
 
-    m_tables[type]->blockSignals(true);
-    
-    bool isValid;
-    int number = value.toInt(&isValid);
-    
-    if (ConfigMap::INPUT_REGISTER == type)
-    {
-        QTableWidgetItem *aItem = m_tables[type]->item(n, 0);
-        if (NULL != aItem)
-        {
-            if (isValid)
-            {
-                aItem->setText(QString::number(number));
-                aItem->setBackgroundColor(QColor(Qt::white));
-            }
-            else
-            {
-                aItem->setText(value.toString());
-                aItem->setBackgroundColor(QColor(Qt::red));
-            }
-        }
-    }
-    else if (ConfigMap::OUTPUT_REGISTER == type)
-    {
-        QSpinBox * spin = qobject_cast<QSpinBox*>(m_tables[type]->cellWidget(n, 0));
-        
-        if (NULL != spin && isValid)
-        {
-            spin->blockSignals(true);
-            spin->setValue(number);
-            spin->blockSignals(false);
-        }
-    }
-
-    m_tables[type]->blockSignals(false);
-}
-
-void CoolerStateWidget::registerSet(int v)
-{
-    bool ok;
-    QSpinBox* edit = qobject_cast<QSpinBox*>(sender());
- 
-    QVariant var = edit->property("name");
-    if (!var.isValid()) return;
-    QString name = var.toString();
-    m_parent->sendValueToDevice(ConfigMap::OUTPUT_REGISTER, name, v);
-}
-
-void CoolerStateWidget::onCoilChanged()
-{
-    QToolButton* button = qobject_cast<QToolButton*>(sender());
-    if (!button) return;
-    QVariant var = button->property("name");
-    if (!var.isValid()) return;
-    QString name = var.toString();
-    int d = button->isChecked() ? 1 : 0;
-    button->setText(d ? tr("On") : tr("Off"));
-    m_parent->sendValueToDevice(ConfigMap::OUTPUT_REGISTER, name, d);
+    ValueFieldWidget *aItem = qobject_cast<ValueFieldWidget*>(m_tables[type]->cellWidget(n, 0));
+    aItem->setValue(value);
 }
 
 void CoolerStateWidget::onPlotCheckChanged()

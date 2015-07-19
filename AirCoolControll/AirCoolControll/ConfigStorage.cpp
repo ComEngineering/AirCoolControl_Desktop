@@ -9,6 +9,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include "Logger.h"
+#include <climits>
 
 ConfigStorage::ConfigStorage()
 {
@@ -78,6 +79,9 @@ bool ConfigStorage::readXMLConfig(const QString& path)
                     a_parameter.m_isBool = false;
                 }
 
+                a_parameter.m_minValue = p.second.get<int>("xmlattr>.min", INT_MIN);
+                a_parameter.m_maxValue = p.second.get<int>("xmlattr>.max", INT_MAX);
+
                 boost::property_tree::ptree errorDetectionSection = p.second.get_child("errors", boost::property_tree::ptree());
                 for (const std::pair<std::string, boost::property_tree::ptree> &a_error : errorDetectionSection)
                 {
@@ -92,7 +96,7 @@ bool ConfigStorage::readXMLConfig(const QString& path)
                 {
                     std::string description = a_item.second.get<std::string>("<xmlattr>.d", "error");
                     int value = a_item.second.get<int>("<xmlattr>.v"); //mandatory
-                    a_parameter.m_enumeration[description] = value;
+                    a_parameter.m_enumeration.push_back(std::pair<std::string,int>(description,value));
                 }
 
                 a_map->addVariable(i, name, a_parameter);

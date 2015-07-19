@@ -23,5 +23,5 @@ void MdiSubWindowPermanent::closeEvent(QCloseEvent * closeEvent)
 void MdiSubWindowPermanent::keyPressEvent(QKeyEvent * keyEvent)
 {
     if (keyEvent->key() == Qt::Key_Escape)
-        hide();
+        showMinimized();
 }

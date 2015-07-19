@@ -24,11 +24,12 @@ DeviceExplorer::DeviceExplorer(const ConfigMapShared config, ModbusDriverShared 
                                                       std::make_shared<PullerReadCoilTask>(m_info.getID(), m_info.getSpeed(), a_int);
             m_modbus->addPullerReadTask(m_registers[i]);
             m_localPull[i].resize(a_int.second - a_int.first + 1);
-            m_view->setParameterList(m_currentMap->getParametersList(i), i);
+            
             m_registers[i]->setListener(this);
             regCount += a_int.length();
         }
     }
+    m_view->setParameterList(m_currentMap);
 }
 
 DeviceExplorer::~DeviceExplorer()
@@ -119,10 +120,10 @@ void DeviceExplorer::activateView(QMdiArea * area)
         m_mdi->setWindowTitle(m_info.getDescription());
         connect(m_mdi, SIGNAL(windowStateChanged(Qt::WindowStates, Qt::WindowStates)), this, SLOT(viewStateChanged(Qt::WindowStates, Qt::WindowStates)));
         area->addSubWindow(m_mdi);
+        m_listView->updateContent();
     }
     m_mdi->show();
-    m_mdi->setFocus();
-    area->setActiveSubWindow(m_mdi);
+    m_mdi->activateWindow();
 }
 
 void DeviceExplorer::somethingChanged()
@@ -153,7 +154,7 @@ void DeviceExplorer::viewStateChanged(Qt::WindowStates oldState, Qt::WindowState
 {
     if (newState == Qt::WindowActive && m_listView)
     {
-        m_listView->activateDevice(m_info.getUART(), m_info.getID());//TODO identification device
+        m_listView->activateDevice(this);
     }
 }
 

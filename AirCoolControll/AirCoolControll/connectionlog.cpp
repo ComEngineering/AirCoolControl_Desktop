@@ -16,6 +16,9 @@ ConnectionLog::ConnectionLog(QWidget *parent)
     connect(ui.tableWidget, SIGNAL(cellClicked(int, int)), this, SLOT(cellSelected(int, int)));
     connect(ui.disconnectButton, SIGNAL(clicked()), this, SLOT(removeConnection()));
     connect(ui.clearButton, SIGNAL(clicked()), this, SLOT(removeAllConnection()));
+
+    ui.clearButton->setEnabled(false);
+    ui.disconnectButton->setEnabled(false);
 }
 
 ConnectionLog::~ConnectionLog()
@@ -26,12 +29,25 @@ ConnectionLog::~ConnectionLog()
 void ConnectionLog::setDeviceList(ConnectedDeviceStorage* devices)
 {
     m_devices = devices;
+    updateContent();
 }
 
 void ConnectionLog::updateContent(void)
 {
     ui.tableWidget->setRowCount(m_devices->size());
     int currentRow = 0;
+
+    if (m_devices->size() == 0)
+    {
+        ui.clearButton->setEnabled(false);
+        ui.disconnectButton->setEnabled(false);
+        return;
+    }
+    else
+    {
+        ui.clearButton->setEnabled(true);
+        ui.disconnectButton->setEnabled(true);
+    }
 
     for (DeviceInfoShared info : *m_devices)
     {
@@ -96,6 +112,7 @@ void ConnectionLog::sellectionChanged(int n, const QBrush& brush)
                 a_item->setBackground(s_free);
         }
     }
+    ui.tableWidget->update();
 }
 
 void ConnectionLog::removeConnection(void)
@@ -112,9 +129,9 @@ void ConnectionLog::removeAllConnection(void)
     updateContent();
 }
 
-void ConnectionLog::activateDevice(const QString& uart_name, int id)
+void ConnectionLog::activateDevice(const DeviceExplorer* device)
 {
-    int n = m_devices->findDeviceIndex(uart_name, id);
+    int n = m_devices->findDeviceIndex(device);
     if (-1 != n)
         sellectionChanged(n, s_selected);
 }

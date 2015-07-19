@@ -168,3 +168,10 @@ ConfigMap::RegisterType ConfigMap::getVariableType(const std::string& key) const
     
     return a_parameter->second.m_type;
 }
+
+const std::pair<std::string,ConfigMap::Parameter>& ConfigMap::operator[](int n) const
+{
+    assert(m_map.size() > n);
+
+    return m_map.at(n);
+}

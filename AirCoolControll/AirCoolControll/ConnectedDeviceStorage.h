@@ -29,7 +29,7 @@ public:
     void setListView(ConnectionLog* view) { m_listView = view; }
 
     void removeDeviceFromList(int n);
-    int  findDeviceIndex(const QString& uart_name, int id) const;
+    int  findDeviceIndex(const DeviceExplorer* device) const;
 
     bool setActiveIndex(int n);
 

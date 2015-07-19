@@ -4,7 +4,6 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <list>
 #include <Interval.h>
 #include <qstring.h>
 #include <qvariant.h>
@@ -142,7 +141,7 @@ public:
         int                        m_maxValue;
         RegisterType               m_type;
         ErrorDetector              m_errorDetector;
-        std::map<std::string, int> m_enumeration;
+        std::vector<std::pair<std::string, int>> m_enumeration;
     } Parameter;
 
     typedef std::vector<std::pair<std::string, std::string>> ParameterList;
@@ -160,6 +159,8 @@ public:
     void  setUI_Config(const std::string& type, const std::string& configFile);
     ParameterMap::const_iterator findParameter(const std::string& name) const;
     std::string getParameterDescription(const std::string& name) const;
+    const std::pair<std::string,Parameter>& operator[](int n) const;
+    int size(void) const { return m_map.size(); }
 
 private:
     static qint16 decodeWithMethod(qint16 value, const std::string& method);

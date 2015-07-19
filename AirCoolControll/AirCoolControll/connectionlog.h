@@ -7,6 +7,7 @@
 #include "modbusuart_impl.h"
 
 class ConnectedDeviceStorage;
+class DeviceExplorer;
 
 class ConnectionLog : public QWidget
 {
@@ -19,7 +20,7 @@ public:
     void setDeviceList(ConnectedDeviceStorage* devices);
     void updateContent(void);
 
-    void activateDevice(const QString& uart_name, int id);
+    void activateDevice(const DeviceExplorer* device);
 
 private slots:
     void cellSelected(int row, int column);

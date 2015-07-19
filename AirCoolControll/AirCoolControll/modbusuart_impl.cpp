@@ -66,7 +66,7 @@ bool ModBusUART_Impl::readRegisterPool(quint16 id, int speed, quint16 regNumber,
         if (m_port.waitForReadyRead(Configurator::getMaximunTimeout()))
         {
             QByteArray responseData = m_port.readAll();
-            while (m_port.waitForReadyRead(Configurator::getChankTimeout()))  // TO DO from settings
+            while (m_port.waitForReadyRead(Configurator::getChankTimeout()))  
                 responseData += m_port.readAll();
 
             if (!checkCRC(responseData))

@@ -112,13 +112,13 @@ void ConnectedDeviceStorage::getDevicesConnectedToDriver(const QString& name, st
             vector.push_back((*i)->getDescription());
 }
 
-int  ConnectedDeviceStorage::findDeviceIndex(const QString& uart_name, int id) const
+int  ConnectedDeviceStorage::findDeviceIndex(const DeviceExplorer* device) const
 {
     int i = 0;
     int rc = -1;
     for (auto it : *this)
     {
-        if (it->getUART() == uart_name && it->getID() == id)
+        if (it->getExplorer().get() == device)
         {
             rc = i;
             break;
