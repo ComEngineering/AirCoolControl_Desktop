@@ -15,7 +15,7 @@
 class ConfigMap
 {
 public:
-    ConfigMap(const std::string& vendor, const std::string& product, const std::string& versionMin, const std::string& versionMax);
+    ConfigMap(const std::string& configName, const std::string& vendor, const std::string& product, const std::string& versionMin, const std::string& versionMax);
     ~ConfigMap();
 
     enum RegisterType {
@@ -166,6 +166,7 @@ private:
     static qint16 decodeWithMethod(qint16 value, const std::string& method);
     
 private:
+    std::string     m_configName;
     std::string     m_vendor;
     std::string     m_product;
     VersionStorage  m_versionMin;

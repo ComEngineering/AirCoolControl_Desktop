@@ -8,7 +8,8 @@ const std::unordered_map<std::string, ert::DetectionType> ert::s_error_map = {
     { "EQ", ert::EQ }, { "GT", ert::GT }, { "LT", ert::LT }, { "GTE", ert::GTE }, { "LTE", ert::LTE }, { "AND", ert::AND }, { "XOR", ert::XOR } 
 };
 
-ConfigMap::ConfigMap(const std::string& vendor, const std::string& product, const std::string& versionMin, const std::string& versionMax) :
+ConfigMap::ConfigMap(const std::string& configName, const std::string& vendor, const std::string& product, const std::string& versionMin, const std::string& versionMax) :
+    m_configName(configName),
     m_vendor(vendor),
     m_product(product),
     m_versionMin(QString::fromStdString(versionMin)),

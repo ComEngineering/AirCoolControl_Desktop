@@ -30,6 +30,7 @@ public:
     void     updateStateWidget(void);
 
     void     activateView(QMdiArea * area);
+    void     minimizeView(QMdiArea * area);
 
     void     somethingChanged();
 

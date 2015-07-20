@@ -91,16 +91,22 @@ bool ConnectedDeviceStorage::setActiveIndex(int n)
     {
         int counter = 0;
         for (std::list<DeviceInfoShared>::iterator it = begin(); it != end(); it++)
-            if (counter++ == n)
+        {
+            DeviceExplorerShared a_device = (*it)->getExplorer();
+            if (a_device)
             {
-                DeviceExplorerShared a_device = (*it)->getExplorer();
-                if (a_device)
+                if (counter++ == n)
                 {
+
                     a_device->activateView(m_mdiArea);
                     rc = true;
                 }
-                break;
+                else
+                {
+                    a_device->minimizeView(m_mdiArea);
+                }
             }
+        }
     }
     return rc;
 }

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1298</width>
-    <height>811</height>
+    <height>812</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,7 +37,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>FILE</string>
     </property>
     <addaction name="actionConnect_to_device"/>
     <addaction name="actionConnect_to_host"/>
@@ -45,10 +45,26 @@
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
-     <string>About</string>
+     <string>ABOUT</string>
     </property>
    </widget>
+   <widget class="QMenu" name="menuDEVICES">
+    <property name="title">
+     <string>DEVICES</string>
+    </property>
+    <addaction name="actionCreate_new_config"/>
+    <addaction name="actionEdit_configuration"/>
+   </widget>
+   <widget class="QMenu" name="menuTEST">
+    <property name="title">
+     <string>TEST</string>
+    </property>
+    <addaction name="actionCreate_new_test"/>
+    <addaction name="actionEdit_test"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuDEVICES"/>
+   <addaction name="menuTEST"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
@@ -105,6 +121,9 @@
    <property name="toolTip">
     <string>Connect to device</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Return</string>
+   </property>
   </action>
   <action name="actionDisconnect_from_UART">
    <property name="icon">
@@ -143,6 +162,35 @@
    </property>
    <property name="toolTip">
     <string>Connect ot remote host</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionCreate_new_config">
+   <property name="text">
+    <string>Create new configuration</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionEdit_configuration">
+   <property name="text">
+    <string>Edit configuration</string>
+   </property>
+  </action>
+  <action name="actionCreate_new_test">
+   <property name="text">
+    <string>Create new test</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionEdit_test">
+   <property name="text">
+    <string>Edit test</string>
    </property>
   </action>
  </widget>

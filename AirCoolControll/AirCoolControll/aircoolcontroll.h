@@ -34,6 +34,7 @@ private slots:
     void showConnectToHostDialog();
     void newActiveWindow(QMdiSubWindow* w);
     void newStatus(const QString&);
+    void showAddNewConfigDialog(void);
 
 private:
     Ui::AirCoolControllClass   ui;

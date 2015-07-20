@@ -124,6 +124,12 @@ void DeviceExplorer::activateView(QMdiArea * area)
     }
     m_mdi->show();
     m_mdi->activateWindow();
+    m_mdi->showNormal();
+}
+
+void DeviceExplorer::minimizeView(QMdiArea * area)
+{
+    m_mdi->showMinimized();
 }
 
 void DeviceExplorer::somethingChanged()

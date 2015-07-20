@@ -37,11 +37,12 @@ bool ConfigStorage::readXMLConfig(const QString& path)
     try
     {
         boost::property_tree::read_xml(path.toStdString(), tree, boost::property_tree::xml_parser::no_comments);
+        std::string configName = tree.get<std::string>("Config.<xmlattr>.name");
         std::string vendor = tree.get<std::string>("Config.Vendor");
         std::string product = tree.get<std::string>("Config.Product");
         std::string versionMin = tree.get<std::string>("Config.Version.min");
         std::string versionMax = tree.get<std::string>("Config.Version.max");
-        std::shared_ptr<ConfigMap> a_map = std::make_shared<ConfigMap>(vendor, product, versionMin, versionMax);
+        std::shared_ptr<ConfigMap> a_map = std::make_shared<ConfigMap>(configName, vendor, product, versionMin, versionMax);
 
         std::string uiType = tree.get<std::string>("Config.UI.<xmlattr>.type", "none");
         if ("none" != uiType)
