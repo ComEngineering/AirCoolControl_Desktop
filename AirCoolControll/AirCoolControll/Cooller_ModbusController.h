@@ -28,6 +28,7 @@ public:
     std::vector<std::pair<QString, bool>> getDriverList(void) const;
     void getDevicesConnectedToDriver(const QString& name, std::vector<QString>& vector) const;
     void releaseDriverWithName(const QString& driverName);
+    ConfigStorage& getConfigs() { return m_configs; }
 
 private:
     void checkConnectionState(void);

@@ -2,6 +2,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include "DeviceInfo.h"
 #include <algorithm>
+#include "Logger.h"
 
 using ert = ConfigMap::ErrorDetector::Error;
 const std::unordered_map<std::string, ert::DetectionType> ert::s_error_map = { 
@@ -175,4 +176,107 @@ const std::pair<std::string,ConfigMap::Parameter>& ConfigMap::operator[](int n) 
     assert(m_map.size() > n);
 
     return m_map.at(n);
+}
+
+bool ConfigMap::saveToFile(const std::string& path) const
+{
+    boost::property_tree::ptree tree;
+   
+    tree.put("Config.<xmlattr>.name",m_configName);
+    tree.put("Config.Vendor",m_vendor);
+    tree.put("Config.Product",m_product);
+    tree.put("Config.Version.min",QString(m_versionMin).toStdString());
+    tree.put("Config.Version.max",QString(m_versionMax).toStdString());
+            
+    if ("none" == m_UI_type)
+    {
+        tree.put("Config.UI.<xmlattr>.type", "none");
+    }
+    else
+    {
+        tree.put("Config.UI",m_UI_config);
+        tree.put("Config.UI.<xmlattr>.type", m_UI_type);
+    }
+
+    static const char* childs[ConfigMap::REGISTER_PULL_COUNT] = {
+        "InputValues",
+        "OutValues",
+        "Coils"
+    };
+
+    for (ConfigMap::RegisterType i = ConfigMap::REGISTER_PULL_FIRST; i < ConfigMap::REGISTER_PULL_COUNT; i = ConfigMap::NEXT(i))
+    {
+        boost::property_tree::ptree section_tree;
+        for (const std::pair<std::string, Parameter> &p : m_map)
+        {   
+            const ConfigMap::Parameter& a_parameter = p.second;
+            if (a_parameter.m_type != i)
+                continue;
+
+            boost::property_tree::ptree parameter_tree;
+            std::string a_name = p.first;
+                
+            parameter_tree.put(a_name, a_parameter.m_description);
+            parameter_tree.put("<xmlattr>.R", a_parameter.m_registerNumber);
+
+            if (a_parameter.m_isBool)
+                parameter_tree.put("<xmlattr>.B", a_parameter.m_bitNumber);
+                
+            if (a_parameter.m_decodeMethod != "")
+                parameter_tree.put("<xmlattr>.D", a_parameter.m_decodeMethod);
+                
+            parameter_tree.put("<xmlattr>.min", a_parameter.m_minValue);
+            parameter_tree.put("<xmlattr>.max", a_parameter.m_maxValue);
+
+            int ne = a_parameter.m_errorDetector.size();
+            if (ne > 0)
+            {
+                boost::property_tree::ptree errorDetectionSection;
+                for (int j = 0; j < ne; j++)
+                {  
+                    boost::property_tree::ptree errorD;
+                    ErrorDetector::Error a_err = a_parameter.m_errorDetector[j];
+                    errorD.put("<xmlattr>.d", a_err.m_description);
+                    errorD.put("<xmlattr>.v", a_err.m_value);
+                    std::string typeDesc;
+                    for (const std::pair<std::string, ert::DetectionType>& er_t_it : ert::s_error_map) 
+                    {
+                        if (a_err.m_type == er_t_it.second)
+                        {
+                            typeDesc = er_t_it.first;
+                            break;
+                        }
+                    }
+                    errorDetectionSection.put_child(typeDesc, errorD);
+                }
+                parameter_tree.put_child("errors", errorDetectionSection);
+            }
+
+            if (a_parameter.m_enumeration.size())
+            {
+                boost::property_tree::ptree enumTree;
+                    
+                for (const std::pair<std::string, int> &a_item : a_parameter.m_enumeration)
+                {
+                    enumTree.put("<xmlattr>.d", a_item.first);
+                    enumTree.put("<xmlattr>.v", a_item.second);
+                }
+                enumTree.put_child("enum", enumTree);
+            }
+
+            section_tree.put_child(p.first, parameter_tree);
+        }
+        tree.put_child(childs[i], section_tree);
+    }
+    
+    try
+    {
+        boost::property_tree::write_xml(path, tree);
+    }
+    catch (boost::property_tree::xml_parser_error err)
+    {
+        Logger::log("Error write XML file. Message:" + err.message(), Logger::Error);
+        return false;
+    }
+    return true;
 }

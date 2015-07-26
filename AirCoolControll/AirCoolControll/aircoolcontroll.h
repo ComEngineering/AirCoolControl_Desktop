@@ -35,6 +35,7 @@ private slots:
     void newActiveWindow(QMdiSubWindow* w);
     void newStatus(const QString&);
     void showAddNewConfigDialog(void);
+    void showSelectConfigDialog(void);
 
 private:
     Ui::AirCoolControllClass   ui;

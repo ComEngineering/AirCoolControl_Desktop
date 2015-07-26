@@ -80,8 +80,8 @@ bool ConfigStorage::readXMLConfig(const QString& path)
                     a_parameter.m_isBool = false;
                 }
 
-                a_parameter.m_minValue = p.second.get<int>("xmlattr>.min", INT_MIN);
-                a_parameter.m_maxValue = p.second.get<int>("xmlattr>.max", INT_MAX);
+                a_parameter.m_minValue = p.second.get<int>("<xmlattr>.min", INT_MIN);
+                a_parameter.m_maxValue = p.second.get<int>("<xmlattr>.max", INT_MAX);
 
                 boost::property_tree::ptree errorDetectionSection = p.second.get_child("errors", boost::property_tree::ptree());
                 for (const std::pair<std::string, boost::property_tree::ptree> &a_error : errorDetectionSection)

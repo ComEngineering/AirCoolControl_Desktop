@@ -1,6 +1,8 @@
 #include "aircoolcontroll.h"
 #include "Cooller_ModbusController.h"
 #include "AddNewConfigWidget.h"
+#include "EditConfigWindow.h"
+#include "SelectConfigWidget.h"
 
 AirCoolControll::AirCoolControll(QWidget *parent)
     : QMainWindow(parent),
@@ -24,6 +26,7 @@ AirCoolControll::AirCoolControll(QWidget *parent)
     connect(ui.actionDisconnect_from_UART, SIGNAL(triggered(void)), this, SLOT(showDisconnectDialog()));
     connect(ui.actionConnect_to_host, SIGNAL(triggered(void)), this, SLOT(showConnectToHostDialog()));
     connect(ui.actionCreate_new_config, SIGNAL(triggered(void)), this, SLOT(showAddNewConfigDialog()));
+    connect(ui.actionEdit_configuration, SIGNAL(triggered(void)), this, SLOT(showSelectConfigDialog()));
 
    /////////////////////////////////////////////////////////////////////////////////////
     connect(ui.mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(newActiveWindow(QMdiSubWindow*)));
@@ -91,9 +94,32 @@ void AirCoolControll::newStatus(const QString& statusString)
 
 void AirCoolControll::showAddNewConfigDialog(void)
 {
-    AddNewConfigWidget* d = new AddNewConfigWidget();
-    d->exec();
-    delete d;
+    AddNewConfigWidget*  addConfig = new AddNewConfigWidget(m_comunicator->getConfigs(), this);
+    
+    int rc = addConfig->exec();
+    if (1 == rc)
+    {
+        EditConfigWindow* edit = new EditConfigWindow(addConfig->getConfig(), this);
+        edit->exec();
+        delete edit;
+    }
+
+    delete addConfig;
+}
+
+void AirCoolControll::showSelectConfigDialog(void)
+{
+    SelectConfigWidget*  selectConfig = new SelectConfigWidget(m_comunicator->getConfigs(), this);
+
+    int rc = selectConfig->exec();
+    if (1 == rc)
+    {
+        EditConfigWindow* edit = new EditConfigWindow(selectConfig->getConfig(), this);
+        edit->exec();
+        delete edit;
+    }
+
+    delete selectConfig;
 }
 
 void AirCoolControll::newActiveWindow(QMdiSubWindow* w)

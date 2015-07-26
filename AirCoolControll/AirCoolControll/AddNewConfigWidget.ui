@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>652</width>
-    <height>287</height>
+    <width>296</width>
+    <height>498</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>AddNewConfigWidget</string>
+   <string>Add New Config</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout_3">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="label_name">
          <property name="font">
           <font>
            <pointsize>10</pointsize>
@@ -39,25 +39,51 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,2">
-       <item>
-        <widget class="QCheckBox" name="checkBox">
-         <property name="text">
-          <string>Copy from configuration</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="old_configurations_list"/>
-       </item>
-      </layout>
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string>Copy form another config</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QPushButton" name="copy_button">
+              <property name="text">
+               <string>Copy from</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QListWidget" name="old_configs_list"/>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_7">
+      <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
-          <widget class="QLabel" name="label_2">
+          <widget class="QLabel" name="label_vendor">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -66,10 +92,20 @@
            <property name="text">
             <string>Vendor:</string>
            </property>
+           <property name="buddy">
+            <cstring>vendor_edit</cstring>
+           </property>
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_3">
+          <widget class="QLineEdit" name="vendor_edit"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QLabel" name="label_product">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -78,8 +114,18 @@
            <property name="text">
             <string>Product:</string>
            </property>
+           <property name="buddy">
+            <cstring>product_edit</cstring>
+           </property>
           </widget>
          </item>
+         <item>
+          <widget class="QLineEdit" name="product_edit"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
          <item>
           <widget class="QLabel" name="label_4">
            <property name="font">
@@ -90,8 +136,18 @@
            <property name="text">
             <string>Minimum version:</string>
            </property>
+           <property name="buddy">
+            <cstring>min_version</cstring>
+           </property>
           </widget>
          </item>
+         <item>
+          <widget class="VersionEditWidget" name="min_version" native="true"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
          <item>
           <widget class="QLabel" name="label_5">
            <property name="font">
@@ -102,75 +158,24 @@
            <property name="text">
             <string>Maximum version:</string>
            </property>
+           <property name="buddy">
+            <cstring>max_version</cstring>
+           </property>
           </widget>
          </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QLineEdit" name="vendor_edit"/>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="product_edit"/>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <item>
-            <widget class="VersionLineEdit" name="min_major_version"/>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>.</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="VersionLineEdit" name="min_minor_version"/>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_7">
-             <property name="text">
-              <string>.</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="VersionLineEdit" name="min_release_version"/>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_6">
-           <item>
-            <widget class="VersionLineEdit" name="max_major_version"/>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_8">
-             <property name="text">
-              <string>.</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="VersionLineEdit" name="max_minor_version"/>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_9">
-             <property name="text">
-              <string>.</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="VersionLineEdit" name="max_release_version"/>
-           </item>
-          </layout>
+          <widget class="VersionEditWidget" name="max_version" native="true"/>
          </item>
         </layout>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -188,13 +193,20 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="select_graph">
          <property name="text">
           <string>Add graphic UI</string>
          </property>
         </widget>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="Line" name="line_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
      </item>
      <item>
       <spacer name="verticalSpacer">
@@ -243,36 +255,14 @@
     </layout>
    </item>
   </layout>
-  <zorder>label</zorder>
-  <zorder>config_name_edit</zorder>
-  <zorder>add_button</zorder>
-  <zorder>cancel_button</zorder>
-  <zorder>horizontalSpacer</zorder>
-  <zorder>checkBox</zorder>
-  <zorder>verticalSpacer</zorder>
-  <zorder>old_configurations_list</zorder>
-  <zorder>label_2</zorder>
-  <zorder>label_3</zorder>
-  <zorder>label_4</zorder>
-  <zorder>label_5</zorder>
-  <zorder>product_edit</zorder>
-  <zorder>min_major_version</zorder>
-  <zorder>vendor_edit</zorder>
-  <zorder>pushButton</zorder>
-  <zorder>horizontalSpacer_2</zorder>
-  <zorder>pushButton</zorder>
-  <zorder>label_6</zorder>
-  <zorder>min_minor_version</zorder>
-  <zorder>label_7</zorder>
-  <zorder>min_release_version</zorder>
-  <zorder>layoutWidget</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>VersionLineEdit</class>
-   <extends>QLineEdit</extends>
-   <header>versionlineedit.h</header>
+   <class>VersionEditWidget</class>
+   <extends>QWidget</extends>
+   <header>VersionEditWidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

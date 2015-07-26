@@ -16,6 +16,7 @@ class ConfigMap
 {
 public:
     ConfigMap(const std::string& configName, const std::string& vendor, const std::string& product, const std::string& versionMin, const std::string& versionMax);
+    ConfigMap(void){}
     ~ConfigMap();
 
     enum RegisterType {
@@ -126,6 +127,9 @@ public:
             }
             return rc;
         }
+
+        int size(void) const { return m_detection_list.size(); }
+        const Error& operator[](int n) const { return m_detection_list[n]; }
     private:
         std::vector<Error> m_detection_list;
     };
@@ -147,6 +151,9 @@ public:
     typedef std::vector<std::pair<std::string, std::string>> ParameterList;
     typedef std::vector<std::pair<std::string, Parameter>> ParameterMap;
 
+    const std::string& getName(void) const { return m_configName; }
+    void setName(const std::string& name) { m_configName = name; }
+    void fetchInfo(std::string& vendor, std::string& product, VersionStorage& max, VersionStorage& min){ max = m_versionMax; min = m_versionMin; vendor = m_vendor; product = m_product; }
     void addVariable(int n,const std::string& name, const Parameter& p);
     int  getRegisterNumber(const std::string& name) const;
     bool haveVariableWithName(const std::string& name) const;
@@ -161,6 +168,7 @@ public:
     std::string getParameterDescription(const std::string& name) const;
     const std::pair<std::string,Parameter>& operator[](int n) const;
     int size(void) const { return m_map.size(); }
+    bool saveToFile(const std::string& path) const;
 
 private:
     static qint16 decodeWithMethod(qint16 value, const std::string& method);

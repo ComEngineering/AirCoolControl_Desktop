@@ -7,7 +7,7 @@ class VersionStorage
 {
 public:
     VersionStorage(QString versionString);
-    VersionStorage() : m_isLegal(false){}
+    VersionStorage() : m_isLegal(false), m_major(0), m_minor(0), m_revision(0) {}
     ~VersionStorage();
 
     bool isLegal(){ return m_isLegal; }
@@ -15,6 +15,8 @@ public:
     bool operator>=(const VersionStorage& other) const { return !operator<=(other); }
     bool operator==(const VersionStorage& other) const;
     explicit operator QString() const;
+
+    friend class VersionEditWidget;
 
 private:
     static bool versionFilter(QChar c);
