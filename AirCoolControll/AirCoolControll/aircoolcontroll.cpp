@@ -114,9 +114,13 @@ void AirCoolControll::showSelectConfigDialog(void)
     int rc = selectConfig->exec();
     if (1 == rc)
     {
-        EditConfigWindow* edit = new EditConfigWindow(selectConfig->getConfig(), this);
-        edit->exec();
-        delete edit;
+        ConfigMapShared config = selectConfig->getConfig();
+        if (config)
+        {
+            EditConfigWindow* edit = new EditConfigWindow(config, this);
+            edit->exec();
+            delete edit;
+        }
     }
 
     delete selectConfig;

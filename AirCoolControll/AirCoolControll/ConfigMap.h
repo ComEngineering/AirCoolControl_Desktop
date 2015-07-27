@@ -19,6 +19,8 @@ public:
     ConfigMap(void){}
     ~ConfigMap();
 
+    friend class EditConfigWindow;
+
     enum RegisterType {
         REGISTER_PULL_FIRST = 0,
         INPUT_REGISTER = 0,
@@ -151,24 +153,31 @@ public:
     typedef std::vector<std::pair<std::string, std::string>> ParameterList;
     typedef std::vector<std::pair<std::string, Parameter>> ParameterMap;
 
-    const std::string& getName(void) const { return m_configName; }
-    void setName(const std::string& name) { m_configName = name; }
-    void fetchInfo(std::string& vendor, std::string& product, VersionStorage& max, VersionStorage& min){ max = m_versionMax; min = m_versionMin; vendor = m_vendor; product = m_product; }
-    void addVariable(int n,const std::string& name, const Parameter& p);
-    int  getRegisterNumber(const std::string& name) const;
-    bool haveVariableWithName(const std::string& name) const;
-    QVariant getValue(const std::string& name, const std::vector<quint16>& array) const;
-    bool isVariableBool(const std::string& name, int& bitNumber);
-    Interval& getInterval(int n);
-    bool  isSupport(const DeviceInfoShared info) const;
+    const std::string&   getName(void) const { return m_configName; }
+    void                 setName(const std::string& name) { m_configName = name; }
+    void                 fetchInfo(std::string& vendor, std::string& product, VersionStorage& max, VersionStorage& min){ 
+                             max = m_versionMax; 
+                             min = m_versionMin; 
+                             vendor = m_vendor; 
+                             product = m_product; 
+                         }
+    void                 addVariable(int n,const std::string& name, const Parameter& p);
+    int                  getRegisterNumber(const std::string& name) const;
+    bool                 haveVariableWithName(const std::string& name) const;
+    QVariant             getValue(const std::string& name, const std::vector<quint16>& array) const;
+    bool                 isVariableBool(const std::string& name, int& bitNumber);
+    Interval&            getInterval(int n);
+    bool                 isSupport(const DeviceInfoShared info) const;
     const ParameterList& getParametersList(ConfigMap::RegisterType e);
-    RegisterType getVariableType(const std::string& key) const;
-    void  setUI_Config(const std::string& type, const std::string& configFile);
-    ParameterMap::const_iterator findParameter(const std::string& name) const;
-    std::string getParameterDescription(const std::string& name) const;
-    const std::pair<std::string,Parameter>& operator[](int n) const;
-    int size(void) const { return m_map.size(); }
-    bool saveToFile(const std::string& path) const;
+    RegisterType         getVariableType(const std::string& key) const;
+    void                 setUI_Config(const std::string& type, const std::string& configFile);
+    ParameterMap::const_iterator 
+                         findParameter(const std::string& name) const;
+    std::string          getParameterDescription(const std::string& name) const;
+    const std::pair<std::string,Parameter>& 
+                         operator[](int n) const;
+    int                  size(void) const { return m_map.size(); }
+    bool                 saveToFile(const std::string& path) const;
 
 private:
     static qint16 decodeWithMethod(qint16 value, const std::string& method);
@@ -185,7 +194,7 @@ private:
     ParameterMap    m_map;
     Interval        m_registersIntervals[REGISTER_PULL_COUNT];
 
-    ConfigMap::ParameterList m_parameters[REGISTER_PULL_COUNT];
+    ParameterList   m_parameters[REGISTER_PULL_COUNT];
 };
 
 typedef std::shared_ptr<ConfigMap> ConfigMapShared;

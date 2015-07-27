@@ -17,6 +17,7 @@ public:
 
 private slots:
     void editOK(void);
+    void editOK(const QModelIndex & index);
     void checkWidgetsEnabled(void);
 
 private:

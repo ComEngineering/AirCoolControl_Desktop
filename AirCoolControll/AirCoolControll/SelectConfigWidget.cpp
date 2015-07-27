@@ -14,6 +14,7 @@ SelectConfigWidget::SelectConfigWidget(ConfigStorage& storage, QWidget *parent)
     connect(ui.button_cancel, SIGNAL(clicked()), this, SLOT(reject()));
     connect(ui.button_edit, SIGNAL(clicked()), this, SLOT(editOK()));
     connect(ui.list_configs, SIGNAL(itemSelectionChanged()), this, SLOT(checkWidgetsEnabled()));
+    connect(ui.list_configs, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(editOK(const QModelIndex&)));
 
     checkWidgetsEnabled();
 }
@@ -33,9 +34,15 @@ ConfigMapShared SelectConfigWidget::getConfig(void) const
         {
             return (*it);
         }
+    return ConfigMapShared();
 }
 
 void SelectConfigWidget::editOK(void)
+{
+    done(1);
+}
+
+void SelectConfigWidget::editOK(const QModelIndex & index)
 {
     done(1);
 }
