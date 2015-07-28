@@ -161,7 +161,7 @@ public:
                              vendor = m_vendor; 
                              product = m_product; 
                          }
-    void                 addVariable(int n,const std::string& name, const Parameter& p);
+    void                 addVariable(const std::string& name, const Parameter& p);
     int                  getRegisterNumber(const std::string& name) const;
     bool                 haveVariableWithName(const std::string& name) const;
     QVariant             getValue(const std::string& name, const std::vector<quint16>& array) const;
@@ -178,6 +178,8 @@ public:
                          operator[](int n) const;
     int                  size(void) const { return m_map.size(); }
     bool                 saveToFile(const std::string& path) const;
+    void                 deleteParameterWithName(const std::string& name);
+    void                 setNewParameter(const std::string& name, const Parameter& newParameter);
 
 private:
     static qint16 decodeWithMethod(qint16 value, const std::string& method);

@@ -100,7 +100,7 @@ bool ConfigStorage::readXMLConfig(const QString& path)
                     a_parameter.m_enumeration.push_back(std::pair<std::string,int>(description,value));
                 }
 
-                a_map->addVariable(i, name, a_parameter);
+                a_map->addVariable(name, a_parameter);
             }
         }
 

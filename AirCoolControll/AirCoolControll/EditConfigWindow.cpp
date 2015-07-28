@@ -25,6 +25,10 @@ EditConfigWindow::EditConfigWindow(ConfigMapShared a_map, QWidget *parent)
     connect(ui.table_output, SIGNAL(cellClicked(int, int)), this, SLOT(cellSelectedOutput(int, int)));
     connect(ui.table_coils, SIGNAL(cellClicked(int, int)), this, SLOT(cellSelectedCoils(int, int)));
 
+    connect(ui.table_input, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(cellEditInput(int, int)));
+    connect(ui.table_output, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(cellEditOutput(int, int)));
+    connect(ui.table_coils, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(cellEditCoils(int, int)));
+
     m_map = a_map->m_map;
     m_tables[ConfigMap::INPUT_REGISTER] = ui.table_input;
     m_tables[ConfigMap::OUTPUT_REGISTER] = ui.table_output;
@@ -91,6 +95,24 @@ void EditConfigWindow::cellSelectedCoils(int row, int collumn)
     m_currentIndex[ConfigMap::COIL] = row;
 }
 
+void EditConfigWindow::cellEditInput(int row, int collumn)
+{
+    cellSelectedInput(row, collumn);
+    editInput();
+}
+
+void EditConfigWindow::cellEditOutput(int row, int collumn)
+{
+    cellSelectedOutput(row, collumn);
+    editOutput();
+}
+
+void EditConfigWindow::cellEditCoils(int row, int collumn)
+{
+    cellSelectedCoils(row, collumn);
+    editCoil();
+}
+
 void EditConfigWindow::sellectionChanged(int oldIndex, int newIndex, QTableWidget* table)
 {
     int nc = table->rowCount();
@@ -113,47 +135,89 @@ void EditConfigWindow::saveConfig()
     done(1);
 }
 
+void EditConfigWindow::addNewParameter(ConfigMap::RegisterType type)
+{
+    ConfigMap::Parameter newParameter;
+    newParameter.m_type = type;
+    QString newName;
+    if (!getNewName())
+        return;
+
+    if (editParameter(newParameter))
+    {
+        m_config->setNewParameter(newName.toStdString(), newParameter);
+    }
+}
+
 void EditConfigWindow::addCoil()
 {
-
+    addNewParameter(ConfigMap::COIL);
 }
 
 void EditConfigWindow::addInput()
 {
-
+    addNewParameter(ConfigMap::INPUT_REGISTER);
 }
 
 void EditConfigWindow::addOutput()
 {
-
+    addNewParameter(ConfigMap::OUTPUT_REGISTER);
 }
 
 void EditConfigWindow::editCoil()
 {
-
+    editParameter(ConfigMap::COIL);
 }
 
 void EditConfigWindow::editInput()
 {
-
+    editParameter(ConfigMap::INPUT_REGISTER);
 }
 
 void EditConfigWindow::editOutput()
 {
-
+    editParameter(ConfigMap::OUTPUT_REGISTER);
 }
 
 void EditConfigWindow::deleteCoil()
 {
-
+    deleteParameter(ConfigMap::COIL);
 }
 
 void EditConfigWindow::deleteInput()
 {
-
+    deleteParameter(ConfigMap::INPUT_REGISTER);
 }
 
 void EditConfigWindow::deleteOutput()
 {
+    deleteParameter(ConfigMap::OUTPUT_REGISTER);
+}
 
+void EditConfigWindow::editParameter(ConfigMap::RegisterType type)
+{
+    QTableWidgetItem * ti = m_tables[type]->item(m_currentIndex[type], 0);
+    QString id = ti->text();
+    ConfigMap::Parameter newParameter = m_config->findParameter(id.toStdString())->second;
+    if (editParameter(newParameter))
+    {
+        m_config->setNewParameter(id.toStdString(), newParameter);
+    }
+}
+
+void EditConfigWindow::deleteParameter(ConfigMap::RegisterType type)
+{
+    QTableWidgetItem * ti = m_tables[type]->item(m_currentIndex[type], 0);
+    QString id = ti->text();
+    m_config->deleteParameterWithName(id.toStdString());
+}
+
+bool EditConfigWindow::editParameter(ConfigMap::Parameter parameter)
+{
+    return true;
+}
+
+bool EditConfigWindow::getNewName()
+{
+    return true;
 }

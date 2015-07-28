@@ -27,10 +27,18 @@ private slots:
     void cellSelectedInput(int, int);
     void cellSelectedOutput(int, int);
     void cellSelectedCoils(int, int);
+    void cellEditInput(int, int);
+    void cellEditOutput(int, int);
+    void cellEditCoils(int, int);
 
 private:
     void initTab(ConfigMap::RegisterType type);
     void sellectionChanged(int oldIndex, int newIndex, QTableWidget* table);
+    void editParameter(ConfigMap::RegisterType type);
+    void deleteParameter(ConfigMap::RegisterType type);
+    bool editParameter(ConfigMap::Parameter parameter);
+    bool getNewName();
+    void addNewParameter(ConfigMap::RegisterType type);
     
 private:
     Ui::EditConfigWindow    ui;

@@ -26,8 +26,9 @@ ConfigMap::~ConfigMap()
 {
 }
 
-void ConfigMap::addVariable(int n,const std::string& name, const Parameter& p)
+void ConfigMap::addVariable(const std::string& name, const Parameter& p)
 {
+    int n = p.m_type;
     m_map.push_back(std::pair<std::string, Parameter>(name,p));
     
     if (p.m_registerNumber < m_registersIntervals[n].first)
@@ -279,4 +280,22 @@ bool ConfigMap::saveToFile(const std::string& path) const
         return false;
     }
     return true;
+}
+
+void ConfigMap::deleteParameterWithName(const std::string& name)
+{
+    std::vector<std::pair<std::string, Parameter>>::const_iterator i = std::find_if(m_map.begin(), m_map.end(), [&name](const std::pair<std::string, Parameter>& e){return name == e.first; });
+    if (i != m_map.end())
+    {
+        m_map.erase(i);
+    }
+}
+
+void ConfigMap::setNewParameter(const std::string& name, const ConfigMap::Parameter& newParameter)
+{
+    std::vector<std::pair<std::string, Parameter>>::iterator i = std::find_if(m_map.begin(), m_map.end(), [&name](const std::pair<std::string, Parameter>& e){return name == e.first; });
+    if (i != m_map.end())
+    {
+        i->second = newParameter;
+    }
 }
