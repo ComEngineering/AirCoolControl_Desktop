@@ -36,8 +36,8 @@ private:
     void sellectionChanged(int oldIndex, int newIndex, QTableWidget* table);
     void editParameter(ConfigMap::RegisterType type);
     void deleteParameter(ConfigMap::RegisterType type);
-    bool editParameter(ConfigMap::Parameter parameter);
-    bool getNewName();
+    bool editParameter(ConfigMap::Parameter& parameter);
+    bool getNewName(QString& newName);
     void addNewParameter(ConfigMap::RegisterType type);
     
 private:

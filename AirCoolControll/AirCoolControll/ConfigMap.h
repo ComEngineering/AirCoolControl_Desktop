@@ -136,7 +136,7 @@ public:
         std::vector<Error> m_detection_list;
     };
 
-    typedef struct 
+    typedef struct _Parameter
     {
         int                        m_registerNumber;
         std::string                m_description;
@@ -148,6 +148,8 @@ public:
         RegisterType               m_type;
         ErrorDetector              m_errorDetector;
         std::vector<std::pair<std::string, int>> m_enumeration;
+
+        _Parameter() : m_registerNumber(-1), m_minValue(SHRT_MIN), m_maxValue(SHRT_MAX){}
     } Parameter;
 
     typedef std::vector<std::pair<std::string, std::string>> ParameterList;

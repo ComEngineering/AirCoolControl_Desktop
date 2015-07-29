@@ -1,4 +1,6 @@
 #include "EditConfigWindow.h"
+#include "NewParameterNameDialog.h"
+#include "EditParameterDialog.h"
 
 EditConfigWindow::EditConfigWindow(ConfigMapShared a_map, QWidget *parent)
     : QDialog(parent),
@@ -140,7 +142,7 @@ void EditConfigWindow::addNewParameter(ConfigMap::RegisterType type)
     ConfigMap::Parameter newParameter;
     newParameter.m_type = type;
     QString newName;
-    if (!getNewName())
+    if (!getNewName(newName))
         return;
 
     if (editParameter(newParameter))
@@ -212,12 +214,26 @@ void EditConfigWindow::deleteParameter(ConfigMap::RegisterType type)
     m_config->deleteParameterWithName(id.toStdString());
 }
 
-bool EditConfigWindow::editParameter(ConfigMap::Parameter parameter)
+bool EditConfigWindow::editParameter(ConfigMap::Parameter& parameter)
 {
-    return true;
+    EditParameterDialog dialog(parameter, this);
+
+    return dialog.exec() == 1;
 }
 
-bool EditConfigWindow::getNewName()
+bool EditConfigWindow::getNewName(QString& newName)
 {
-    return true;
+    bool rc = false;
+    std::set<QString> existingNames;
+    for (const auto& it : m_config->m_map)
+        existingNames.insert(QString::fromStdString(it.first));
+    
+    NewParameterNameDialog nameDialog(existingNames, this);
+    if (nameDialog.exec() == 1)
+    {
+        newName = nameDialog.getNewName();
+        rc = true;
+    }
+
+    return rc;
 }
