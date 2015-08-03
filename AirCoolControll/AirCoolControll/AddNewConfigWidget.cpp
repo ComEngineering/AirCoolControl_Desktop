@@ -70,9 +70,10 @@ void AddNewConfigWidget::addConfig()
         QMessageBox::critical(this, tr("Invalid File name"), tr("Document with this name exists.\nGive it another name"));
         return;
     }
+    m_map->setFilePath(ui.config_name_edit->text().toStdString());
     m_map->setName(ui.config_name_edit->text().toStdString());
     m_storage.push_back(m_map);
-    m_map->saveToFile(path.toStdString());
+    m_map->save();
     done(1);
 }
 

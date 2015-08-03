@@ -13,8 +13,19 @@ public:
     EditParameterDialog(ConfigMap::Parameter& parameter, QDialog *parent = 0);
     ~EditParameterDialog();
 
+private slots:
+    void newDescription(const QString& desc);
+    void newRegestryNumber(int n);
+    void newBitState(int);
+    void newBitNumber(int);
+    void newMinValue(int);
+    void newMaxValue(int);
+    void newDecodeMethod(int);
+    void okClicked();
+
 private:
     Ui::EditParameterDialog ui;
+    ConfigMap::Parameter  m_editedParameterCopy;
     ConfigMap::Parameter& m_editedParameter;
 };
 

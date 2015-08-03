@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>447</width>
-    <height>469</height>
+    <height>532</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -160,7 +160,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="spinBox_minValue">
+          <widget class="QSpinBox" name="spinBox_maxValue">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -204,7 +204,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="spinBox_maxValue">
+          <widget class="QSpinBox" name="spinBox_minValue">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -436,7 +436,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="button_cancel">
          <property name="font">
           <font>
            <pointsize>10</pointsize>
@@ -448,7 +448,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="button_ok">
          <property name="font">
           <font>
            <pointsize>10</pointsize>

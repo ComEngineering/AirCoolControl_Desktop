@@ -1,4 +1,5 @@
 #include "NewParameterNameDialog.h"
+#include <QRegExpValidator>
 
 NewParameterNameDialog::NewParameterNameDialog(const std::set<QString>& existingNames, QWidget *parent)
     : QDialog(parent),
@@ -10,6 +11,8 @@ NewParameterNameDialog::NewParameterNameDialog(const std::set<QString>& existing
 
     ui.label_status->setVisible(false);
     ui.button_ok->setEnabled(false);
+
+    ui.lineEdit_name->setValidator(new QRegExpValidator(QRegExp("[_a-zA-Z][_a-zA-Z0-9]{0,30}"),this));
 
     connect(ui.button_cancel, SIGNAL(clicked()), this, SLOT(reject()));
     connect(ui.button_ok, SIGNAL(clicked()), this, SLOT(finish()));

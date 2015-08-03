@@ -15,7 +15,7 @@
 class ConfigMap
 {
 public:
-    ConfigMap(const std::string& configName, const std::string& vendor, const std::string& product, const std::string& versionMin, const std::string& versionMax);
+    ConfigMap(const std::string& fileName, const std::string& configName, const std::string& vendor, const std::string& product, const std::string& versionMin, const std::string& versionMax);
     ConfigMap(void){}
     ~ConfigMap();
 
@@ -157,6 +157,7 @@ public:
 
     const std::string&   getName(void) const { return m_configName; }
     void                 setName(const std::string& name) { m_configName = name; }
+    void                 setFilePath(const std::string& path) { m_filePath = path; }
     void                 fetchInfo(std::string& vendor, std::string& product, VersionStorage& max, VersionStorage& min){ 
                              max = m_versionMax; 
                              min = m_versionMin; 
@@ -180,6 +181,7 @@ public:
                          operator[](int n) const;
     int                  size(void) const { return m_map.size(); }
     bool                 saveToFile(const std::string& path) const;
+    void                 save(void) const;
     void                 deleteParameterWithName(const std::string& name);
     void                 setNewParameter(const std::string& name, const Parameter& newParameter);
 
@@ -187,6 +189,7 @@ private:
     static qint16 decodeWithMethod(qint16 value, const std::string& method);
     
 private:
+    std::string     m_filePath;
     std::string     m_configName;
     std::string     m_vendor;
     std::string     m_product;

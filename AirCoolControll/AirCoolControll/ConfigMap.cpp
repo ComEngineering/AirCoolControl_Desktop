@@ -3,13 +3,15 @@
 #include "DeviceInfo.h"
 #include <algorithm>
 #include "Logger.h"
+#include "Configurator.h"
 
 using ert = ConfigMap::ErrorDetector::Error;
 const std::unordered_map<std::string, ert::DetectionType> ert::s_error_map = { 
     { "EQ", ert::EQ }, { "GT", ert::GT }, { "LT", ert::LT }, { "GTE", ert::GTE }, { "LTE", ert::LTE }, { "AND", ert::AND }, { "XOR", ert::XOR } 
 };
 
-ConfigMap::ConfigMap(const std::string& configName, const std::string& vendor, const std::string& product, const std::string& versionMin, const std::string& versionMax) :
+ConfigMap::ConfigMap(const std::string& fileName, const std::string& configName, const std::string& vendor, const std::string& product, const std::string& versionMin, const std::string& versionMax) :
+    m_filePath(fileName),
     m_configName(configName),
     m_vendor(vendor),
     m_product(product),
@@ -179,6 +181,12 @@ const std::pair<std::string,ConfigMap::Parameter>& ConfigMap::operator[](int n) 
     return m_map.at(n);
 }
 
+void ConfigMap::save(void) const
+{
+    QString path = Configurator::getConfigFilesPath() + QString::fromStdString(m_filePath) + ".xml";
+    saveToFile(path.toStdString());
+}
+
 bool ConfigMap::saveToFile(const std::string& path) const
 {
     boost::property_tree::ptree tree;
@@ -297,5 +305,9 @@ void ConfigMap::setNewParameter(const std::string& name, const ConfigMap::Parame
     if (i != m_map.end())
     {
         i->second = newParameter;
+    }
+    else
+    {
+        addVariable(name, newParameter);
     }
 }

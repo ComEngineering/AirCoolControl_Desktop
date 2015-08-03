@@ -134,6 +134,7 @@ void EditConfigWindow::sellectionChanged(int oldIndex, int newIndex, QTableWidge
 void EditConfigWindow::saveConfig()
 {
     m_config->m_map = m_map;
+    m_config->save();
     done(1);
 }
 
@@ -148,6 +149,9 @@ void EditConfigWindow::addNewParameter(ConfigMap::RegisterType type)
     if (editParameter(newParameter))
     {
         m_config->setNewParameter(newName.toStdString(), newParameter);
+        m_tables[type]->clearContents();
+        m_map = m_config->m_map;
+        initTab(type);
     }
 }
 
