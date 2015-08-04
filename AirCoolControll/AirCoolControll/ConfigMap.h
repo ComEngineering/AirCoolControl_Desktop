@@ -44,7 +44,7 @@ public:
         {
             enum DetectionType
             {
-                EQ,
+                EQ = 0,
                 GT,
                 LT,
                 GTE,

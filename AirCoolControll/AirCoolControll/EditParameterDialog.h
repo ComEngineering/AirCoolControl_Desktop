@@ -14,19 +14,25 @@ public:
     ~EditParameterDialog();
 
 private slots:
-    void newDescription(const QString& desc);
-    void newRegestryNumber(int n);
     void newBitState(int);
-    void newBitNumber(int);
-    void newMinValue(int);
-    void newMaxValue(int);
-    void newDecodeMethod(int);
     void okClicked();
+    void addError();
+    void addEnum();
+    void deleteError();
+    void deleteEnum();
+    void cellSelectedEnum(int, int);
+    void cellSelectedError(int, int);
 
 private:
+    void initTables(void);
+    void addErrorLine(const ConfigMap::ErrorDetector::Error& error);
+    void addEnumLine(std::string showAs, int value);
+    
+private:
     Ui::EditParameterDialog ui;
-    ConfigMap::Parameter  m_editedParameterCopy;
     ConfigMap::Parameter& m_editedParameter;
+    int                   m_enumCurrentIndex;
+    int                   m_errorCurrentIndex;
 };
 
 #endif // EDITPARAMETERDIALOG_H

@@ -285,9 +285,15 @@
         <item row="0" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
-           <widget class="QTableWidget" name="tableWidget">
+           <widget class="QTableWidget" name="table_enum">
+            <attribute name="horizontalHeaderDefaultSectionSize">
+             <number>45</number>
+            </attribute>
             <attribute name="horizontalHeaderStretchLastSection">
              <bool>true</bool>
+            </attribute>
+            <attribute name="verticalHeaderVisible">
+             <bool>false</bool>
             </attribute>
             <attribute name="verticalHeaderDefaultSectionSize">
              <number>22</number>
@@ -357,7 +363,16 @@
         <item row="0" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_7">
           <item>
-           <widget class="QTableWidget" name="tableWidget_2">
+           <widget class="QTableWidget" name="table_error">
+            <attribute name="horizontalHeaderDefaultSectionSize">
+             <number>45</number>
+            </attribute>
+            <attribute name="horizontalHeaderStretchLastSection">
+             <bool>true</bool>
+            </attribute>
+            <attribute name="verticalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
             <attribute name="verticalHeaderDefaultSectionSize">
              <number>22</number>
             </attribute>
@@ -365,7 +380,7 @@
              <number>22</number>
             </attribute>
             <attribute name="verticalHeaderStretchLastSection">
-             <bool>true</bool>
+             <bool>false</bool>
             </attribute>
             <column>
              <property name="text">
@@ -396,7 +411,7 @@
             <item>
              <widget class="QPushButton" name="button_deleteErrorDetector">
               <property name="text">
-               <string>Deletre</string>
+               <string>Delete</string>
               </property>
              </widget>
             </item>

@@ -3,34 +3,37 @@
 EditParameterDialog::EditParameterDialog(ConfigMap::Parameter& parameter,QDialog *parent)
     : QDialog(parent),
     m_editedParameter(parameter),
-    m_editedParameterCopy(parameter)
+    m_enumCurrentIndex(-1),
+    m_errorCurrentIndex(-1)
 {
     ui.setupUi(this);
 
     ui.lineEdit_description->setText(QString::fromStdString(m_editedParameter.m_description));
-    connect(ui.lineEdit_description, SIGNAL(textChanged(const QString &)), this, SLOT(newDescription(const QString&)));
-
+    
     ui.spinBox_register->setValue(m_editedParameter.m_registerNumber);
-    connect(ui.spinBox_register, SIGNAL(valueChanged(int)), this, SLOT(newRegestryNumber(int)));
-
+    
     ui.checkBox->setChecked(m_editedParameter.m_isBool);
     connect(ui.checkBox, SIGNAL(stateChanged(int)), this, SLOT(newBitState(int)));
     ui.spinBox_bitNumber->setEnabled(m_editedParameter.m_isBool);
 
     ui.spinBox_bitNumber->setValue(m_editedParameter.m_bitNumber);
-    connect(ui.spinBox_bitNumber, SIGNAL(valueChanged(int)), this, SLOT(newBitNumber(int)));
-
+   
     ui.spinBox_minValue->setValue(m_editedParameter.m_minValue);
-    connect(ui.spinBox_minValue, SIGNAL(valueChanged(int)), this, SLOT(newMinValue(int)));
-
+   
     ui.spinBox_maxValue->setValue(m_editedParameter.m_maxValue);
-    connect(ui.spinBox_maxValue, SIGNAL(valueChanged(int)), this, SLOT(newMaxValue(int)));
 
     ui.comboBox_decodeMethod->addItems(QString("None,AT").split(','));
-    connect(ui.comboBox_decodeMethod, SIGNAL(activated(int)), this, SLOT(newDecodeMethod(int)));
-
+    
     connect(ui.button_cancel, SIGNAL(clicked()), this, SLOT(reject()));
     connect(ui.button_ok, SIGNAL(clicked()), this, SLOT(okClicked()));
+    connect(ui.button_addErrorDetector, SIGNAL(clicked()), this, SLOT(addError()));
+    connect(ui.button_addEnum, SIGNAL(clicked()), this, SLOT(addEnum()));
+    connect(ui.button_deleteErrorDetector, SIGNAL(clicked()), this, SLOT(deleteError()));
+    connect(ui.button_deleteEnum, SIGNAL(clicked()), this, SLOT(deleteEnum()));
+    connect(ui.table_enum, SIGNAL(cellClicked(int, int)), this, SLOT(cellSelectedEnum(int, int)));
+    connect(ui.table_error, SIGNAL(cellClicked(int, int)), this, SLOT(cellSelectedError(int, int)));
+        
+    initTables();
 }
 
 EditParameterDialog::~EditParameterDialog()
@@ -38,49 +41,146 @@ EditParameterDialog::~EditParameterDialog()
 
 }
 
-void EditParameterDialog::newDescription(const QString& desc)
-{
-    m_editedParameterCopy.m_description = desc.toStdString();
-}
-
-void EditParameterDialog::newRegestryNumber(int n)
-{
-    m_editedParameterCopy.m_registerNumber = n;
-}
 
 void EditParameterDialog::newBitState(int n)
 {
-    bool is_bool = (bool)n;
-    m_editedParameterCopy.m_isBool = is_bool;
+    bool is_bool = (bool)n;  
     ui.spinBox_bitNumber->setEnabled(is_bool);
-}
-
-void EditParameterDialog::newBitNumber(int n)
-{
-    m_editedParameterCopy.m_bitNumber = n;
-}
-
-void EditParameterDialog::newMinValue(int n)
-{
-    m_editedParameterCopy.m_minValue = n;
-}
-
-void EditParameterDialog::newMaxValue(int n)
-{
-    m_editedParameterCopy.m_maxValue = n;
-}
-
-void EditParameterDialog::newDecodeMethod(int n)
-{
-    const static char* methods[] = { "", "AT" };
-    if (n < 0)
-        return;
-
-    m_editedParameterCopy.m_decodeMethod = methods[n];
 }
 
 void EditParameterDialog::okClicked()
 {
-    m_editedParameter = m_editedParameterCopy;
+    const static char* methods[] = { "", "AT" };
+    
+    m_editedParameter.m_description = ui.lineEdit_description->text().toStdString();
+    m_editedParameter.m_registerNumber = ui.spinBox_register->value();
+    m_editedParameter.m_bitNumber = ui.spinBox_bitNumber->value();
+    m_editedParameter.m_minValue = ui.spinBox_minValue->value();
+    m_editedParameter.m_maxValue = ui.spinBox_maxValue->value();
+    m_editedParameter.m_isBool = ui.checkBox->isChecked();
+    
+    int n = ui.comboBox_decodeMethod->currentIndex();
+    m_editedParameter.m_decodeMethod = methods[n < 0 ? 0 : n];
+
+    /// TO DO read enum and error
+
     done(1);
+}
+
+void EditParameterDialog::initTables(void)
+{
+    ui.button_deleteEnum->setEnabled(false);
+    ui.button_deleteErrorDetector->setEnabled(false);
+
+    ui.table_error->setSelectionMode(QTableWidget::NoSelection);
+    ui.table_enum->setSelectionMode(QTableWidget::NoSelection);
+
+    for (const auto& it : m_editedParameter.m_enumeration)
+    {
+        addEnumLine(it.first, it.second);
+    }
+
+    for (int i = 0; i < m_editedParameter.m_errorDetector.size(); i++)
+    {
+        addErrorLine(m_editedParameter.m_errorDetector[i]);
+    }
+}
+
+void EditParameterDialog::addErrorLine(const ConfigMap::ErrorDetector::Error& error)
+{
+    static const QString detectionTypes("==,>,<,>=,<=,AND,XOR");
+
+    int currentRow = ui.table_error->rowCount();
+    ui.table_error->setRowCount(currentRow + 1);
+    
+    QTableWidgetItem *newItem = new QTableWidgetItem(QString::fromStdString(error.m_description));
+    newItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+    ui.table_error->setItem(currentRow, 2, newItem);
+
+    QSpinBox* spin = new QSpinBox(ui.table_error);
+    spin->setValue(error.m_value);
+    ui.table_error->setCellWidget(currentRow, 1, spin);
+
+    QComboBox* combo = new QComboBox(ui.table_error);
+    combo->addItems(detectionTypes.split(','));
+    combo->setCurrentIndex(error.m_type);
+    ui.table_error->setCellWidget(currentRow, 0, combo);
+
+    ui.table_error->update();
+}
+
+void EditParameterDialog::addEnumLine(std::string showAs, int value)
+{
+    int currentRow = ui.table_enum->rowCount();
+    ui.table_enum->setRowCount(currentRow + 1);
+    
+    QTableWidgetItem *newItem = new QTableWidgetItem(QString::fromStdString(showAs));
+    newItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsEnabled);
+    ui.table_enum->setItem(currentRow, 1, newItem);
+
+    QSpinBox* spin = new QSpinBox(ui.table_enum);
+    spin->setValue(value);
+    ui.table_enum->setCellWidget(currentRow, 0, spin);
+
+    ui.table_enum->update();
+}
+
+void EditParameterDialog::addError()
+{
+    ConfigMap::ErrorDetector::Error error("EQ", "", 0);
+    addErrorLine(error);
+}
+
+void EditParameterDialog::addEnum()
+{
+    addEnumLine("", 0);
+}
+
+void EditParameterDialog::deleteError()
+{
+    ui.table_error->removeRow(m_errorCurrentIndex);
+    m_errorCurrentIndex = -1;
+    ui.table_error->update();
+    
+    ui.button_deleteErrorDetector->setEnabled(false);
+}
+
+void EditParameterDialog::deleteEnum()
+{
+    ui.table_enum->removeRow(m_enumCurrentIndex);
+    m_enumCurrentIndex = -1;
+    ui.table_enum->update();
+
+    ui.button_deleteEnum->setEnabled(false);
+}
+
+void EditParameterDialog::cellSelectedEnum(int row, int collumn)
+{
+    QTableWidgetItem* a_item = ui.table_enum->item(row, 1);
+    a_item->setBackground(QBrush(Qt::green));
+    
+    if (m_enumCurrentIndex != -1)
+    {
+        a_item = ui.table_enum->item(m_enumCurrentIndex, 1);
+        a_item->setBackground(QBrush(Qt::white));
+    }
+ 
+    m_enumCurrentIndex = row;
+    ui.button_deleteEnum->setEnabled(true);
+    ui.table_enum->update();
+}
+
+void EditParameterDialog::cellSelectedError(int row, int collumn)
+{
+    QTableWidgetItem* a_item = ui.table_error->item(row, 2);
+    a_item->setBackground(QBrush(Qt::green));
+    if (m_errorCurrentIndex != -1)
+    {
+        a_item = ui.table_error->item(m_errorCurrentIndex, 2);
+        a_item->setBackground(QBrush(Qt::white));
+    }
+
+    m_errorCurrentIndex = row;
+    ui.button_deleteErrorDetector->setEnabled(true);
+    ui.table_error->update();
 }
