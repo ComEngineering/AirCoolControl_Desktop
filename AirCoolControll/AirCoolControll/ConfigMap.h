@@ -132,6 +132,7 @@ public:
 
         int size(void) const { return m_detection_list.size(); }
         const Error& operator[](int n) const { return m_detection_list[n]; }
+        void clear(void) { m_detection_list.clear(); }
     private:
         std::vector<Error> m_detection_list;
     };

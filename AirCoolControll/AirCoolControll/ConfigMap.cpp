@@ -208,9 +208,9 @@ bool ConfigMap::saveToFile(const std::string& path) const
     }
 
     static const char* childs[ConfigMap::REGISTER_PULL_COUNT] = {
-        "InputValues",
-        "OutValues",
-        "Coils"
+        "Config.InputValues",
+        "Config.OutValues",
+        "Config.Coils"
     };
 
     for (ConfigMap::RegisterType i = ConfigMap::REGISTER_PULL_FIRST; i < ConfigMap::REGISTER_PULL_COUNT; i = ConfigMap::NEXT(i))
@@ -225,7 +225,7 @@ bool ConfigMap::saveToFile(const std::string& path) const
             boost::property_tree::ptree parameter_tree;
             std::string a_name = p.first;
                 
-            parameter_tree.put(a_name, a_parameter.m_description);
+            parameter_tree.put_value(a_parameter.m_description);
             parameter_tree.put("<xmlattr>.R", a_parameter.m_registerNumber);
 
             if (a_parameter.m_isBool)
@@ -241,6 +241,7 @@ bool ConfigMap::saveToFile(const std::string& path) const
             if (ne > 0)
             {
                 boost::property_tree::ptree errorDetectionSection;
+
                 for (int j = 0; j < ne; j++)
                 {  
                     boost::property_tree::ptree errorD;
@@ -256,7 +257,7 @@ bool ConfigMap::saveToFile(const std::string& path) const
                             break;
                         }
                     }
-                    errorDetectionSection.put_child(typeDesc, errorD);
+                    errorDetectionSection.add_child(typeDesc, errorD);
                 }
                 parameter_tree.put_child("errors", errorDetectionSection);
             }
@@ -267,10 +268,12 @@ bool ConfigMap::saveToFile(const std::string& path) const
                     
                 for (const std::pair<std::string, int> &a_item : a_parameter.m_enumeration)
                 {
-                    enumTree.put("<xmlattr>.d", a_item.first);
-                    enumTree.put("<xmlattr>.v", a_item.second);
+                    boost::property_tree::ptree enumItem;
+                    enumItem.add("<xmlattr>.d", a_item.first);
+                    enumItem.add("<xmlattr>.v", a_item.second);
+                    enumTree.add_child("item", enumItem);
                 }
-                enumTree.put_child("enum", enumTree);
+                parameter_tree.put_child("enum", enumTree);
             }
 
             section_tree.put_child(p.first, parameter_tree);

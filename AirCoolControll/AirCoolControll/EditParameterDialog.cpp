@@ -62,7 +62,35 @@ void EditParameterDialog::okClicked()
     int n = ui.comboBox_decodeMethod->currentIndex();
     m_editedParameter.m_decodeMethod = methods[n < 0 ? 0 : n];
 
-    /// TO DO read enum and error
+    int tableSize = ui.table_enum->rowCount();
+    if (0 != tableSize)
+    {
+        m_editedParameter.m_enumeration.clear();
+        for (int i = 0; i < tableSize; i++)
+        {
+            QString name = ui.table_enum->item(i, 1)->text();
+            if (QString() == name)
+                continue;
+            QSpinBox* enumSpin = qobject_cast<QSpinBox*>(ui.table_enum->cellWidget(i, 0));
+            m_editedParameter.m_enumeration.emplace_back(std::pair<std::string, int>(name.toStdString(), enumSpin->value()));
+        }
+    }
+
+    tableSize = ui.table_error->rowCount();
+    if (0 != tableSize)
+    {
+        m_editedParameter.m_errorDetector.clear();
+        for (int i = 0; i < tableSize; i++)
+        {
+            QString name = ui.table_error->item(i, 2)->text();
+            if (QString() == name)
+                continue;
+            QSpinBox* spin = qobject_cast<QSpinBox*>(ui.table_error->cellWidget(i, 1));
+            QComboBox* combo = qobject_cast<QComboBox*>(ui.table_error->cellWidget(i, 0));
+            const static char* enumDescriptions[] = { "EQ", "GT", "LT", "GTE", "LTE", "AND", "XOR" };
+            m_editedParameter.m_errorDetector.addError( enumDescriptions[combo->currentIndex()], name.toStdString(), spin->value());
+        }
+    }
 
     done(1);
 }
