@@ -10,6 +10,8 @@ public:
     PullerSetCoilTask(int id, int speed, int regNumber, bool value);
     ~PullerSetCoilTask();
 
+    Priority  priority(){ return High; }
+
     bool proceed(ModBusUART_Impl* modbus);
 
 private:

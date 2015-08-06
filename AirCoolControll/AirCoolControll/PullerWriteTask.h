@@ -11,6 +11,8 @@ public:
     PullerWriteTask(int id,int speed,int regNumber,int value);
     virtual ~PullerWriteTask();
 
+    Priority  priority(){ return Midle; }
+
     bool proceed(ModBusUART_Impl* modbus);
 
 private:

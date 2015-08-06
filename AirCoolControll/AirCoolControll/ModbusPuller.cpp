@@ -40,6 +40,7 @@ void ModbusPuller::run(void)
     m_endProcessingSemaphore.acquire(1);
     int currentScanningID = 1;
     QString vendor, product, version;
+    bool highestPriorityTaskDone;
     while (m_continueProcessing)
     {
         if (m_isStoped)
@@ -48,15 +49,20 @@ void ModbusPuller::run(void)
         if (!m_modbus)
             m_modbus = new ModBusUART_Impl(m_uartName);
 
-        for (QList<PullerTaskShared>::iterator task = m_tasks.begin(); task != m_tasks.end(); )
+        highestPriorityTaskDone = true;
+        for (PullerTaskBase::Priority p = PullerTaskBase::Priority::High; highestPriorityTaskDone && p < PullerTaskBase::Priority::Count; PullerTaskBase::NEXT(p))
         {
-            if ((*task)->isItTimeToDo() && true == (*task)->proceed(m_modbus))
+            for (QList<PullerTaskShared>::iterator task = m_tasks.begin(); task != m_tasks.end(); task++)
             {
-                task = m_tasks.erase(task);
-            }
-            else
-            {
-                task++;
+                if ((*task)->priority() == p && (*task)->isItTimeToDo())
+                {
+                    if (true == (*task)->proceed(m_modbus))
+                    {
+                        m_tasks.erase(task);
+                        break;
+                    }
+                    highestPriorityTaskDone = false;
+                }
             }
         }
 

@@ -60,11 +60,13 @@ void OutValueWidget::paintEvent(QPaintEvent *event)
     
     if (m_edit)
     {
-        m_edit->blockSignals(true);
-        ///setText(isValid ? QString::number(number) : m_value.toString());
-        m_edit->setValue(number);
+        if (!m_edit->hasFocus())
+        {
+            m_edit->blockSignals(true);
+            m_edit->setValue(number);
+            m_edit->blockSignals(false);
+        }
         m_edit->setGeometry(this->rect());
-        m_edit->blockSignals(false);
         m_edit->update();
     }
     else
@@ -87,6 +89,4 @@ void OutValueWidget::paintEvent(QPaintEvent *event)
         m_combo->blockSignals(false);
         m_combo->update();
     }
-
-    
 }

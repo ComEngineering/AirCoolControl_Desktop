@@ -16,6 +16,8 @@ public:
     PullerReadTask(int id, int speed, Interval& range);
     virtual ~PullerReadTask();
 
+    Priority  priority(){ return Low; }
+
     bool proceed(ModBusUART_Impl* modbus);
     virtual bool isItTimeToDo(void) const;
 

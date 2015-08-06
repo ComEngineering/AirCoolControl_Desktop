@@ -10,6 +10,8 @@ public:
     PullerReadCoilTask(int id, int speed, Interval& range);
     ~PullerReadCoilTask();
 
+    Priority  priority(){ return Low; }
+
     bool proceed(ModBusUART_Impl* modbus);
 
 };

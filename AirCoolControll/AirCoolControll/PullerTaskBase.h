@@ -8,13 +8,27 @@ class ModBusUART_Impl;
 
 class PullerTaskBase 
 {
-
 public:
+    enum Priority
+    {
+        High = 0,
+        Midle,
+        Low,
+        Count
+    };
+
+    static Priority &NEXT(Priority &c) {
+        assert(c < Count);
+        c = static_cast<Priority>(c + 1);
+        return c;
+    }
+
     PullerTaskBase(int id,int speed = 9600);
     virtual ~PullerTaskBase();
 
     virtual bool proceed(ModBusUART_Impl* modbus) = 0;
     virtual bool isItTimeToDo(void) const { return true; }
+    virtual Priority  priority() = 0;
 
     int  getID() const;
     int  getSpeed() const;

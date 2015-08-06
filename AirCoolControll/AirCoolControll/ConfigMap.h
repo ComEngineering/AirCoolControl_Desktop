@@ -29,7 +29,7 @@ public:
         REGISTER_PULL_COUNT
     };
       
-    static RegisterType &NEXT(ConfigMap::RegisterType &c) {
+    static RegisterType &NEXT(RegisterType &c) {
         assert(c < REGISTER_PULL_COUNT);
         c = static_cast<RegisterType>(c + 1);
         return c;
