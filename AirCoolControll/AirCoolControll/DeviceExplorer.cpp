@@ -1,4 +1,3 @@
-#include "Logger.h"
 #include <cfloat>
 #include <qmdiarea.h>
 #include "DeviceExplorer.h"

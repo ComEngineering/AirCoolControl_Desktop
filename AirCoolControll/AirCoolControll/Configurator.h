@@ -20,7 +20,8 @@ public:
     static const QString& getVersion();
     static const QVariant getSettings(const QString& key);
     static void setSettings(const QString& key, const QVariant& value);
-    static  QString getConfigFilesPath();
+    static QString getConfigFilesPath();
+    static QString getTestFilesPath();
 
     DEFINE_PROPERTY(RetryCount, 3);
     DEFINE_PROPERTY(ChankTimeout, 20);

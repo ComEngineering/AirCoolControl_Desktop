@@ -2,9 +2,10 @@
 #include "Configurator.h"
 #include <assert.h>
 
-SimpleTest::SimpleTest(const std::string& name, const std::string& descripton) :
+SimpleTest::SimpleTest(const std::string& name, const std::string& descripton, ConfigMapShared config) :
 m_description(descripton),
-m_name(name)
+m_name(name),
+m_config(config)
 {
 }
 

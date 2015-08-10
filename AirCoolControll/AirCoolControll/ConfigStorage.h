@@ -9,6 +9,10 @@ public:
     ConfigStorage();
     ~ConfigStorage();
 
+    std::vector<std::string> getNames(void) const;
+    ConfigMapShared getConfig(int n) const;
+    ConfigMapShared getConfig(const std::string& name) const;
+
 private:
     bool ConfigStorage::readXMLConfig(const QString& path);
 };

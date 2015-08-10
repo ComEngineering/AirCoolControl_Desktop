@@ -15,13 +15,13 @@ ConfigStorage::ConfigStorage()
 {
     QString configsPath = Configurator::getConfigFilesPath();
     QDirIterator iter(configsPath, QStringList() << "*.xml", QDir::Files | QDir::NoDotAndDotDot, QDirIterator::NoIteratorFlags);
-    int configsRed = 0;
+
     while (iter.hasNext())
     {
         iter.next();
         QString xmlFilePath = iter.filePath();
-        if (readXMLConfig(xmlFilePath))
-            configsRed++;
+        if (!readXMLConfig(xmlFilePath))
+            Logger::log("Invalid config file - " + xmlFilePath.toStdString(), Logger::Error);;
     }
 }
 
@@ -42,7 +42,7 @@ bool ConfigStorage::readXMLConfig(const QString& path)
         std::string product = tree.get<std::string>("Config.Product");
         std::string versionMin = tree.get<std::string>("Config.Version.min");
         std::string versionMax = tree.get<std::string>("Config.Version.max");
-        std::shared_ptr<ConfigMap> a_map = std::make_shared<ConfigMap>(path.toStdString(), configName, vendor, product, versionMin, versionMax);
+        ConfigMapShared a_map = std::make_shared<ConfigMap>(path.toStdString(), configName, vendor, product, versionMin, versionMax);
 
         std::string uiType = tree.get<std::string>("Config.UI.<xmlattr>.type", "none");
         if ("none" != uiType)
@@ -123,4 +123,35 @@ bool ConfigStorage::readXMLConfig(const QString& path)
     }
 
     return true;
+}
+
+std::vector<std::string> ConfigStorage::getNames(void) const
+{
+    std::vector<std::string> rc;
+    for (const auto a_config : *this)
+    {
+       rc.emplace_back(a_config->getName());
+    }
+    return rc;
+}
+
+ConfigMapShared ConfigStorage::getConfig(int n) const
+{
+    std::list<ConfigMapShared>::const_iterator it;
+    for (it = begin(); it != end(); it++)
+        if (n-- == 0)
+        {
+            return (*it);
+        }
+    return ConfigMapShared();
+}
+
+ConfigMapShared ConfigStorage::getConfig(const std::string& name) const
+{
+    for (const auto& it : *this)
+    {
+        if (it->getName() == name)
+            return it;
+    }
+    return ConfigMapShared();
 }

@@ -17,7 +17,7 @@ Cooller_ModBusController::Cooller_ModBusController(AirCoolControll* mainWindow) 
     m_connector(this)
 {
     connect(m_recheckTimer, SIGNAL(timeout()), this, SLOT(updateState()));
-    m_recheckTimer->setInterval(500);
+    m_recheckTimer->setInterval(500); //TO DO give it from config
     m_recheckTimer->start();
 //    config->setExternalCommunicator(&m_connector);
 
@@ -38,6 +38,7 @@ Cooller_ModBusController::Cooller_ModBusController(AirCoolControll* mainWindow) 
     connect(&m_info, SIGNAL(uartDisconnected(const QString&)), &m_explorers, SLOT(removeDevicesWithUART(const QString&)));
 
     m_explorers.setConfigList(&m_configs);
+    m_tests.read(&m_configs);
     
     m_mainWindow->getConnectionLog()->setDeviceList(&m_explorers);
     m_explorers.setMdiArea(mainWindow->getMdiArea());

@@ -1,8 +1,11 @@
 #include "aircoolcontroll.h"
 #include "Cooller_ModbusController.h"
-#include "AddNewConfigWidget.h"
+#include "AddNewConfigDialog.h"
 #include "EditConfigWindow.h"
 #include "SelectConfigWidget.h"
+#include "TestEditDialog.h"
+#include "addnewtestdialog.h"
+#include "TestEditDialog.h"
 
 AirCoolControll::AirCoolControll(QWidget *parent)
     : QMainWindow(parent),
@@ -27,6 +30,8 @@ AirCoolControll::AirCoolControll(QWidget *parent)
     connect(ui.actionConnect_to_host, SIGNAL(triggered(void)), this, SLOT(showConnectToHostDialog()));
     connect(ui.actionCreate_new_config, SIGNAL(triggered(void)), this, SLOT(showAddNewConfigDialog()));
     connect(ui.actionEdit_configuration, SIGNAL(triggered(void)), this, SLOT(showSelectConfigDialog()));
+    connect(ui.actionEdit_test, SIGNAL(triggered(void)), this, SLOT(showSelectTestDialog()));
+    connect(ui.actionCreate_new_test, SIGNAL(triggered(void)), this, SLOT(showAddNewTestDialog()));
 
    /////////////////////////////////////////////////////////////////////////////////////
     connect(ui.mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(newActiveWindow(QMdiSubWindow*)));
@@ -94,7 +99,7 @@ void AirCoolControll::newStatus(const QString& statusString)
 
 void AirCoolControll::showAddNewConfigDialog(void)
 {
-    AddNewConfigWidget*  addConfig = new AddNewConfigWidget(m_comunicator->getConfigs(), this);
+    AddNewConfigDialog*  addConfig = new AddNewConfigDialog(m_comunicator->getConfigs(), this);
     
     int rc = addConfig->exec();
     if (1 == rc)
@@ -109,12 +114,12 @@ void AirCoolControll::showAddNewConfigDialog(void)
 
 void AirCoolControll::showSelectConfigDialog(void)
 {
-    SelectConfigWidget*  selectConfig = new SelectConfigWidget(m_comunicator->getConfigs(), this);
+    SelectConfigWidget*  selectConfig = new SelectConfigWidget(m_comunicator->getConfigs().getNames(), this);
 
     int rc = selectConfig->exec();
     if (1 == rc)
     {
-        ConfigMapShared config = selectConfig->getConfig();
+        ConfigMapShared config = m_comunicator->getConfigs().getConfig(selectConfig->getSelectedIndex());
         if (config)
         {
             EditConfigWindow* edit = new EditConfigWindow(config, this);
@@ -125,6 +130,41 @@ void AirCoolControll::showSelectConfigDialog(void)
 
     delete selectConfig;
 }
+
+void AirCoolControll::showSelectTestDialog(void)
+{
+    SelectConfigWidget*  selectConfig = new SelectConfigWidget(m_comunicator->getTests().getNames(), this);
+
+    int rc = selectConfig->exec();
+    if (1 == rc)
+    {
+        SimpleTestShared test = m_comunicator->getTests().getTest(selectConfig->getSelectedIndex());
+        if (test)
+        {
+            TestEditDialog* edit = new TestEditDialog(test, this);
+            edit->exec();
+            delete edit;
+        }
+    }
+
+    delete selectConfig;
+}
+
+void AirCoolControll::showAddNewTestDialog(void)
+{
+    AddNewTestDialog*  addTest = new AddNewTestDialog(m_comunicator->getTests(), this);
+
+    int rc = addTest->exec();
+    if (1 == rc)
+    {
+        TestEditDialog* edit = new TestEditDialog(addTest->getTest(), this);
+        edit->exec();
+        delete edit;
+    }
+
+    delete addTest;
+}
+
 
 void AirCoolControll::newActiveWindow(QMdiSubWindow* w)
 {

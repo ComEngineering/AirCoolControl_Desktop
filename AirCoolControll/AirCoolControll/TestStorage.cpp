@@ -6,7 +6,16 @@
 #include <boost/property_tree/xml_parser.hpp>
 
 TestStorage::TestStorage()
+{   
+}
+
+TestStorage::~TestStorage()
 {
+}
+
+void TestStorage::read(const ConfigStorage* configs)
+{
+    m_configs = configs;
     QString testsPath = Configurator::getTestFilesPath();
     QDirIterator iter(testsPath, QStringList() << "*.xml", QDir::Files | QDir::NoDotAndDotDot, QDirIterator::NoIteratorFlags);
 
@@ -19,11 +28,6 @@ TestStorage::TestStorage()
     }
 }
 
-
-TestStorage::~TestStorage()
-{
-}
-
 bool TestStorage::readXML_Test(const QString& path)
 {
     boost::property_tree::ptree tree;
@@ -33,7 +37,12 @@ bool TestStorage::readXML_Test(const QString& path)
 
         std::string name = tree.get<std::string>("Test.<xmlattr>.name");
         std::string description = tree.get<std::string>("Test.Description");
-        SimpleTestShared a_test = std::make_shared<SimpleTest>(name, description);
+        std::string configName = tree.get<std::string>("Test.ConfigName");
+        ConfigMapShared config = m_configs->getConfig(configName);
+        if (!config)
+            return false;
+
+        SimpleTestShared a_test = std::make_shared<SimpleTest>(name, description, config);
 
         boost::property_tree::ptree stages = tree.get_child("Test.stages", boost::property_tree::ptree());
         for (const std::pair<std::string, boost::property_tree::ptree> &a_stage_tree : stages)

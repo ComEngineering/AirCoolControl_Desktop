@@ -36,6 +36,8 @@ private slots:
     void newStatus(const QString&);
     void showAddNewConfigDialog(void);
     void showSelectConfigDialog(void);
+    void showSelectTestDialog(void);
+    void showAddNewTestDialog(void);
 
 private:
     Ui::AirCoolControllClass   ui;

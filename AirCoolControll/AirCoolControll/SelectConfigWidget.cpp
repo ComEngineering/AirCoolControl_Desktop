@@ -1,14 +1,13 @@
 #include "SelectConfigWidget.h"
 
-SelectConfigWidget::SelectConfigWidget(ConfigStorage& storage, QWidget *parent)
-    : QDialog(parent),
-    m_storage(storage)
+SelectConfigWidget::SelectConfigWidget(std::vector<std::string>&& storage, QWidget *parent)
+    : QDialog(parent)
 {
     ui.setupUi(this);
 
-    for (const auto a_config : storage)
+    for (const auto& a_name : storage)
     {
-        ui.list_configs->addItem(QString::fromStdString(a_config->getName()));
+        ui.list_configs->addItem(QString::fromStdString(a_name));
     }
 
     connect(ui.button_cancel, SIGNAL(clicked()), this, SLOT(reject()));
@@ -24,17 +23,9 @@ SelectConfigWidget::~SelectConfigWidget()
 
 }
 
-ConfigMapShared SelectConfigWidget::getConfig(void) const
+int SelectConfigWidget::getSelectedIndex(void) const
 {
-    int n = ui.list_configs->currentRow();
-
-    std::list<ConfigMapShared>::iterator it;
-    for (it = m_storage.begin(); it != m_storage.end(); it++)
-        if (n-- == 0)
-        {
-            return (*it);
-        }
-    return ConfigMapShared();
+    return ui.list_configs->currentRow();
 }
 
 void SelectConfigWidget::editOK(void)

@@ -46,3 +46,8 @@ QString Configurator::getConfigFilesPath()
 {
     return QApplication::applicationDirPath() + "/configs/";
 }
+
+QString Configurator::getTestFilesPath()
+{
+    return QApplication::applicationDirPath() + "/tests/";
+}

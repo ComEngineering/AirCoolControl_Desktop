@@ -14,6 +14,7 @@
 #include "UART_DeviceStorage.h"
 #include "ConnectedDeviceStorage.h"
 #include "ConfigStorage.h"
+#include "TestStorage.h"
 
 class AirCoolControll;
 
@@ -29,6 +30,7 @@ public:
     void getDevicesConnectedToDriver(const QString& name, std::vector<QString>& vector) const;
     void releaseDriverWithName(const QString& driverName);
     ConfigStorage& getConfigs() { return m_configs; }
+    TestStorage& getTests(){ return m_tests; }
 
 private:
     void checkConnectionState(void);
@@ -56,6 +58,7 @@ private:
     ExternalConnector       m_connector;
     ExternalControllManager m_externalManager;
     ConfigStorage           m_configs;
+    TestStorage             m_tests;
     
     ConnectedDeviceStorage  m_explorers;
 };

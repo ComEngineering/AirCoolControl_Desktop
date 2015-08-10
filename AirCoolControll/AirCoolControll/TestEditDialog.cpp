@@ -34,12 +34,22 @@ void TestEditDialog::saveConfig()
 
 void TestEditDialog::addStage()
 {
-    m_test->addStage(SimpleTest::Stage());
+    m_localCopy.addStage(SimpleTest::Stage());
+    int activateIndex = ui.stages_tab->count();
+    ui.stages_tab->addTab(new TestStageEditWidget(*(m_localCopy.m_list.end() - 1), this), QString::number(activateIndex + 1));
+    ui.stages_tab->setCurrentIndex(activateIndex);
 }
 
 void TestEditDialog::deleteStage()
 {
-
+    int currentTab = ui.stages_tab->currentIndex();
+    m_localCopy.deleteStage(currentTab);
+    ui.stages_tab->removeTab(currentTab);
+    ui.stages_tab->update();
+    for (; currentTab < ui.stages_tab->count(); currentTab++)
+    {
+        ui.stages_tab->setTabText(currentTab, QString::number(currentTab + 1));
+    }
 }
 
 void TestEditDialog::tabSelected(int tn)
@@ -51,10 +61,10 @@ void TestEditDialog::updateContent(void)
 {
     ui.stages_tab->clear();
     int n = 0;
-    for (const auto& stage : m_localCopy.m_list)
+    for (auto& stage : m_localCopy.m_list)
     {
-        TestStageEditWidget* stage = new TestStageEditWidget(this);
-        ui.stages_tab->insertTab(n, stage, QString::number(n+1));
+        TestStageEditWidget* stageEditor = new TestStageEditWidget(stage, this);
+        ui.stages_tab->addTab(stageEditor, QString::number(n+1));
         n++;
     }
     ui.label_full_time->setText(QTime(0,0).addSecs(m_localCopy.getOverallDuraton()).toString("hh:mm:ss"));

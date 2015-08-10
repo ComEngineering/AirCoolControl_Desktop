@@ -10,10 +10,10 @@ class SelectConfigWidget : public QDialog
     Q_OBJECT
 
 public:
-    SelectConfigWidget(ConfigStorage& storage, QWidget *parent = 0);
+    SelectConfigWidget(std::vector<std::string>&& storage, QWidget *parent = 0);
     ~SelectConfigWidget();
 
-    ConfigMapShared getConfig(void) const;
+    int getSelectedIndex(void) const;
 
 private slots:
     void editOK(void);
@@ -22,7 +22,6 @@ private slots:
 
 private:
     Ui::SelectConfigWidget ui;
-    ConfigStorage&  m_storage;
 };
 
 #endif // SELECTCONFIGWIDGET_H

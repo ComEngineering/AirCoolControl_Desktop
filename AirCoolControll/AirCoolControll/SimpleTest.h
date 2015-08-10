@@ -5,11 +5,12 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "ConfigMap.h"
 
 class SimpleTest
 {
 public:
-    SimpleTest(const std::string& name, const std::string& descripton);
+    SimpleTest(const std::string& name, const std::string& descripton, ConfigMapShared config);
     SimpleTest(){}
     ~SimpleTest();
 
@@ -34,10 +35,11 @@ public:
     Stage* stageWithIndex(uint n);
        
 private:
-    std::string m_name;
-    std::string m_filePath;
-    std::string m_description;
-    StageList   m_list;
+    std::string     m_name;
+    std::string     m_filePath;
+    std::string     m_description;
+    StageList       m_list;
+    ConfigMapShared m_config;
 };
 
 typedef std::shared_ptr<SimpleTest> SimpleTestShared;
