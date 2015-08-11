@@ -15,11 +15,11 @@ public:
 
 private slots:
     void newTime(const QTime &);
-    void newDial(int);
 
 private:
     Ui::TestStageEditWidget ui;
     SimpleTest::Stage& m_test;
+    TestEditDialog*    m_parent;
 };
 
 #endif // TESTSTAGEEDITWIDGET_H

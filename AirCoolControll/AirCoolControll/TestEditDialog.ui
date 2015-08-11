@@ -70,7 +70,7 @@
         <enum>QTabWidget::Triangular</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <property name="elideMode">
         <enum>Qt::ElideLeft</enum>
@@ -140,6 +140,9 @@
         <widget class="QPushButton" name="button_save">
          <property name="text">
           <string>Save</string>
+         </property>
+         <property name="default">
+          <bool>true</bool>
          </property>
         </widget>
        </item>

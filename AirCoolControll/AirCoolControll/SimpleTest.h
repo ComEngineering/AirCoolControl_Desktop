@@ -32,6 +32,8 @@ public:
     void setName(const std::string& name){ m_name = name; }
 
     int getOverallDuraton(void) const;
+    int getStageStartTime(int n) const;
+    int getStageWithTime(int time) const;
     Stage* stageWithIndex(uint n);
        
 private:

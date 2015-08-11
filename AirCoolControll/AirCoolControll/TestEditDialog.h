@@ -13,14 +13,18 @@ public:
     TestEditDialog(SimpleTestShared test, QWidget *parent = 0);
     ~TestEditDialog();
 
+    void durationChangedCallback();
+
 private:
     void updateContent(void);
+    void setTimeSlider();
 
 private slots:
     void saveConfig();
     void addStage();
     void deleteStage();
     void tabSelected(int tn);
+    void sliderMoved(int);
 
 private:
     Ui::TestEditDialog ui;

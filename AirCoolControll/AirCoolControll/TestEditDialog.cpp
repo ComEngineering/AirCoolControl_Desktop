@@ -16,6 +16,9 @@ TestEditDialog::TestEditDialog(SimpleTestShared test, QWidget *parent)
     connect(ui.button_delete_stage, SIGNAL(clicked()), this, SLOT(deleteStage()));
 
     connect(ui.stages_tab, SIGNAL(currentChanged(int)), this, SLOT(tabSelected(int)));
+    //connect(ui.stages_tab, SIGNAL(currentChanged(int)), this, SLOT(tabSelected(int)));
+
+    connect(ui.slider_time, SIGNAL(valueChanged(int)), this, SLOT(sliderMoved(int)));
 
     updateContent();
 }
@@ -54,7 +57,8 @@ void TestEditDialog::deleteStage()
 
 void TestEditDialog::tabSelected(int tn)
 {
-
+    int startTime = m_localCopy.getStageStartTime(tn);
+    ui.slider_time->setValue(startTime);
 }
 
 void TestEditDialog::updateContent(void)
@@ -67,6 +71,24 @@ void TestEditDialog::updateContent(void)
         ui.stages_tab->addTab(stageEditor, QString::number(n+1));
         n++;
     }
-    ui.label_full_time->setText(QTime(0,0).addSecs(m_localCopy.getOverallDuraton()).toString("hh:mm:ss"));
+    setTimeSlider();
     update();
+}
+
+void TestEditDialog::sliderMoved(int n)
+{
+    int stage = m_localCopy.getStageWithTime(n);
+    ui.stages_tab->setCurrentIndex(stage);
+}
+
+void TestEditDialog::setTimeSlider()
+{
+    int overallDuration = m_localCopy.getOverallDuraton();
+    ui.label_full_time->setText(QTime(0, 0).addSecs(overallDuration).toString("hh:mm:ss"));
+    ui.slider_time->setMaximum(overallDuration);
+}
+
+void TestEditDialog::durationChangedCallback()
+{
+    setTimeSlider();
 }

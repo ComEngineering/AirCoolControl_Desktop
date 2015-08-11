@@ -1,6 +1,7 @@
 #include "SimpleTest.h"
 #include "Configurator.h"
 #include <assert.h>
+#include <algorithm>
 
 SimpleTest::SimpleTest(const std::string& name, const std::string& descripton, ConfigMapShared config) :
 m_description(descripton),
@@ -57,8 +58,33 @@ int SimpleTest::getOverallDuraton(void) const
     return rc;
 }
 
+int SimpleTest::getStageStartTime(int n) const
+{
+    int rc = 0;
+    n = std::min(size_t(n), m_list.size());
+    for (int i = 0; i < n; i++)
+    {
+        rc += m_list[i].m_duration;
+    }
+    return rc;
+}
+
 SimpleTest::Stage* SimpleTest::stageWithIndex(uint n)
 {
     assert(n < m_list.size());
     return &m_list[n];
+}
+
+int SimpleTest::getStageWithTime(int time) const
+{
+    int currentTime = 0;
+    for (int i = 0; i < m_list.size(); i++)
+    {
+        currentTime += m_list[i].m_duration;
+        if (time < currentTime)
+        {
+            return i;
+        }
+    }
+    return m_list.size() - 1;
 }
