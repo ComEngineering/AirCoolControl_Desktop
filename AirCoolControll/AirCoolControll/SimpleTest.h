@@ -31,6 +31,9 @@ public:
     const std::string& getName(){ return m_name; }
     void setName(const std::string& name){ m_name = name; }
 
+    void setConfig(ConfigMapShared config);
+    ConfigMapShared getConfig(void) const { return m_config; }
+
     int getOverallDuraton(void) const;
     int getStageStartTime(int n) const;
     int getStageWithTime(int time) const;

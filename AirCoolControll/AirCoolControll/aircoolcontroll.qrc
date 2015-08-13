@@ -6,5 +6,7 @@
       <file>../../Images/preferences.png</file>
       <file>../../Images/connect_to_host.png</file>
       <file>../../Images/plot_icon.png</file>
+      <file>../../Images/togle_icon.png</file>
+      <file>../../Images/not_togle_icon.png</file>
     </qresource>
 </RCC>

@@ -152,7 +152,8 @@ void AirCoolControll::showSelectTestDialog(void)
 
 void AirCoolControll::showAddNewTestDialog(void)
 {
-    AddNewTestDialog*  addTest = new AddNewTestDialog(m_comunicator->getTests(), this);
+    ConfigStorage& configs = m_comunicator->getConfigs();
+    AddNewTestDialog*  addTest = new AddNewTestDialog(m_comunicator->getTests(), configs, this);
 
     int rc = addTest->exec();
     if (1 == rc)

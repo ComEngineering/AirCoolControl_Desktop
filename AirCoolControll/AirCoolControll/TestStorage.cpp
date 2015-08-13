@@ -40,7 +40,10 @@ bool TestStorage::readXML_Test(const QString& path)
         std::string configName = tree.get<std::string>("Test.ConfigName");
         ConfigMapShared config = m_configs->getConfig(configName);
         if (!config)
+        {
+            Logger::log("Wrong config name - " + configName + " - in test - " + name);
             return false;
+        }
 
         SimpleTestShared a_test = std::make_shared<SimpleTest>(name, description, config);
 

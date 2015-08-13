@@ -88,3 +88,9 @@ int SimpleTest::getStageWithTime(int time) const
     }
     return m_list.size() - 1;
 }
+
+void SimpleTest::setConfig(ConfigMapShared config)
+{ 
+    m_config = config;
+    // TO DO verify test conditions
+}
