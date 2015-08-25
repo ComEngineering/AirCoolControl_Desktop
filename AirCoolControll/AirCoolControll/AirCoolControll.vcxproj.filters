@@ -404,6 +404,15 @@
     <ClCompile Include="addnewtestdialog.cpp">
       <Filter>Source Files\Widgets</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_PictureWidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_PictureWidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="PictureWidget.cpp">
+      <Filter>Source Files\Widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="aircoolcontroll.ui">
@@ -575,6 +584,9 @@
       <Filter>Form Files</Filter>
     </CustomBuild>
     <CustomBuild Include="addnewtestdialog.h">
+      <Filter>Header Files\Widgets</Filter>
+    </CustomBuild>
+    <CustomBuild Include="PictureWidget.h">
       <Filter>Header Files\Widgets</Filter>
     </CustomBuild>
   </ItemGroup>

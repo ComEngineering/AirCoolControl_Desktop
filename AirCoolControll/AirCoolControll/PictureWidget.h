@@ -5,6 +5,8 @@
 #include <qpixmap.h>
 #include "ConfigMap.h"
 
+class DeviceExplorer;
+
 class PictureWidget : public QWidget
 {
     Q_OBJECT
@@ -13,14 +15,18 @@ public:
     PictureWidget(QWidget *parent = 0);
     ~PictureWidget();
 
-    void setConfig(const ConfigMapShared map);
+    void setConfig(const ConfigMapShared map, DeviceExplorer *device);
+    bool isValid(void) const {
+        return m_device != NULL;
+    }
+    float getAspectRatio(void) const;
 
 protected:
     void	paintEvent(QPaintEvent * event);
 
 private:
     ConfigMapShared m_map;
-    bool            m_validVidget;
+    DeviceExplorer *m_device;
     QPixmap         m_pixmap;
 };
 

@@ -15,14 +15,11 @@ CoolerStateWidget::CoolerStateWidget(DeviceExplorer *parent)
     m_colorEnumerator(0)
 { 
     ui.setupUi(this);
-
-    QList<int> sizes;
-    int splitterLength = size().width();
-    int tabLength = splitterLength * .4;
-    
-    sizes.push_back(tabLength);
-    sizes.push_back(splitterLength - tabLength);
-    ui.splitter->setSizes(sizes);
+ 
+    m_splitterSizes.push_back(size().width());
+    m_splitterSizes.push_back(0);
+    m_splitterSizes.push_back(0);
+    ui.splitter->setSizes(m_splitterSizes);
 
     ui.inputParametersTable->setSortingEnabled(false);
 
@@ -34,11 +31,51 @@ CoolerStateWidget::CoolerStateWidget(DeviceExplorer *parent)
     initPlotter();
     setUpdatesEnabled(true);
     startTimer(Configurator::getPullInterval());
+
+    connect(&m_updateSplitterTimer, SIGNAL(timeout()), this, SLOT(updateSplitter()));
+    m_updateSplitterTimer.start(k_splitterUpdateTime);
 }
 
 CoolerStateWidget::~CoolerStateWidget()
 {
+}
 
+void CoolerStateWidget::updateSplitter()
+{
+    QList<int> sizes(ui.splitter->sizes());
+    if (sizes != m_splitterSizes)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            int delta = m_splitterSizes[i] - sizes[i];
+            if (abs(delta) <= k_delta)
+                sizes[i] = m_splitterSizes[i];
+            else
+                sizes[i] += (delta < 0) ? -k_delta : k_delta;
+        }
+        ui.splitter->setSizes(sizes);
+        update();
+    }
+}
+
+void CoolerStateWidget::setNewSplitterMode(bool showPlotter)
+{
+    int splitterLength = size().width();
+
+    if (showPlotter || false == ui.picture_widget->isValid())
+    {
+        int tabLength = splitterLength * .4;
+        m_splitterSizes[0] = tabLength;
+        m_splitterSizes[1] = splitterLength - tabLength;
+        m_splitterSizes[2] = 0;
+    }
+    else
+    {
+        float as = ui.picture_widget->getAspectRatio();
+        m_splitterSizes[2] = size().height() * as;
+        m_splitterSizes[1] = 0;
+        m_splitterSizes[0] = splitterLength - m_splitterSizes[2];
+    }
 }
 
 void CoolerStateWidget::timerEvent(QTimerEvent *event)
@@ -68,6 +105,9 @@ void CoolerStateWidget::timerEvent(QTimerEvent *event)
 
 void CoolerStateWidget::setParameterList(ConfigMapShared config)
 {
+    ui.picture_widget->setConfig(config, m_parent);
+    setNewSplitterMode(!ui.picture_widget->isValid());
+
     int currentRow[ConfigMap::REGISTER_PULL_COUNT];
 
     for (ConfigMap::RegisterType i = ConfigMap::REGISTER_PULL_FIRST; i < ConfigMap::REGISTER_PULL_COUNT; ConfigMap::NEXT(i))
@@ -125,7 +165,8 @@ void CoolerStateWidget::updateParameter(int n, QVariant value, ConfigMap::Regist
     QMutexLocker locker(&m_updateMutex);
 
     ValueFieldWidget *aItem = qobject_cast<ValueFieldWidget*>(m_tables[type]->cellWidget(n, 0));
-    aItem->setValue(value);
+    if (aItem)
+        aItem->setValue(value);
 }
 
 void CoolerStateWidget::onPlotCheckChanged()
@@ -152,6 +193,7 @@ void CoolerStateWidget::onPlotCheckChanged()
         m_plotList.erase(name);
     }
     ui.plotView->replot();
+    setNewSplitterMode(!m_plotList.empty());
 }
 
 void CoolerStateWidget::initPlotter(void)

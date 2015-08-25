@@ -29,6 +29,7 @@ public:
     virtual bool proceed(ModBusUART_Impl* modbus) = 0;
     virtual bool isItTimeToDo(void) const { return true; }
     virtual Priority  priority() = 0;
+    virtual long  millisecondsToCall(void) const { return 0; }
 
     int  getID() const;
     int  getSpeed() const;

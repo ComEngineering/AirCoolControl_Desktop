@@ -153,8 +153,16 @@ public:
         _Parameter() : m_registerNumber(-1), m_minValue(SHRT_MIN), m_maxValue(SHRT_MAX){}
     } Parameter;
 
+    typedef struct _UI_Placeholder
+    {
+        std::string   m_variableName;
+        int           m_x;
+        int           m_y;
+    } UI_Placeholder;
+
     typedef std::vector<std::pair<std::string, std::string>> ParameterList;
     typedef std::vector<std::pair<std::string, Parameter>> ParameterMap;
+    typedef std::vector<UI_Placeholder> UI_PlaceholderList;
 
     const std::string&   getName(void) const { return m_configName; }
     void                 setName(const std::string& name) { m_configName = name; }
@@ -174,7 +182,7 @@ public:
     bool                 isSupport(const DeviceInfoShared info) const;
     const ParameterList& getParametersList(ConfigMap::RegisterType e);
     RegisterType         getVariableType(const std::string& key) const;
-    void                 setUI_Config(const std::string& type, const std::string& configFile);
+   
     ParameterMap::const_iterator 
                          findParameter(const std::string& name) const;
     std::string          getParameterDescription(const std::string& name) const;
@@ -184,7 +192,13 @@ public:
     bool                 saveToFile(const std::string& path) const;
     void                 save(void) const;
     void                 deleteParameterWithName(const std::string& name);
-    void                 setNewParameter(const std::string& name, const Parameter& newParameter);
+    void                 setNewParameter(const std::string& name, const Parameter& newParameter); 
+    
+    void                 setUI_Config(const std::string& type, const std::string& configFile, const UI_PlaceholderList& placeholders);
+    const UI_PlaceholderList& 
+                         getPlaceholders(void) const { return m_UI_placeholders; }
+    const std::string&   getUItype(void) const { return m_UI_type; }
+    const std::string&   getUIpicturePath(void) const { return m_UI_picturePath; }
 
 private:
     static qint16 decodeWithMethod(qint16 value, const std::string& method);
@@ -196,8 +210,10 @@ private:
     std::string     m_product;
     VersionStorage  m_versionMin;
     VersionStorage  m_versionMax;
+
     std::string     m_UI_type;
-    std::string     m_UI_config;
+    std::string     m_UI_picturePath;
+    UI_PlaceholderList m_UI_placeholders;
 
     ParameterMap    m_map;
     Interval        m_registersIntervals[REGISTER_PULL_COUNT];

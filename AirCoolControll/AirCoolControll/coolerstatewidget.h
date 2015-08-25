@@ -7,6 +7,7 @@
 #include "ConfigMap.h"
 #include <qmutex.h>
 #include <qstring.h>
+#include <qtimer.h>
 #include <map>
 
 class DeviceExplorer;
@@ -22,14 +23,17 @@ public:
     void setParameterList(ConfigMapShared config);
     
     void updateParameter(int n, QVariant value, ConfigMap::RegisterType type);
+
 private:
     void initPlotter(void);
+    void setNewSplitterMode(bool showPlotter);
 
 private slots:
     void onPlotCheckChanged();
+    void updateSplitter();
 
 signals:
-    void newRegisterValue(int,QString&, int);
+    void newRegisterValue(int, QString&, int);
 
 protected:
     void timerEvent(QTimerEvent *event);
@@ -42,6 +46,11 @@ private:
     DeviceExplorer *             m_parent;
     bool                         m_needSetTimeRange;
     int                          m_colorEnumerator;
+    QTimer                       m_updateSplitterTimer;
+    QList<int>                   m_splitterSizes;
+
+    const static int             k_delta = 100;
+    const static int             k_splitterUpdateTime = 200;
 };
 
 #endif // COOLERSTATEWIDGET_H

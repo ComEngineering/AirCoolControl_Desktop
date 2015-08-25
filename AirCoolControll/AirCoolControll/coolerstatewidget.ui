@@ -25,7 +25,7 @@
   <property name="windowTitle">
    <string>CoolerStateWidget</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
+  <layout class="QGridLayout" name="gridLayout_7">
    <item row="0" column="0">
     <widget class="QSplitter" name="splitter">
      <property name="sizePolicy">
@@ -222,7 +222,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QFrame" name="frame_2">
+     <widget class="QFrame" name="frame_plotter">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
         <horstretch>0</horstretch>
@@ -248,6 +248,19 @@
        </item>
       </layout>
      </widget>
+     <widget class="QFrame" name="frame_picture">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="PictureWidget" name="picture_widget" native="true"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
   </layout>
@@ -258,6 +271,12 @@
    <class>QCustomPlot</class>
    <extends>QWidget</extends>
    <header location="global">../CustomPlot/inc/qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PictureWidget</class>
+   <extends>QWidget</extends>
+   <header>picturewidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -33,6 +33,7 @@ void ModbusPuller::addTask(PullerTaskShared a_task)
 {
     QMutexLocker lock(&m_taskMutex);
     m_newTasks.append(a_task);
+    m_isStoped = false;
 }
 
 void ModbusPuller::run(void)
@@ -44,7 +45,10 @@ void ModbusPuller::run(void)
     while (m_continueProcessing)
     {
         if (m_isStoped)
+        {
             QThread::yieldCurrentThread();
+            continue;
+        }
 
         if (!m_modbus)
             m_modbus = new ModBusUART_Impl(m_uartName);
@@ -99,6 +103,23 @@ void ModbusPuller::run(void)
                 }
                 m_removeIndex = 0;
             }
+        }
+        
+        if (m_tasks.size() != 0)
+        {
+            int pause = (*m_tasks.begin())->millisecondsToCall();
+            for (QList<PullerTaskShared>::iterator task = m_tasks.begin() + 1; task != m_tasks.end(); task++)
+            {
+                int a_pause = (*task)->millisecondsToCall();
+                if (a_pause < pause)
+                    pause = a_pause;
+            }
+            if (pause > 0)
+                QThread::msleep(pause);
+        }
+        else
+        {
+            m_isStoped = true;
         }
     }
     

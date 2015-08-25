@@ -20,6 +20,7 @@ public:
 
     bool proceed(ModBusUART_Impl* modbus);
     virtual bool isItTimeToDo(void) const;
+    long millisecondsToCall(void) const;
 
     bool isContentChanged();
     void getContent(std::vector<quint16>& list);

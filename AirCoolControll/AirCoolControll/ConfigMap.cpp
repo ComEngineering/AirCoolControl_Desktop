@@ -141,10 +141,11 @@ qint16 ConfigMap::decodeWithMethod(qint16 value, const std::string& method)
     return ret;
 }
 
-void  ConfigMap::setUI_Config(const std::string& type, const std::string& configFile)
+void  ConfigMap::setUI_Config(const std::string& type, const std::string& configFile, const UI_PlaceholderList& placeholders)
 {
     m_UI_type = type;
-    m_UI_config = configFile;
+    m_UI_picturePath = configFile;
+    m_UI_placeholders = placeholders;
 }
 
 ConfigMap::ParameterMap::const_iterator ConfigMap::findParameter(const std::string& name) const
@@ -203,8 +204,16 @@ bool ConfigMap::saveToFile(const std::string& path) const
     }
     else
     {
-        tree.put("Config.UI",m_UI_config);
+        tree.put("Config.UI.path",m_UI_picturePath);
         tree.put("Config.UI.<xmlattr>.type", m_UI_type);
+        boost::property_tree::ptree placeholders_tree;
+        for (const auto& item : m_UI_placeholders)
+        {
+            placeholders_tree.put("item.<xmlattr>.v", item.m_variableName);
+            placeholders_tree.put("item.<xmlattr>.x", item.m_x);
+            placeholders_tree.put("item.<xmlattr>.y", item.m_y);
+        }
+        tree.put_child("Config.UI.placeholders", placeholders_tree);
     }
 
     static const char* childs[ConfigMap::REGISTER_PULL_COUNT] = {
