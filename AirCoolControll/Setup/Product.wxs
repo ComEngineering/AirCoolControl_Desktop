@@ -41,20 +41,28 @@
     <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" ></Property>
     <WixVariable Id="WixUILicenseRtf" Overridable="yes" Value="License.rtf"/>
     <UIRef Id="WixUI_InstallDir"/>
-    
-    <CustomAction Id ="CA.StartAppOnExit" FileKey ="MainExecutable" ExeCommand  ="" Execute ="immediate" Impersonate ="yes" Return ="asyncNoWait" /> 
+
+    <!--CustomAction Id ="CA.StartAppOnExit" FileKey ="MainExecutable" ExeCommand  ="" Execute ="immediate" Impersonate ="yes" Return ="asyncNoWait" /--> 
   
     <DirectoryRef Id="TARGETDIR">
       <!-- Path relates to MSVC2013. Change it for another versions -->
       <?if   $(var.AirCoolControll.Platform)="x64"?>
-        <Merge Id="VCRedist" SourceFile="C:\Program Files (x86)\Common Files\Merge Modules\Microsoft_VC120_CRT_x64.msm" DiskId="1" Language="0"/>
+        <Merge Id="VCRedist" SourceFile="C:\Program Files (x86)\Common Files\Merge Modules\Microsoft_VC120_DebugCRT_x64.msm" 
+               DiskId="1" 
+               Language="0"/>
       <?else?>
-        <Merge Id="VCRedist" SourceFile="C:\Program Files (x86)\Common Files\Merge Modules\Microsoft_VC120_CRT_x86.msm" DiskId="1" Language="0"/>
+        <Merge Id="VCRedist" SourceFile="C:\Program Files (x86)\Common Files\Merge Modules\Microsoft_VC120_CRT_x86.msm" 
+        DiskId="1" 
+        Language="0"/>
       <?endif?>
     </DirectoryRef>
   
-    <Feature Id="VCRedist" Title="Visual C++ 12.0 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
-        <MergeRef Id="VCRedist"/>
+    <Feature Id="VCRedistFeature" 
+             Title="Visual C++ 12.0 Runtime" 
+             AllowAdvertise="no" 
+             Display="hidden" 
+             Level="1">
+       <MergeRef Id="VCRedist"/>
     </Feature>
 	</Product>
 
@@ -123,6 +131,9 @@
 		<ComponentGroup Id="ConfigComponents" Directory="CONFIGSFOLDER">
       <Component Id="ConfigComponent">
 				  <File Id='Config1' DiskId='1' Source='$(var.AirCoolControll.ProjectDir)../../configs/TEKO_COOLER_0_0_1.xml'/>
+			</Component>
+      <Component Id="ConfigPicture">
+				  <File Id='Picture1' DiskId='1' Source='$(var.AirCoolControll.ProjectDir)../../configs/TEKO_COOLER_0_0_1.png'/>
 			</Component>
 		</ComponentGroup>
 	</Fragment>

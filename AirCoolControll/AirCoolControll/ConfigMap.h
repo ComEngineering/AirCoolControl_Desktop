@@ -194,11 +194,12 @@ public:
     void                 deleteParameterWithName(const std::string& name);
     void                 setNewParameter(const std::string& name, const Parameter& newParameter); 
     
-    void                 setUI_Config(const std::string& type, const std::string& configFile, const UI_PlaceholderList& placeholders);
+    void                 setUI_Config(const std::string& type, const std::string& configFile, const UI_PlaceholderList& placeholders, int fontHeight);
     const UI_PlaceholderList& 
                          getPlaceholders(void) const { return m_UI_placeholders; }
     const std::string&   getUItype(void) const { return m_UI_type; }
     const std::string&   getUIpicturePath(void) const { return m_UI_picturePath; }
+    int                  getFontHeight(void) const { return m_fontHeight; }
 
 private:
     static qint16 decodeWithMethod(qint16 value, const std::string& method);
@@ -214,6 +215,7 @@ private:
     std::string     m_UI_type;
     std::string     m_UI_picturePath;
     UI_PlaceholderList m_UI_placeholders;
+    int             m_fontHeight;
 
     ParameterMap    m_map;
     Interval        m_registersIntervals[REGISTER_PULL_COUNT];

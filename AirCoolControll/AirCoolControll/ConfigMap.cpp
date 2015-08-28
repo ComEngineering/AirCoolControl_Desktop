@@ -141,11 +141,12 @@ qint16 ConfigMap::decodeWithMethod(qint16 value, const std::string& method)
     return ret;
 }
 
-void  ConfigMap::setUI_Config(const std::string& type, const std::string& configFile, const UI_PlaceholderList& placeholders)
+void  ConfigMap::setUI_Config(const std::string& type, const std::string& configFile, const UI_PlaceholderList& placeholders, int fontHeight)
 {
     m_UI_type = type;
     m_UI_picturePath = configFile;
     m_UI_placeholders = placeholders;
+    m_fontHeight = fontHeight;
 }
 
 ConfigMap::ParameterMap::const_iterator ConfigMap::findParameter(const std::string& name) const
@@ -205,6 +206,7 @@ bool ConfigMap::saveToFile(const std::string& path) const
     else
     {
         tree.put("Config.UI.path",m_UI_picturePath);
+        tree.put("Config.UI.font_height", m_fontHeight);
         tree.put("Config.UI.<xmlattr>.type", m_UI_type);
         boost::property_tree::ptree placeholders_tree;
         for (const auto& item : m_UI_placeholders)

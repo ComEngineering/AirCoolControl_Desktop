@@ -48,6 +48,7 @@ bool ConfigStorage::readXMLConfig(const QString& path)
         if ("none" != uiType)
         {
             std::string ui_path = tree.get<std::string>("Config.UI.path");
+            int fontHeight = tree.get<int>("Config.UI.font_height", 8);
             boost::property_tree::ptree placeholdersTree = tree.get_child("Config.UI.placeholders", boost::property_tree::ptree());
             ConfigMap::UI_PlaceholderList placeholdersList;
             for (const std::pair<std::string, boost::property_tree::ptree> &a_placeholder : placeholdersTree)
@@ -58,7 +59,7 @@ bool ConfigStorage::readXMLConfig(const QString& path)
                 item.m_y = a_placeholder.second.get<int>("<xmlattr>.y");
                 placeholdersList.push_back(item);
             }
-            a_map->setUI_Config(uiType, ui_path, placeholdersList);
+            a_map->setUI_Config(uiType, ui_path, placeholdersList, fontHeight);
         }
 
         boost::property_tree::ptree values[ConfigMap::REGISTER_PULL_COUNT] = {

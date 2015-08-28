@@ -50,7 +50,7 @@ private:
     QList<int>                   m_splitterSizes;
 
     const static int             k_delta = 100;
-    const static int             k_splitterUpdateTime = 200;
+    const static int             k_splitterUpdateTime = 100;
 };
 
 #endif // COOLERSTATEWIDGET_H

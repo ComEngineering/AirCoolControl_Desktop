@@ -40,6 +40,9 @@ void PictureWidget::paintEvent(QPaintEvent * event)
     painter.drawPixmap(rect(), m_pixmap);
     float scaleX = float(width()) / m_pixmap.width();
     float scaleY = float(height()) / m_pixmap.height();
+    QFont font = painter.font();
+    font.setPointSize(m_map->getFontHeight());
+    painter.setFont(font);
     for (const auto& tag : m_map->getPlaceholders())
     {
         QVariant v = m_device->getRegisterValue(tag.m_variableName);

@@ -9,6 +9,7 @@
 
     <UI type="picture">
       <path>TEKO_COOLER_0_0_1.png</path>
+      <font_height>12</font_height>
       <placeholders>
         <item v="TINSIDE" x="50" y="255" />
         <item v="TOUTSIDE" x="65" y="55" />

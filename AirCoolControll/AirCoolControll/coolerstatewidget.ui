@@ -248,19 +248,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QFrame" name="frame_picture">
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0">
-        <widget class="PictureWidget" name="picture_widget" native="true"/>
-       </item>
-      </layout>
-     </widget>
+     <widget class="PictureWidget" name="picture_widget" native="true"/>
     </widget>
    </item>
   </layout>
