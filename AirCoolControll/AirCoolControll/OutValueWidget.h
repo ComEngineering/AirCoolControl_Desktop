@@ -19,7 +19,7 @@ protected:
 
 private slots:
     void registerSet(int v);
-    void enumItemAcivated(const QString &);
+    void enumItemActivated(int);
 
 private:
     QSpinBox *           m_edit;

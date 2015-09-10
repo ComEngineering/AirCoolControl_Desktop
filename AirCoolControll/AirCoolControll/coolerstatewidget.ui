@@ -248,7 +248,9 @@
        </item>
       </layout>
      </widget>
-     <widget class="PictureWidget" name="picture_widget" native="true"/>
+     <widget class="PictureWidget" name="picture_widget" native="true">
+      <zorder>plotView</zorder>
+     </widget>
     </widget>
    </item>
   </layout>
