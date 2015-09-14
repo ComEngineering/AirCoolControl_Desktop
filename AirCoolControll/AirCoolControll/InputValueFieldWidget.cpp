@@ -18,16 +18,20 @@ InputValueFieldWidget::~InputValueFieldWidget()
     delete m_gridLayout;
 }
 
-void InputValueFieldWidget::paintEvent(QPaintEvent *event)
-{
+void InputValueFieldWidget::setValue(QVariant value) 
+{ 
     const static char errorStyle[] = "QLabel { background-color : red; color : black; }";
     const static char valueStyle[] = "QLabel { background-color : white; color : black; }";
 
     bool isValid;
-    int number = m_value.toInt(&isValid);
-    m_label->setText(isValid ? QString::number(number) : m_value.toString());
+    int number = value.toInt(&isValid);
+    m_label->setText(isValid ? QString::number(number) : value.toString());
     m_label->setStyleSheet(isValid ? valueStyle : errorStyle);
+
+    repaint();
+}
+
+void InputValueFieldWidget::paintEvent(QPaintEvent *event)
+{
     m_label->setGeometry(this->rect());
-    
-    m_label->update();
 }

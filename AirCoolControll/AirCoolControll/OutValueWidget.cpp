@@ -50,11 +50,11 @@ void OutValueWidget::enumItemActivated(int v)
     registerSet(v);
 }
 
-void OutValueWidget::paintEvent(QPaintEvent *event)
+void OutValueWidget::setValue(QVariant value)
 {
     bool isValid;
-    int number = m_value.toInt(&isValid);
-    
+    int number = value.toInt(&isValid);
+
     if (m_edit)
     {
         if (!m_edit->hasFocus())
@@ -64,7 +64,6 @@ void OutValueWidget::paintEvent(QPaintEvent *event)
             m_edit->blockSignals(false);
         }
         m_edit->setGeometry(this->rect());
-        m_edit->update();
     }
     else
     {
@@ -84,6 +83,19 @@ void OutValueWidget::paintEvent(QPaintEvent *event)
         }
         m_combo->setGeometry(this->rect());
         m_combo->blockSignals(false);
-        m_combo->update();
+    }
+
+    repaint();
+}
+
+void OutValueWidget::paintEvent(QPaintEvent *event)
+{
+    if (m_edit)
+    {
+        m_edit->setGeometry(this->rect());
+    }
+    else
+    {
+        m_combo->setGeometry(this->rect());
     }
 }

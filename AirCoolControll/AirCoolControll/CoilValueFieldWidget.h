@@ -13,6 +13,8 @@ public:
     CoilValueFieldWidget(DeviceExplorer* explorer, const std::string& name , QWidget *parent = 0);
     ~CoilValueFieldWidget();
 
+    virtual void setValue(QVariant value) override;
+
 private slots:
     void onCoilChanged();
 

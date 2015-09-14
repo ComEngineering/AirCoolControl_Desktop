@@ -13,10 +13,9 @@ public:
     ValueFieldWidget(DeviceExplorer* explorer, const std::string& name, QWidget *parent = 0);
     ~ValueFieldWidget();
 
-    virtual void setValue(QVariant value) { m_value = value; }
+    virtual void setValue(QVariant value) = 0; 
 
 protected:
-    QVariant        m_value;
     DeviceExplorer* m_explorer;
     std::string     m_name;
 };

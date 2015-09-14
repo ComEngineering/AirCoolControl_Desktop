@@ -72,7 +72,7 @@
           <enum>QTabWidget::Triangular</enum>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="tab">
           <attribute name="title">
@@ -202,15 +202,6 @@
              </column>
              <column>
               <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="aircoolcontroll.qrc">
-                <normaloff>:/Images/plot_icon.png</normaloff>:/Images/plot_icon.png</iconset>
-              </property>
-             </column>
-             <column>
-              <property name="text">
                <string>Description</string>
               </property>
              </column>
@@ -248,9 +239,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="PictureWidget" name="picture_widget" native="true">
-      <zorder>plotView</zorder>
-     </widget>
+     <widget class="PictureWidget" name="picture_widget" native="true"/>
     </widget>
    </item>
   </layout>

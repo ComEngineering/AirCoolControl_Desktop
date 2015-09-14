@@ -28,40 +28,13 @@ CoolerStateWidget::CoolerStateWidget(DeviceExplorer *parent)
     m_tables[ConfigMap::COIL] = ui.coilsTable;
     
     ui.frame->resize(500, ui.frame->height());
-   // initPlotter();
+    initPlotter();
     setUpdatesEnabled(true);
     startTimer(Configurator::getPullInterval());
-
-    connect(&m_updateSplitterTimer, SIGNAL(timeout()), this, SLOT(updateSplitter()));
-    m_updateSplitterTimer.start(k_splitterUpdateTime);
 }
 
 CoolerStateWidget::~CoolerStateWidget()
 {
-}
-
-void CoolerStateWidget::updateSplitter()
-{
-    QList<int> sizes(ui.splitter->sizes());
-    bool needToStopResize = true;
-    if (sizes != m_splitterSizes)
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            int delta = m_splitterSizes[i] - sizes[i];
-            if (abs(delta) <= k_delta)
-                sizes[i] = m_splitterSizes[i];
-            else
-            {
-                sizes[i] += (delta < 0) ? -k_delta : k_delta;
-                needToStopResize = false;
-            }
-        }
-        ui.splitter->setSizes(sizes);
-        update();
-    }
-    if (needToStopResize)
-        m_updateSplitterTimer.stop();
 }
 
 void CoolerStateWidget::setNewSplitterMode(bool showPlotter)
@@ -82,8 +55,7 @@ void CoolerStateWidget::setNewSplitterMode(bool showPlotter)
         m_splitterSizes[1] = 0;
         m_splitterSizes[0] = splitterLength - m_splitterSizes[2];
     }
-
-    m_updateSplitterTimer.start(k_splitterUpdateTime);
+    ui.splitter->setSizes(m_splitterSizes);
 }
 
 void CoolerStateWidget::timerEvent(QTimerEvent *event)
@@ -145,19 +117,23 @@ void CoolerStateWidget::setParameterList(ConfigMapShared config)
         }
         /// Value
         QWidget* valueWidget;
+        //QTableWidgetItem * item;
         if (a_type == ConfigMap::COIL)
         {
             valueWidget = new CoilValueFieldWidget(m_parent,a_name,this);
+            //item = new QTableWidgetItem("a");
             m_tables[a_type]->setItem(currentRow[a_type], 1, newItem);
         }
         else if (a_type == ConfigMap::INPUT_REGISTER)
         {
             valueWidget = new InputValueFieldWidget(m_parent, a_name, this);
+            //item = new QTableWidgetItem("b");
             m_tables[a_type]->setItem(currentRow[a_type], 2, newItem);
         }
         else if (a_type == ConfigMap::OUTPUT_REGISTER)
         {
             valueWidget = new OutValueWidget(m_parent,a_name,a_parameter,this);
+            //item = new QTableWidgetItem("c");
             m_tables[a_type]->setItem(currentRow[a_type], 2, newItem);
         }
         else
@@ -165,6 +141,8 @@ void CoolerStateWidget::setParameterList(ConfigMapShared config)
             assert(false);
         }
         m_tables[a_type]->setCellWidget(currentRow[a_type], 0, valueWidget);
+        //m_tables[a_type]->setItem(currentRow[a_type], 0, item);
+
         currentRow[a_type]++;
     }
 
