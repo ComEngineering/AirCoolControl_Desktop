@@ -6,3 +6,4 @@
 /AirCoolControll/AirCoolControll/x64
 /AirCoolControll/Setup/bin
 /AirCoolControll/Setup/obj
+*.vcxproj

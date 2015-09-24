@@ -38,6 +38,7 @@ private slots:
     void showSelectConfigDialog(void);
     void showSelectTestDialog(void);
     void showAddNewTestDialog(void);
+	void showArea(void);
 
 private:
     Ui::AirCoolControllClass   ui;

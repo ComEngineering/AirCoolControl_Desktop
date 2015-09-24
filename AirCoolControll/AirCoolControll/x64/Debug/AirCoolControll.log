@@ -1,0 +1,35 @@
+﻿Build started 15.09.2015 16:25:33.
+     1>Project "C:\Work\AirCoolControl_Desktop\AirCoolControll\AirCoolControll\AirCoolControll.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\libs\boost_1_57_0 /I.\GeneratedFiles /I. /IC:\Qt\Qt5.4.1\5.4\msvc2013_64_opengl\\include /I.\GeneratedFiles\Debug /IC:\Qt\Qt5.4.1\5.4\msvc2013_64_opengl\\include\QtCore /IC:\Qt\Qt5.4.1\5.4\msvc2013_64_opengl\\include\QtGui /IC:\Qt\Qt5.4.1\5.4\msvc2013_64_opengl\\include\QtPrintSupport /IC:\Qt\Qt5.4.1\5.4\msvc2013_64_opengl\\include\QtWidgets /Zi /nologo /W1 /WX- /Od /D UNICODE /D WIN32 /D WIN64 /D QT_DLL /D QT_CORE_LIB /D QT_GUI_LIB /D QT_WIDGETS_LIB /Gm- /EHsc /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt abouttextdialog.cpp aircoolcontroll.cpp GeneratedFiles\Debug\moc_abouttextdialog.cpp
+         abouttextdialog.cpp
+     1>c:\work\aircoolcontrol_desktop\aircoolcontroll\aircoolcontroll\abouttextdialog.h(20): error C2653: 'Ui' : is not a class or namespace name
+     1>c:\work\aircoolcontrol_desktop\aircoolcontroll\aircoolcontroll\abouttextdialog.h(20): error C2146: syntax error : missing ';' before identifier 'ui'
+     1>c:\work\aircoolcontrol_desktop\aircoolcontroll\aircoolcontroll\abouttextdialog.h(20): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>c:\work\aircoolcontrol_desktop\aircoolcontroll\aircoolcontroll\abouttextdialog.ui(1): error C2059: syntax error : '<'
+     1>c:\work\aircoolcontrol_desktop\aircoolcontroll\aircoolcontroll\abouttextdialog.ui(3): error C2332: 'class' : missing tag name
+     1>c:\work\aircoolcontrol_desktop\aircoolcontroll\aircoolcontroll\abouttextdialog.ui(4): error C2332: 'class' : missing tag name
+     1>c:\work\aircoolcontrol_desktop\aircoolcontroll\aircoolcontroll\abouttextdialog.ui(19): error C2332: 'class' : missing tag name
+     1>c:\work\aircoolcontrol_desktop\aircoolcontroll\aircoolcontroll\abouttextdialog.ui(23): error C2332: 'enum' : missing tag name
+     1>c:\work\aircoolcontrol_desktop\aircoolcontroll\aircoolcontroll\abouttextdialog.ui(34): error C2332: 'class' : missing tag name
+     1>c:\work\aircoolcontrol_desktop\aircoolcontroll\aircoolcontroll\abouttextdialog.ui(44): error C2332: 'class' : missing tag name
+     1>abouttextdialog.cpp(8): error C2065: 'ui' : undeclared identifier
+     1>abouttextdialog.cpp(8): error C2228: left of '.setupUi' must have class/struct/union
+                 type is 'unknown-type'
+     1>abouttextdialog.cpp(8): error C2355: 'this' : can only be referenced inside non-static member functions or non-static data member initializers
+     1>abouttextdialog.cpp(8): error C2143: syntax error : missing '}' before ';'
+     1>abouttextdialog.cpp(8): fatal error C1903: unable to recover from previous error(s); stopping compilation
+         aircoolcontroll.cpp
+     1>c:\work\aircoolcontrol_desktop\aircoolcontroll\aircoolcontroll\abouttextdialog.h(20): error C2653: 'Ui' : is not a class or namespace name
+     1>c:\work\aircoolcontrol_desktop\aircoolcontroll\aircoolcontroll\abouttextdialog.h(20): error C2146: syntax error : missing ';' before identifier 'ui'
+     1>c:\work\aircoolcontrol_desktop\aircoolcontroll\aircoolcontroll\abouttextdialog.h(20): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+         moc_abouttextdialog.cpp
+     1>c:\work\aircoolcontrol_desktop\aircoolcontroll\aircoolcontroll\generatedfiles\debug\../../abouttextdialog.h(20): error C2653: 'Ui' : is not a class or namespace name
+     1>c:\work\aircoolcontrol_desktop\aircoolcontroll\aircoolcontroll\generatedfiles\debug\../../abouttextdialog.h(20): error C2146: syntax error : missing ';' before identifier 'ui'
+     1>c:\work\aircoolcontrol_desktop\aircoolcontroll\aircoolcontroll\generatedfiles\debug\../../abouttextdialog.h(20): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+         Generating Code...
+     1>Done Building Project "C:\Work\AirCoolControl_Desktop\AirCoolControll\AirCoolControll\AirCoolControll.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:06.17
