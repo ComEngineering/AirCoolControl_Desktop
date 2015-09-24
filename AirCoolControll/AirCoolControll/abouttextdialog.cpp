@@ -1,6 +1,4 @@
 #include "abouttextdialog.h"
-#include  "ui_abouttextdialog.h"
-#include  "abouttextdialog.ui"
 
 AboutTextDialog::AboutTextDialog(QWidget *parent)
 	: QDialog(parent)

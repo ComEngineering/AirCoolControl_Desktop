@@ -193,6 +193,14 @@
     <string>Edit test</string>
    </property>
   </action>
+  <action name="actionActionAbout">
+   <property name="text">
+    <string>actionAbout</string>
+   </property>
+   <property name="toolTip">
+    <string>About</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

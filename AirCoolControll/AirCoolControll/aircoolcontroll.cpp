@@ -37,7 +37,7 @@ AirCoolControll::AirCoolControll(QWidget *parent)
 
    /////////////////////////////////////////////////////////////////////////////////////
     connect(ui.mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(newActiveWindow(QMdiSubWindow*)));
-	connect(ui.menuAbout, SIGNAL(clicked()), this, SLOT(showArea()));
+    connect(ui.menuAbout, SIGNAL(triggered()), this, SLOT(showArea()));
 }
 
 AirCoolControll::~AirCoolControll()

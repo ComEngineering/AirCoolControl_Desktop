@@ -3,8 +3,7 @@
 
 
 #include <QDialog>
-#include <QtWidgets/QMainWindow>
-//include "ui_abouttextdialog.h"
+#include "ui_abouttextdialog.h"
 //#include <QtGui>
 
 
