@@ -14,12 +14,14 @@ public:
     OutValueWidget(DeviceExplorer* explorer, const std::string& name, const ConfigMap::Parameter& parameter, QWidget *parent = 0);
     ~OutValueWidget();
 
+    virtual void setValue(QVariant value) override;
+
 protected:
     void paintEvent(QPaintEvent *event);
 
 private slots:
     void registerSet(int v);
-    void enumItemAcivated(const QString &);
+    void enumItemActivated(int);
 
 private:
     QSpinBox *           m_edit;

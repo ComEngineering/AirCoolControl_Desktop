@@ -26,11 +26,9 @@ OutValueWidget::OutValueWidget(DeviceExplorer* explorer, const std::string& name
         {
             m_combo->addItem(QString::fromStdString(pair.first), pair.second);
         }
-        connect(m_combo, SIGNAL(activated(int)), this, SLOT(enumItemAcivated(int)));
+        connect(m_combo, SIGNAL(activated(int)), this, SLOT(enumItemActivated(int)));
         m_gridLayout->addWidget(m_combo, 0, 0, 1, 1);
     }
-    
-    
 }
 
 OutValueWidget::~OutValueWidget()
@@ -45,19 +43,18 @@ void OutValueWidget::registerSet(int v)
     m_explorer->sendValueToDevice(ConfigMap::OUTPUT_REGISTER, QString::fromStdString(m_name), v);
 }
 
-void OutValueWidget::enumItemAcivated(const QString & name)
+void OutValueWidget::enumItemActivated(int v)
 {
-
-    int v = std::find_if(m_parameters.m_enumeration.begin(), m_parameters.m_enumeration.end(), [&name](const std::pair<std::string, int>& p) {return name.toStdString() == p.first; })->second;
+ //   int v = std::find_if(m_parameters.m_enumeration.begin(), m_parameters.m_enumeration.end(), 
+ //       [&name](const std::pair<std::string, int>& p) {return name.toStdString() == p.first; })->second;
     registerSet(v);
 }
 
-void OutValueWidget::paintEvent(QPaintEvent *event)
+void OutValueWidget::setValue(QVariant value)
 {
-    
     bool isValid;
-    int number = m_value.toInt(&isValid);
-    
+    int number = value.toInt(&isValid);
+
     if (m_edit)
     {
         if (!m_edit->hasFocus())
@@ -67,7 +64,6 @@ void OutValueWidget::paintEvent(QPaintEvent *event)
             m_edit->blockSignals(false);
         }
         m_edit->setGeometry(this->rect());
-        m_edit->update();
     }
     else
     {
@@ -87,6 +83,19 @@ void OutValueWidget::paintEvent(QPaintEvent *event)
         }
         m_combo->setGeometry(this->rect());
         m_combo->blockSignals(false);
-        m_combo->update();
+    }
+
+    repaint();
+}
+
+void OutValueWidget::paintEvent(QPaintEvent *event)
+{
+    if (m_edit)
+    {
+        m_edit->setGeometry(this->rect());
+    }
+    else
+    {
+        m_combo->setGeometry(this->rect());
     }
 }

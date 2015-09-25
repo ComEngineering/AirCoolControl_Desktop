@@ -13,6 +13,8 @@ public:
     InputValueFieldWidget(DeviceExplorer* explorer, const std::string& name, QWidget *parent = 0);
     ~InputValueFieldWidget();
 
+    virtual void setValue(QVariant value) override;
+
 protected:
     void paintEvent(QPaintEvent *event);
 

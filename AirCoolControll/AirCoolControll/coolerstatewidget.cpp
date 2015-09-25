@@ -27,35 +27,14 @@ CoolerStateWidget::CoolerStateWidget(DeviceExplorer *parent)
     m_tables[ConfigMap::OUTPUT_REGISTER] = ui.outputParametersTable;
     m_tables[ConfigMap::COIL] = ui.coilsTable;
     
-    ui.frame->resize(500,ui.frame->height());
+    ui.frame->resize(500, ui.frame->height());
     initPlotter();
     setUpdatesEnabled(true);
     startTimer(Configurator::getPullInterval());
-
-    connect(&m_updateSplitterTimer, SIGNAL(timeout()), this, SLOT(updateSplitter()));
-    m_updateSplitterTimer.start(k_splitterUpdateTime);
 }
 
 CoolerStateWidget::~CoolerStateWidget()
 {
-}
-
-void CoolerStateWidget::updateSplitter()
-{
-    QList<int> sizes(ui.splitter->sizes());
-    if (sizes != m_splitterSizes)
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            int delta = m_splitterSizes[i] - sizes[i];
-            if (abs(delta) <= k_delta)
-                sizes[i] = m_splitterSizes[i];
-            else
-                sizes[i] += (delta < 0) ? -k_delta : k_delta;
-        }
-        ui.splitter->setSizes(sizes);
-        update();
-    }
 }
 
 void CoolerStateWidget::setNewSplitterMode(bool showPlotter)
@@ -76,6 +55,7 @@ void CoolerStateWidget::setNewSplitterMode(bool showPlotter)
         m_splitterSizes[1] = 0;
         m_splitterSizes[0] = splitterLength - m_splitterSizes[2];
     }
+    ui.splitter->setSizes(m_splitterSizes);
 }
 
 void CoolerStateWidget::timerEvent(QTimerEvent *event)
@@ -116,7 +96,7 @@ void CoolerStateWidget::setParameterList(ConfigMapShared config)
         m_tables[i]->setRowCount(config->getParametersList(i).size());
         currentRow[i] = 0;
     }
-
+    
     for (int i = 0; i < config->size(); i++)
     {
         const ConfigMap::Parameter& a_parameter = (*config)[i].second;
@@ -126,33 +106,43 @@ void CoolerStateWidget::setParameterList(ConfigMapShared config)
         /// Description
         QTableWidgetItem* newItem = new QTableWidgetItem(QString::fromStdString(a_parameter.m_description));
         newItem->setFlags(Qt::ItemIsEnabled);
-        m_tables[a_type]->setItem(currentRow[a_type], 2, newItem);
 
         /// Plot check box
-        QCheckBox* check = new QCheckBox(this);
-        m_tables[a_type]->setCellWidget(currentRow[a_type], 1, check);
-        check->setProperty("name", QVariant(QString::fromStdString(a_name)));
-        connect(check, SIGNAL(clicked()), this, SLOT(onPlotCheckChanged()));
-
+        if (a_type != ConfigMap::COIL)
+        {
+            QCheckBox* check = new QCheckBox(this);
+            m_tables[a_type]->setCellWidget(currentRow[a_type], 1, check);
+            check->setProperty("name", QVariant(QString::fromStdString(a_name)));
+            connect(check, SIGNAL(clicked()), this, SLOT(onPlotCheckChanged()));
+        }
         /// Value
         QWidget* valueWidget;
+        //QTableWidgetItem * item;
         if (a_type == ConfigMap::COIL)
         {
             valueWidget = new CoilValueFieldWidget(m_parent,a_name,this);
+            //item = new QTableWidgetItem("a");
+            m_tables[a_type]->setItem(currentRow[a_type], 1, newItem);
         }
         else if (a_type == ConfigMap::INPUT_REGISTER)
         {
             valueWidget = new InputValueFieldWidget(m_parent, a_name, this);
+            //item = new QTableWidgetItem("b");
+            m_tables[a_type]->setItem(currentRow[a_type], 2, newItem);
         }
         else if (a_type == ConfigMap::OUTPUT_REGISTER)
         {
             valueWidget = new OutValueWidget(m_parent,a_name,a_parameter,this);
+            //item = new QTableWidgetItem("c");
+            m_tables[a_type]->setItem(currentRow[a_type], 2, newItem);
         }
         else
         {
             assert(false);
         }
         m_tables[a_type]->setCellWidget(currentRow[a_type], 0, valueWidget);
+        //m_tables[a_type]->setItem(currentRow[a_type], 0, item);
+
         currentRow[a_type]++;
     }
 

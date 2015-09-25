@@ -30,7 +30,6 @@ private:
 
 private slots:
     void onPlotCheckChanged();
-    void updateSplitter();
 
 signals:
     void newRegisterValue(int, QString&, int);
@@ -46,11 +45,7 @@ private:
     DeviceExplorer *             m_parent;
     bool                         m_needSetTimeRange;
     int                          m_colorEnumerator;
-    QTimer                       m_updateSplitterTimer;
     QList<int>                   m_splitterSizes;
-
-    const static int             k_delta = 100;
-    const static int             k_splitterUpdateTime = 100;
 };
 
 #endif // COOLERSTATEWIDGET_H

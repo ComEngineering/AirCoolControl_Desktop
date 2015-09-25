@@ -149,15 +149,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ModbusDriver.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_coollergraphwidget.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_coollergraphwidget.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="coollergraphwidget.cpp">
-      <Filter>Source Files\Widgets</Filter>
-    </ClCompile>
     <ClCompile Include="connectionlog.cpp">
       <Filter>Source Files\Widgets</Filter>
     </ClCompile>
@@ -460,12 +451,6 @@
     <CustomBuild Include="ModbusDriver.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="coollergraphwidget.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="coollergraphwidget.h">
-      <Filter>Header Files\Widgets</Filter>
-    </CustomBuild>
     <CustomBuild Include="connectionlog.h">
       <Filter>Header Files\Widgets</Filter>
     </CustomBuild>
@@ -632,9 +617,6 @@
     </ClInclude>
     <ClInclude Include="VersionStorage.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GeneratedFiles\ui_coollergraphwidget.h">
-      <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="PullerReadCoilTask.h">
       <Filter>Header Files</Filter>

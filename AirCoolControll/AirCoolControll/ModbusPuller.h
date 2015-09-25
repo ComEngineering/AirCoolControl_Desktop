@@ -5,7 +5,9 @@
 #include "PullerTaskBase.h"
 #include <qlist.h>
 #include "modbusuart_impl.h"
-#include <qsemaphore.h>
+#include <qmutex.h>
+#include <qeventloop.h>
+#include <qtimer.h>
 
 class ModbusPuller : public QThread
 {
@@ -24,23 +26,22 @@ public:
 protected:
     void run(void);
 
-signals:
+private slots:
+    void process();
 
 private:
     QList<PullerTaskShared> m_tasks;
     QList<PullerTaskShared> m_newTasks;
-    QString                 m_uartName;
     ModBusUART_Impl*        m_modbus;
     bool                    m_isStoped;
-    mutable QMutex          m_infoMapMutex;
     mutable QMutex          m_taskMutex;
-    QSemaphore              m_endProcessingSemaphore;
-    bool                    m_continueProcessing;
     /// variable that indicates if some kind of task has to be removed from task list.
     // 0 - nothing
     // -1 - all
     // id - for all requests with apropriate device id 
     volatile int            m_removeIndex;
+    QEventLoop              m_eventLoop;
+    QTimer                  m_timer;
 };
 
 #endif // ModbusPuller_H

@@ -15,6 +15,10 @@ CoilValueFieldWidget::~CoilValueFieldWidget()
     delete m_button;
 }
 
+void CoilValueFieldWidget::setValue(QVariant value)
+{
+}
+
 void CoilValueFieldWidget::onCoilChanged()
 {
     int d = m_button->isChecked() ? 1 : 0;
