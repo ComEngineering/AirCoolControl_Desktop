@@ -1,4 +1,7 @@
 /AirCoolControll/*.sdf
-/AirCoolControll/x64
 /AirCoolControll/AirCoolControll/GeneratedFiles
 /AirCoolControll/AirCoolControll/Debug
+/AirCoolControll/Setup/obj
+/AirCoolControll/Setup/bin
+/AirCoolControll//AirCoolControll/x64
+/AirCoolControll//AirCoolControll/win32
