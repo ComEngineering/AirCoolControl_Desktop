@@ -404,6 +404,15 @@
     <ClCompile Include="PictureWidget.cpp">
       <Filter>Source Files\Widgets</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_AboutDialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AboutDialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="AboutDialog.cpp">
+      <Filter>Source Files\Widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="aircoolcontroll.ui">
@@ -574,6 +583,12 @@
     <CustomBuild Include="PictureWidget.h">
       <Filter>Header Files\Widgets</Filter>
     </CustomBuild>
+    <CustomBuild Include="AboutDialog.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AboutDialog.h">
+      <Filter>Header Files\Widgets</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_aircoolcontroll.h">
@@ -660,9 +675,16 @@
     <ClInclude Include="GeneratedFiles\ui_addnewtestdialog.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_AboutDialog.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="..\..\configs\TEKO_COOLER_0_0_1.xml" />
-    <Xml Include="..\..\tests\test_example.xml" />
+    <Xml Include="..\..\configs\TEKO_COOLER_0_0_1.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
+    <Xml Include="..\..\tests\test_example.xml">
+      <Filter>Resource Files</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
