@@ -1,4 +1,7 @@
 /AirCoolControll/*.sdf
 /AirCoolControll/x64
 /AirCoolControll/AirCoolControll/GeneratedFiles
-/AirCoolControll/AirCoolControll/Debug
+/AirCoolControll/AirCoolControll/Debug/
+AirCoolControll/AirCoolControll/AirCoolControll/vcxproj
+
+*vcxproj

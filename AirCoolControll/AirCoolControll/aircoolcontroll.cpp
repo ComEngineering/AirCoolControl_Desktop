@@ -1,3 +1,5 @@
+
+#include "abouttextdialog.h"
 #include "aircoolcontroll.h"
 #include "Cooller_ModbusController.h"
 #include "AddNewConfigDialog.h"
@@ -35,11 +37,19 @@ AirCoolControll::AirCoolControll(QWidget *parent)
 
    /////////////////////////////////////////////////////////////////////////////////////
     connect(ui.mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(newActiveWindow(QMdiSubWindow*)));
+	connect(ui.menuAbout, SIGNAL(clicked()), this, SLOT(showArea()));
 }
 
 AirCoolControll::~AirCoolControll()
 {
    
+}
+void  AirCoolControll::showArea()
+{
+	AboutTextDialog  *about = new AboutTextDialog(this);
+    
+	about->exec();
+	delete  about;
 }
 
 QMdiArea*    AirCoolControll::getMdiArea(void) const

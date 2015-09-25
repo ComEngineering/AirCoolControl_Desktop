@@ -1,3 +1,4 @@
+
 #ifndef AddNewConfigDialog_H
 #define AddNewConfigDialog_H
 
