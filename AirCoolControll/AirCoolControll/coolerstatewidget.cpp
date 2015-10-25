@@ -15,7 +15,7 @@ CoolerStateWidget::CoolerStateWidget(DeviceExplorer *parent)
     m_colorEnumerator(0)
 { 
     ui.setupUi(this);
- 
+
     m_splitterSizes.push_back(size().width());
     m_splitterSizes.push_back(0);
     m_splitterSizes.push_back(0);
@@ -28,7 +28,7 @@ CoolerStateWidget::CoolerStateWidget(DeviceExplorer *parent)
     m_tables[ConfigMap::COIL] = ui.coilsTable;
     
     ui.frame->resize(500, ui.frame->height());
-   // initPlotter();
+    initPlotter();
     setUpdatesEnabled(true);
     startTimer(Configurator::getPullInterval());
 

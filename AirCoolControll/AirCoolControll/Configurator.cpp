@@ -6,6 +6,7 @@ QSharedPointer <QSettings>   Configurator::s_settings;
 
 Configurator::Configurator()
 {
+    QApplication::addLibraryPath(QApplication::applicationDirPath() + "/platforms/");
     QApplication::setOrganizationName("TEKO");
     QApplication::setApplicationName("AirCoolController");
 

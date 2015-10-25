@@ -13,6 +13,7 @@
   <?define Qt5SerialPort="Qt5SerialPortd"?>
   <?define Qt5Network="Qt5Networkd"?>
   <?define Qt5PrintSupport="Qt5PrintSupportd"?> 
+  <?define qwindows="qwindowsd"?>
 <?else?>
   <?define Qt5Core="Qt5Core"?>
   <?define Qt5Gui="Qt5Gui"?>
@@ -20,6 +21,7 @@
   <?define Qt5SerialPort="Qt5SerialPort"?>
   <?define Qt5Network="Qt5Network"?>
   <?define Qt5PrintSupport="Qt5PrintSupport"?> 
+  <?define qwindows="qwindows"?>
 <?endif?>
 
   <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
@@ -35,6 +37,7 @@
 		<Feature Id="ProductFeature" Title="Setup" Level="1">
 			<ComponentGroupRef Id="ProductComponents" />
       <ComponentGroupRef Id="ConfigComponents" />
+      <ComponentGroupRef Id="PluginsComponents" />
       <ComponentRef Id="ApplicationShortcutAirCoolControll" />
 		</Feature>
     
@@ -71,6 +74,7 @@
 			<Directory Id="ProgramFiles64Folder">
 				<Directory Id="INSTALLFOLDER" Name="$(var.ProductName)"> 
           <Directory Id="CONFIGSFOLDER" Name="configs"/>
+          <Directory Id="PLUGINSSFOLDER" Name="platforms"/>
         </Directory>
 			</Directory>
     
@@ -125,6 +129,11 @@
           <File Id='printsupport' DiskId='1' Source='$(env.QTDIR)/bin/$(var.Qt5PrintSupport).dll '/>
       </Component>
 		</ComponentGroup>
+    <ComponentGroup Id="PluginsComponents" Directory="PLUGINSSFOLDER">
+      <Component Id="QtPlugin1">
+          <File Id='windows_support' DiskId='1' Source='$(env.QTDIR)/plugins/platforms/$(var.qwindows).dll '/>
+      </Component>
+    </ComponentGroup>
 	</Fragment>
     
   <Fragment>
