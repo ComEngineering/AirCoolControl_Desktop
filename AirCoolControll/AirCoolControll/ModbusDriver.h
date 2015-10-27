@@ -8,6 +8,7 @@
 #include "VersionStorage.h"
 #include "ModbusPuller.h"
 #include "DeviceInfo.h"
+#include "PullerGetDeviceInfoTask.h"
 
 class ModbusDriver : public QObject
 {

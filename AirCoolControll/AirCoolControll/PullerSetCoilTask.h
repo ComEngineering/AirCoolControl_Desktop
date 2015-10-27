@@ -12,7 +12,8 @@ public:
 
     Priority  priority(){ return High; }
 
-    bool proceed(ModBusUART_Impl* modbus);
+    void proceed(ModBusUART_Impl* modbus);
+    void succesCall(bool rc);
 
 private:
     int   m_regNumber;

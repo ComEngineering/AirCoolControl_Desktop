@@ -3,308 +3,375 @@
 #include <QtEndian> 
 #include <QMutexLocker>
 #include "Configurator.h"
+#include "PullerGetDeviceInfoTask.h"
+#include "PullerSetCoilTask.h"
+#include "PullerWriteTask.h"
+#include "PullerReadTask.h"
+#include "PullerReadCoilTask.h"
+#include "ModbusPuller.h"
 
-ModBusUART_Impl::ModBusUART_Impl(const QString& name, QObject *parent)
-    : QObject(parent)
+ModBusUART_Impl::ModBusUART_Impl(const QString& name, ModbusPuller *puller)
+    : QObject(nullptr),
+    m_owner(nullptr),
+    m_puller(puller)
 {
     m_port.setPortName(name);
+    connect(&m_port, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(communicationError(QSerialPort::SerialPortError)));
+    connect(&m_port, SIGNAL(bytesWritten(qint64)), this, SLOT(writeFinished(qint64)));
+    connect(&m_port, SIGNAL(readyRead()), this, SLOT(readFinished()));
+    connect(&m_readWaitTimer, SIGNAL(timeout()), this, SLOT(readTimeElapsed()));
+    m_readWaitTimer.setSingleShot(true);
 }
 
 ModBusUART_Impl::~ModBusUART_Impl()
 {
-    QMutexLocker locker(&m_mutex);
+
 }
 
 bool ModBusUART_Impl::startRequest(int speed)
 {
-    if (m_port.open(QIODevice::ReadWrite)) 
+    if (m_port.open(QIODevice::ReadWrite) &&  
+        m_port.setDataBits(QSerialPort::Data8) &&
+        m_port.setFlowControl(QSerialPort::NoFlowControl) &&
+        m_port.setStopBits(QSerialPort::OneStop) &&
+        m_port.setParity(QSerialPort::NoParity) &&
+        m_port.setBaudRate(speed))
     {
-        connect(&m_port, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(communicationError(QSerialPort::SerialPortError)));
-        return  
-            m_port.setDataBits(QSerialPort::Data8) &&
-            m_port.setFlowControl(QSerialPort::NoFlowControl) &&
-            m_port.setStopBits(QSerialPort::OneStop) &&
-            m_port.setParity(QSerialPort::NoParity) &&
-            m_port.setBaudRate(speed);
+        return true;
     }
-   
+    stopRequest(true);
     return false;
 }
 
-void ModBusUART_Impl::stopRequest(void)
+void ModBusUART_Impl::stopRequest(bool remove)
 {
-    disconnect(&m_port, SIGNAL(error(QSerialPort::SerialPortError)), this, SLOT(communicationError(QSerialPort::SerialPortError)));
+    m_buffer.clear();
     m_port.close();
+    m_puller->taskFinished(remove);
+    m_owner = nullptr;
 }
 
-bool ModBusUART_Impl::readRegisterPool(quint16 id, int speed, quint16 regNumber, quint16 regCount,std::vector<quint16>& o_list)
+void ModBusUART_Impl::writeFinished(qint64 size)
+{
+    if (size != m_currentRequestLength)
+    {
+        qDebug("error length");
+    }
+    m_port.read(100);
+}
+
+void ModBusUART_Impl::readFinished(void)
+{
+    m_buffer += m_port.readAll();
+    m_readWaitTimer.start(Configurator::getChankTimeout());
+    m_port.read(100);
+}
+    
+void ModBusUART_Impl::readTimeElapsed(void)
+{
+    switch (m_currentRequest)
+    {
+    case READ_DEVICE_INFO:
+        handleReadDeviceInfo();
+        break;
+    case WRITE_COIL:
+        handleWriteCoil();
+        break;
+    case READ_COIL_POOL:
+        handleReadCoilPool();
+        break;
+    case WRITE_REGISTER:
+        handleWriteRegister();
+        break;
+    case READ_REGISTER_POOL:
+        handleReadRegisterPool();
+        break;
+    }
+}
+
+////////////////////////// Read Register Pool //////////////////////////
+bool ModBusUART_Impl::readRegisterPool(PullerTaskBase* owner, quint16 id, int speed, quint16 regNumber, quint16 regCount)
 {
     if (!startRequest(speed))
         return false;
 
+    m_id = id;
+    m_owner = owner;
+    m_currentRequest = READ_REGISTER_POOL;
+    m_regNumber = regCount;
+
+    quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
+    quint16 regCountBig = qToBigEndian<quint16>(regCount);
+
+    QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
+    data += QByteArray::fromRawData((const char*)& regCountBig, sizeof(quint16));
+    QByteArray req = makeRTUFrame(id, 3, data);
+
+    m_currentRequestLength = m_port.write(req);
+    m_currentResponseLength = 1 + 1 + 1 + 2 * regCount + 2;
+
+    return false;
+}
+
+void ModBusUART_Impl::handleReadRegisterPool()
+{
     bool rc = false;
+    std::vector<quint16> o_list;
 
-    do
-    {
-        quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
-        quint16 regCountBig = qToBigEndian<quint16>(regCount);
-
-        QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
-        data += QByteArray::fromRawData((const char*)& regCountBig, sizeof(quint16));
-        QByteArray req = makeRTUFrame(id, 3, data);
-
-        QMutexLocker locker(&m_mutex);
-
-        m_port.write(req);
-        if (!m_port.waitForBytesWritten(Configurator::getMaximunTimeout()))
-        {
+    do {
+        if (!checkCRC(m_buffer))
             break;
-        }
 
-        int responseLengthMust = 1 + 1 + 1 + 2 * regCount + 2;
+        if (m_buffer.size() != m_currentResponseLength || m_buffer[1] != char(3) || m_buffer[0] != char(m_id))
+                break;
 
-        if (m_port.waitForReadyRead(Configurator::getMaximunTimeout()))
+        const uchar* d = (const uchar *)m_buffer.data() + 3;
+        for (int i = 0; i < m_regNumber; i++)
         {
-            QByteArray responseData = m_port.readAll();
-            while (m_port.waitForReadyRead(Configurator::getChankTimeout()))  
-                responseData += m_port.readAll();
-
-            if (!checkCRC(responseData))
-                break;
-
-            if (responseData.size() != responseLengthMust || responseData[1] != char(3) || responseData[0] != char(id))
-                break;
-
-            o_list.clear();
-            const uchar* d = (const uchar *)responseData.data() + 3;
-            for (int i = 0; i < regCount; i++)
-            {
-                quint16 v = qFromBigEndian<quint16>(d + i * 2);
-                o_list.push_back(v);
-            }
-
-            rc = true;
+            quint16 v = qFromBigEndian<quint16>(d + i * 2);
+            o_list.push_back(v);
         }
+
+        rc = true;
     } while (false);
 
-    stopRequest();
-    return rc;
-}
-
-bool ModBusUART_Impl::writeRegister(quint16 id, int speed, quint16 regNumber, quint16 value)
-{
-    if (!startRequest(speed))
-        return false;
-
-    bool rc = false;
-
-    do
+    if (m_owner)
     {
-        quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
-        quint16 valueBig = qToBigEndian<quint16>(value);
-        QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
-        data.append(QByteArray::fromRawData((const char*)&valueBig, sizeof(quint16)));
-        QByteArray req = makeRTUFrame(id, 6, data);
-
-        QMutexLocker locker(&m_mutex);
-
-        m_port.write(req);
-
-        if (!m_port.waitForBytesWritten(Configurator::getMaximunTimeout()))
-            break;
-
-        if (m_port.waitForReadyRead(Configurator::getMaximunTimeout()))
+        PullerReadTask *task = reinterpret_cast<PullerReadTask*>(m_owner);
+        if (rc)
         {
-            QByteArray responseData = m_port.readAll();
-            while (m_port.waitForReadyRead(Configurator::getChankTimeout())) 
-                responseData += m_port.readAll();
-
-            if (!checkCRC(responseData))
-                break;
-
-            if (responseData.size() == 8 && responseData[1] != char(6) || responseData[0] != char(id))
-            {
-                rc = true;
-            }
+            task->succesCall(o_list);
+        }
+        else
+        {
+            task->failCall();
         }
     }
-    while (false);
-    
-    stopRequest();
-    return rc;
+
+    stopRequest(false);
 }
 
-bool ModBusUART_Impl::readCoilPool(quint16 id, int speed, quint16 regNumber, quint16 coilCount, std::vector<quint16>& o_list)
+////////////////////////// Write register //////////////////////////////////
+bool ModBusUART_Impl::writeRegister(PullerTaskBase* owner, quint16 id, int speed, quint16 regNumber, quint16 value)
 {
     if (!startRequest(speed))
         return false;
 
+    m_currentRequest = WRITE_REGISTER;
+    m_id = id;
+    m_owner = owner;
+
+    quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
+    quint16 valueBig = qToBigEndian<quint16>(value);
+    QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
+    data.append(QByteArray::fromRawData((const char*)&valueBig, sizeof(quint16)));
+    QByteArray req = makeRTUFrame(id, 6, data);
+    m_currentRequestLength = m_port.write(req);
+    return true;
+}
+
+void ModBusUART_Impl::handleWriteRegister()
+{
     bool rc = false;
 
     do
     {
-        quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
-        quint16 regCountBig = qToBigEndian<quint16>(coilCount);
-
-        QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
-        data += QByteArray::fromRawData((const char*)& regCountBig, sizeof(quint16));
-        QByteArray req = makeRTUFrame(id, 1, data);
-
-        QMutexLocker locker(&m_mutex);
-
-        m_port.write(req);
-        if (!m_port.waitForBytesWritten(Configurator::getMaximunTimeout()))
-        {
+        if (!checkCRC(m_buffer))
             break;
+
+        if (m_buffer.size() == 8 && m_buffer[1] != char(6) || m_buffer[0] != char(m_id))
+            rc = true;
+    } while (false);
+
+    if (m_owner)
+    {
+        PullerWriteTask* task = reinterpret_cast<PullerWriteTask*>(m_owner);
+        task->succesCall(rc);
+    }
+    
+    stopRequest(true);
+}
+
+////////////////////////// Read Coil //////////////////////
+bool ModBusUART_Impl::readCoilPool(PullerTaskBase* owner, quint16 id, int speed, quint16 regNumber, quint16 coilCount)
+{
+    if (!startRequest(speed))
+        return false;
+
+    m_id = id;
+    m_owner = owner;
+    m_currentRequest = READ_COIL_POOL;
+    m_regNumber = coilCount;
+
+    quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
+    quint16 regCountBig = qToBigEndian<quint16>(coilCount);
+
+    QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
+    data += QByteArray::fromRawData((const char*)& regCountBig, sizeof(quint16));
+    QByteArray req = makeRTUFrame(id, 1, data);
+
+    char byteMust = (coilCount + 7) / 8;
+    m_currentResponseLength = 1 + 1 + 1 + byteMust;
+    
+    m_currentRequestLength = m_port.write(req); 
+
+    return false;
+}
+
+void ModBusUART_Impl::handleReadCoilPool()
+{
+    bool rc = false;
+    std::vector<quint16> res;
+    do
+    {
+        if (!checkCRC(m_buffer))
+            break;
+
+        if (m_buffer.size() != m_currentResponseLength || m_buffer[1] != char(1) || m_buffer[0] != char(m_id))// || responseData[2] != byteMust)
+            break;
+
+        const uchar* d = (const uchar *)m_buffer.data() + 3;
+        for (int i = 0; i < m_regNumber; i++)
+        {
+            quint8 v = qFromBigEndian<quint8>(d + i / 8);
+            res.push_back( v & (0x1 << (i % 8)) ? 0xff : 0 );
         }
 
-        char byteMust = (coilCount + 7) / 8;
-        int responseLengthMust = 1 + 1 + 1 + byteMust;
+        rc = true;
+    } while (false);
+    PullerReadCoilTask *task = reinterpret_cast<PullerReadCoilTask*>(m_owner);
 
-        if (m_port.waitForReadyRead(Configurator::getMaximunTimeout()))
+    if (m_owner)
+    {
+        if (rc)
         {
-            QByteArray responseData = m_port.readAll();
-            while (m_port.waitForReadyRead(Configurator::getChankTimeout()))
-                responseData += m_port.readAll();
+            task->succesCall(res);
+        }
+        else
+        {
+            task->failCall();
+        }
+    }
+    stopRequest(false);
+}
 
-            if (!checkCRC(responseData))
-                break;
+//////////////////////////// Set coil ///////////////////////////////////////
+bool ModBusUART_Impl::writeCoil(PullerTaskBase* owner, quint16 id, int speed, quint16 regNumber, bool state)
+{
+    if (!startRequest(speed))
+        return false;
 
-            if (responseData.size() != responseLengthMust || responseData[1] != char(1) || responseData[0] != char(id))// || responseData[2] != byteMust)
-                break;
+    m_currentRequest = WRITE_COIL;
+    m_id = id;
+    m_owner = owner;
 
-            o_list.clear();
-            const uchar* d = (const uchar *)responseData.data() + 3;
-            for (int i = 0; i < coilCount; i++)
-            {
-                quint8 v = qFromBigEndian<quint8>(d + i / 8);
-                o_list.push_back( v & (0x1 << (i % 8)) ? 0xff : 0 );
-            }
+    quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
+    quint16 valueBig = (state) ? 0x00ff : 0x0;
+    QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
+    data.append(QByteArray::fromRawData((const char*)&valueBig, sizeof(quint16)));
+    QByteArray req = makeRTUFrame(id, 5, data);
+    m_currentRequestLength = m_port.write(req);
+    return true;
+}
 
+void ModBusUART_Impl::handleWriteCoil()
+{
+    bool rc = false;
+
+    do
+    {
+        if (!checkCRC(m_buffer))
+            break;
+
+        if (m_buffer.size() == 8 && m_buffer[1] == char(5) || m_buffer[0] == char(m_id))
+        {
             rc = true;
         }
     } while (false);
-
-    stopRequest();
-    return rc;
+    
+    if (m_owner)
+    {
+        PullerSetCoilTask* task = reinterpret_cast<PullerSetCoilTask*>(m_owner);
+        task->succesCall(rc);
+    }
+    stopRequest(true);
 }
 
-bool ModBusUART_Impl::writeCoil(quint16 id, int speed, quint16 regNumber, bool state)
+///////////////////// Device info //////////////////////////////
+bool ModBusUART_Impl::readDeviceInfo(PullerTaskBase* owner, quint16 id, int speed)
 {
     if (!startRequest(speed))
         return false;
+    
+    m_currentRequest = READ_DEVICE_INFO;
+    m_id = id;
+    m_owner = owner;
 
-    bool rc = false;
+    const char reqBody[] = { char(0x0E), char(1), char(0) };
+    QByteArray reqBodyArray(reqBody);
+    reqBodyArray.append(char(0));
+    QByteArray req = makeRTUFrame(id, 43, reqBodyArray);
 
-    do
-    {
-        quint16 regNumberBig = qToBigEndian<quint16>(regNumber);
-        quint16 valueBig = (state) ? 0x00ff : 0x0;
-        QByteArray data = QByteArray::fromRawData((const char*)& regNumberBig, sizeof(quint16));
-        data.append(QByteArray::fromRawData((const char*)&valueBig, sizeof(quint16)));
-        QByteArray req = makeRTUFrame(id, 5, data);
-
-        QMutexLocker locker(&m_mutex);
-
-        m_port.write(req);
-
-        if (!m_port.waitForBytesWritten(Configurator::getMaximunTimeout()))
-            break;
-
-        if (m_port.waitForReadyRead(Configurator::getMaximunTimeout()))
-        {
-            QByteArray responseData = m_port.readAll();
-            while (m_port.waitForReadyRead(Configurator::getChankTimeout()))
-                responseData += m_port.readAll();
-
-            if (!checkCRC(responseData))
-                break;
-
-            if (responseData.size() == 8 && responseData[1] == char(5) || responseData[0] == char(id))
-            {
-                rc = true;
-            }
-        }
-    } while (false);
-
-    stopRequest();
-    return rc;
+    m_currentRequestLength = m_port.write(req);
+    return true;
 }
 
-bool ModBusUART_Impl::readDeviceInfo(quint16 id, int speed, QString& vendor, QString& product, QString& version)
+void ModBusUART_Impl::handleReadDeviceInfo()
 {
-    if (!startRequest(speed))
-        return false;
-
     bool rc = false;
-
+    QString vendor, product, version;
     do
     {
-        const char reqBody[] = { char(0x0E), char(1), char(0) };
-        QByteArray reqBodyArray(reqBody);
-        reqBodyArray.append(char(0));
-        QByteArray req = makeRTUFrame(id, 43, reqBodyArray);
-
-        QMutexLocker locker(&m_mutex);
-
-        if (m_port.write(req) != req.size())
+        if (!checkCRC(m_buffer))
             break;
 
-        if (!m_port.waitForBytesWritten(Configurator::getMaximunTimeout()))
+        if (m_buffer[1] != char(43) || m_buffer[0] != char(m_id) || m_buffer[2] != char(0x0e) || m_buffer[3] != char(1))
             break;
-
-        if (m_port.waitForReadyRead(Configurator::getMaximunTimeout()))
-        {
-            QByteArray responseData = m_port.readAll();
-            while (m_port.waitForReadyRead(Configurator::getChankTimeout()))
-                responseData += m_port.readAll();
-
-            if (!checkCRC(responseData))
-                break;
-
-            if (responseData[1] != char(43) || responseData[0] != char(id) || responseData[2] != char(0x0e) || responseData[3] != char(1))
-                break;
-            try
-            {
-                int numberOfObjects = responseData[7];
-                if (numberOfObjects < 3)
-                    break;
+        
+        int numberOfObjects = m_buffer[7];
+        if (numberOfObjects < 3)
+            break;
                 
-                int i = 0;
-                for (int startIndex = 8; i < numberOfObjects; i++)
-                {
-                    if (i != responseData[startIndex])
-                        break;
-                    int len = responseData[startIndex + 1];
-                    std::string a_string(responseData.data() + startIndex + 2, len);
-                    QString* target;
-                    switch (i)
-                    {
-                    case 0:
-                        target = &vendor;
-                        break;
-                    case 1:
-                        target = &product;
-                        break;
-                    case 2:
-                        target = &version;
-                        break;
-                    }
-                    (*target) = QString::fromStdString(a_string);
-                    startIndex += len + 2;
-                }
-                if (i == numberOfObjects)
-                    rc = true;
-            }
-            catch (...)
+        int i = 0;
+        for (int startIndex = 8; i < numberOfObjects; i++)
+        {
+            if (i != m_buffer[startIndex])
+                break;
+            int len = m_buffer[startIndex + 1];
+            std::string a_string(m_buffer.data() + startIndex + 2, len);
+            QString* target;
+            switch (i)
             {
-
+            case 0:
+                vendor = QString::fromStdString(a_string);
+                break;
+            case 1:
+                product = QString::fromStdString(a_string);
+                break;
+            case 2:
+                version = QString::fromStdString(a_string);
+                break;
             }
+            startIndex += len + 2;
         }
+        if (i == numberOfObjects)
+            rc = true;
     } while (false);
+  
+    if (m_owner)
+    {
+        PullerGetDeviceInfoTask* task = reinterpret_cast<PullerGetDeviceInfoTask*>(m_owner);
+        if (rc)
+        {
+            task->succesCall(vendor, product, version);
+        }
+        else
+        {
+            rc = task->failCall();
+        }
+    }
 
-    stopRequest();
-    return rc;
+    stopRequest(rc);
 }
 
 bool ModBusUART_Impl::checkCRC(const QByteArray& data) const

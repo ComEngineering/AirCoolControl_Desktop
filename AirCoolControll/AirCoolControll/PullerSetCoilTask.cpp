@@ -15,17 +15,12 @@ PullerSetCoilTask::~PullerSetCoilTask()
 }
 
 
-bool PullerSetCoilTask::proceed(ModBusUART_Impl* modbus)
+void PullerSetCoilTask::proceed(ModBusUART_Impl* modbus)
 {
-    bool rc = true;
+    modbus->writeCoil(nullptr, getID(), getSpeed(), m_regNumber, m_value);
+}
 
-    if (!modbus->writeCoil(getID(), getSpeed(), m_regNumber, m_value))
-    {
-        if (m_failCounter++ < Configurator::getRetryCount())  /// TO DO read from settings
-            rc = false;
-        /* else
-        emit transmitionError();*/ // TO DO fire callback
-    }
+void PullerSetCoilTask::succesCall(bool rc)
+{
 
-    return rc;
 }

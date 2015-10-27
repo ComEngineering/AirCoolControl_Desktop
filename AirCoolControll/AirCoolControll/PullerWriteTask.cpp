@@ -16,17 +16,13 @@ PullerWriteTask::~PullerWriteTask()
 }
 
 
-bool PullerWriteTask::proceed(ModBusUART_Impl* modbus)
+void PullerWriteTask::proceed(ModBusUART_Impl* modbus)
 {
-    bool rc = true;
+    modbus->writeRegister(this, getID(), getSpeed(), m_regNumber, m_value);
+}
 
-    if (!modbus->writeRegister(getID(), getSpeed(), m_regNumber, m_value))
-    {
-        if (m_failCounter++ <  Configurator::getRetryCount())  
-            rc = false;
-       /* else
-            emit transmitionError();*/
-    }
+void PullerWriteTask::succesCall(bool result)
+{
+    //if (m_failCounter++ <  Configurator::getRetryCount())
 
-    return rc;
 }

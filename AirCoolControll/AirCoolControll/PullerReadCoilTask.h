@@ -12,8 +12,7 @@ public:
 
     Priority  priority(){ return Low; }
 
-    bool proceed(ModBusUART_Impl* modbus);
-
+    void proceed(ModBusUART_Impl* modbus);
 };
 
 typedef std::shared_ptr<PullerReadCoilTask> PullerReadCoilsTaskShared;

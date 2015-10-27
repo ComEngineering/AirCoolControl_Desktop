@@ -18,7 +18,7 @@ public:
 
     Priority  priority(){ return Low; }
 
-    bool proceed(ModBusUART_Impl* modbus);
+    void proceed(ModBusUART_Impl* modbus);
     virtual bool isItTimeToDo(void) const;
     long millisecondsToCall(void) const;
 
@@ -27,6 +27,8 @@ public:
     void setContent(const std::vector<quint16>& list);
 
     void setListener(DeviceExplorer* listener) { m_listener = listener; }
+    void succesCall(const std::vector<quint16>& res);
+    void failCall();
 
 protected:
     Interval                 m_range;

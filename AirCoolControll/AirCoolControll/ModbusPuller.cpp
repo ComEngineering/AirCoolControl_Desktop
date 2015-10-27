@@ -2,12 +2,9 @@
 #include <qwaitcondition.h>
 
 ModbusPuller::ModbusPuller(QObject *parent)
-    : QThread(parent),
-    m_modbus(NULL),
-    m_isStoped(true),
-    m_removeIndex(0)
+    : m_modbus(nullptr)
+    , m_isStoped(true)
 {
-   ;
 }
 
 ModbusPuller::~ModbusPuller()
@@ -15,83 +12,77 @@ ModbusPuller::~ModbusPuller()
     stopPulling();
 }
 
+void ModbusPuller::stopPulling()
+{
+    m_timer.stop();
+    if (m_modbus)
+    {
+        delete m_modbus;
+        m_modbus = nullptr;
+    }
+}
+
 void ModbusPuller::clearTaskList()
 {
-    QMutexLocker lock(&m_taskMutex);
-    m_removeIndex = -1;
+    m_tasks.clear();
 }
 
 void ModbusPuller::removeTaskWithID(int id)
 {
-    QMutexLocker lock(&m_taskMutex);
-    m_removeIndex = id;
+    bool finished = true;
+    while (finished && m_tasks.size())
+    {
+        finished = false;
+        for (QList<PullerTaskShared>::iterator it = m_tasks.begin(); it != m_tasks.end(); it++)
+        {
+            if (id == (*it)->getID())
+            {
+                m_tasks.erase(it);
+                finished = true;
+                break;
+            }
+        }
+    }
 }
 
 void ModbusPuller::addTask(PullerTaskShared a_task)
 {
     QMutexLocker lock(&m_taskMutex);
-    m_newTasks.append(a_task);
-    m_timer.start(0);
+    m_tasks.push_back(a_task);
+    if (!m_modbusBusy)
+        schedule();
 }
 
 void ModbusPuller::process(void)
 {
     if (!m_modbus)
         return;
-    
-    bool highestPriorityTaskDone = true;
-    
-    for (PullerTaskBase::Priority p = PullerTaskBase::Priority::High; highestPriorityTaskDone && p < PullerTaskBase::Priority::Count; PullerTaskBase::NEXT(p))
+
+    for (PullerTaskBase::Priority p = PullerTaskBase::Priority::High; p < PullerTaskBase::Priority::Count; PullerTaskBase::NEXT(p))
     {
-        for (QList<PullerTaskShared>::iterator task = m_tasks.begin(); task != m_tasks.end(); task++)
+        m_currentTaskIndex = 0;
+        for (QList<PullerTaskShared>::iterator currentTask = m_tasks.begin(); currentTask != m_tasks.end(); currentTask++, m_currentTaskIndex++)
         {
-            if ((*task)->priority() == p && (*task)->isItTimeToDo())
+            if ((*currentTask)->priority() == p && (*currentTask)->isItTimeToDo())
             {
-                if (true == (*task)->proceed(m_modbus))
-                {
-                    m_tasks.erase(task);
-                    break;
-                }
-                highestPriorityTaskDone = false;
+                m_modbusBusy = true;
+                (*currentTask)->proceed(m_modbus);
+                return;
             }
         }
     }
+}
 
-    {
-        QMutexLocker lock(&m_taskMutex);
-        if (m_newTasks.size() != 0)
-        {
-            for (PullerTaskShared a_task : m_newTasks)
-                m_tasks.push_back(a_task);
-            
-            m_newTasks.clear();
-        }
+void ModbusPuller::taskFinished(bool remove)
+{
+    if (remove)
+        m_tasks.removeAt(m_currentTaskIndex);
+    m_modbusBusy = false;
+    schedule();
+}
 
-        if (0 != m_removeIndex)
-        {
-            if (-1 == m_removeIndex)
-                m_tasks.clear();
-            else
-            {
-                bool finished = true;
-                while (finished && m_tasks.size())
-                {
-                    finished = false;
-                    for (QList<PullerTaskShared>::iterator it = m_tasks.begin(); it != m_tasks.end(); it++)
-                    {
-                        if (m_removeIndex == (*it)->getID())
-                        {
-                            m_tasks.erase(it);
-                            finished = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            m_removeIndex = 0;
-        }
-    }
-        
+void ModbusPuller::schedule()
+{
     if (m_tasks.size() != 0)
     {
         int pause = (*m_tasks.begin())->millisecondsToCall();
@@ -107,28 +98,11 @@ void ModbusPuller::process(void)
     }
 }
 
-void ModbusPuller::run(void)
-{
-    int currentScanningID = 1;
-
-    m_timer.setSingleShot(true);
-    connect(&m_timer, SIGNAL(timeout()), this, SLOT(process()));
-    
-    exec();
-    
-    if (m_modbus)
-        delete m_modbus;
-}
-
 void ModbusPuller::startPulling(const QString& uartName)
 {
-    if (m_modbus)
-        delete m_modbus;
+    m_modbusBusy = false;
+    m_timer.setSingleShot(true);
+    connect(&m_timer, SIGNAL(timeout()), this, SLOT(process()));
 
-    m_modbus = new ModBusUART_Impl(uartName);
-}
-
-void ModbusPuller::stopPulling()
-{
-    exit();
+    m_modbus = new ModBusUART_Impl(uartName, this);
 }

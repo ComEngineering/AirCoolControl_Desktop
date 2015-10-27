@@ -1,6 +1,5 @@
 #include "ModbusDriver.h"
 #include <QMutexLocker>
-#include "PullerGetDeviceInfoTask.h"
 #include "PullerWriteTask.h"
 #include "PullerSetCoilTask.h"
 #include "DeviceInfo.h"
@@ -11,19 +10,15 @@ ModbusDriver::ModbusDriver(const QString& name, QObject *parent)
 { 
     m_currentPortName = name;
     m_puller.startPulling(name);
-    m_puller.start();
 }
 
 ModbusDriver::~ModbusDriver()
 {
-    m_puller.stopPulling();
-    m_puller.wait();
 }
 
 void ModbusDriver::UARTfail()
 {
     m_puller.stopPulling();
-    m_puller.wait();
     emit connectionFail();
 }
 
@@ -35,7 +30,7 @@ void ModbusDriver::addPullerReadTask(PullerTaskShared a_task)
 void ModbusDriver::requestDeviceAproval(quint16 id, int speed)
 {
     detectionCallback cb = std::bind(&ModbusDriver::onDeviceDetected, this, std::placeholders::_1);
-    PullerGetDeviceInfoTaskShared a_task = std::make_shared<PullerGetDeviceInfoTask>(id,speed,m_currentPortName,cb);
+    PullerGetDeviceInfoTaskShared a_task = std::make_shared<PullerGetDeviceInfoTask>(id, speed, m_currentPortName, cb);
     m_puller.addTask(a_task);
 }
 

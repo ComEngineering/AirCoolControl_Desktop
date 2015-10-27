@@ -1,36 +1,36 @@
 #include "PullerGetDeviceInfoTask.h"
 #include "Configurator.h"
+#include "ModbusDriver.h"
 
 
 PullerGetDeviceInfoTask::PullerGetDeviceInfoTask(int id, int speed, const QString& uartName, ModbusDriver::detectionCallback cb) :
-    PullerTaskBase(id,speed),
+    PullerTaskBase(id, speed),
     m_uartName(uartName),
     m_cb(cb)
 {
 }
 
-
 PullerGetDeviceInfoTask::~PullerGetDeviceInfoTask()
 {
 }
 
-bool PullerGetDeviceInfoTask::proceed(ModBusUART_Impl* modbus)
+void PullerGetDeviceInfoTask::proceed(ModBusUART_Impl* modbus)
 {
-    bool rc = true;
+    modbus->readDeviceInfo(this, getID(), getSpeed());
+}
 
-    QString vendor,product,version;
+void PullerGetDeviceInfoTask::succesCall(const QString& vendor, const QString& product, const QString& version)
+{
+    m_cb(std::make_shared<DeviceInfo>(m_uartName, getID(), getSpeed(), vendor, product, version));
+}
 
-    if ( ! modbus->readDeviceInfo(getID(), getSpeed(), vendor, product, version))
+bool PullerGetDeviceInfoTask::failCall()
+{
+    if (++m_failCounter >= Configurator::getRetryCount())
     {
-        if (++m_failCounter < Configurator::getRetryCount()) 
-            rc = false;
-        else
-            m_cb(std::make_shared<DeviceInfo>(m_uartName, getID()));
-    }
-    else
-    {
-        m_cb(std::make_shared<DeviceInfo>(m_uartName, getID(), getSpeed(), vendor, product, version));
+        m_cb(std::make_shared<DeviceInfo>(m_uartName, getID()));
+        return true;
     }
 
-    return rc;
+    return false;
 }

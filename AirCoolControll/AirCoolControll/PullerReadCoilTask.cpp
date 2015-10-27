@@ -13,21 +13,7 @@ PullerReadCoilTask::~PullerReadCoilTask()
 
 }
 
-bool PullerReadCoilTask::proceed(ModBusUART_Impl* modbus)
+void PullerReadCoilTask::proceed(ModBusUART_Impl* modbus)
 {
-    std::vector<quint16> res;
-    if (modbus->readCoilPool(getID(),getSpeed(), m_range.first, m_range.second - m_range.first + 1, res))
-    {
-        setContent(res);    
-        m_failCounter = 0;
-    }
-    else
-    {
-        m_failCounter++;
-    }
-
-    m_lastSuccessfullAttemptTime = boost::posix_time::microsec_clock::local_time();
-    
-    return false;
+    modbus->readCoilPool(this, getID(), getSpeed(), m_range.first, m_range.second - m_range.first + 1);
 }
-

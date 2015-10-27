@@ -53,22 +53,9 @@ void PullerReadTask::setContent(const std::vector<quint16>& list)
     }
 }
 
-bool PullerReadTask::proceed(ModBusUART_Impl* modbus)
+void PullerReadTask::proceed(ModBusUART_Impl* modbus)
 {
-    std::vector<quint16> res;
-    if (modbus->readRegisterPool(getID(), getSpeed(), m_range.first, m_range.second - m_range.first + 1, res))
-    {
-        setContent(res);    
-        m_failCounter = 0;
-    }
-    else
-    {
-        m_failCounter++;
-    }
-    
-    m_lastSuccessfullAttemptTime = boost::posix_time::microsec_clock::local_time();
-    
-    return false;
+    modbus->readRegisterPool(this, getID(), getSpeed(), m_range.first, m_range.second - m_range.first + 1);
 }
 
 bool PullerReadTask::isItTimeToDo(void) const
@@ -85,4 +72,17 @@ long PullerReadTask::millisecondsToCall(void) const
     boost::posix_time::time_duration diff = boost::posix_time::microsec_clock::local_time() - m_lastSuccessfullAttemptTime;
     long milliseconds = diff.total_milliseconds();
     return Configurator::getPullInterval() - milliseconds;
+}
+
+void PullerReadTask::succesCall(const std::vector<quint16>& res)
+{
+    setContent(res);
+    m_failCounter = 0;
+    m_lastSuccessfullAttemptTime = boost::posix_time::microsec_clock::local_time();
+}
+
+void PullerReadTask::failCall()
+{
+    m_failCounter++;
+    m_lastSuccessfullAttemptTime = boost::posix_time::microsec_clock::local_time();
 }

@@ -26,7 +26,7 @@ public:
     PullerTaskBase(int id,int speed = 9600);
     virtual ~PullerTaskBase();
 
-    virtual bool proceed(ModBusUART_Impl* modbus) = 0;
+    virtual void proceed(ModBusUART_Impl* modbus) = 0;
     virtual bool isItTimeToDo(void) const { return true; }
     virtual Priority  priority() = 0;
     virtual long  millisecondsToCall(void) const { return 0; }
